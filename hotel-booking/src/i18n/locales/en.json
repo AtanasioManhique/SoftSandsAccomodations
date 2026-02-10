@@ -1,0 +1,370 @@
+{
+    "aboutintro":{
+        "title": "SoftSands Accommodations",
+        "description":"SoftSands Accommodations is a coastal tourism startup dedicated to promoting domestic tourism in southern Mozambique. Founded in 2022, we offer exceptional accommodation experiences with a focus on warm hospitality for both national and international visitors."
+    },
+    "problemssection":{
+        "title": "The problem we solve",
+        "description": "Despite Mozambique's many beautiful beach destinations, domestic tourism still faces gaps — especially in the connection between property owners, travelers, and other essential services. This disconnect paves the way for opportunists to take advantage of unsuspecting guests.",
+        "paragraph": "At SoftSands, we are bridging this gap by creating a secure and transparent platform that fosters genuine and reliable experiences for both property owners and travelers.",
+         "subtitlevalue": "Our Values",
+        "subtitlemission": "Our Mission",
+        "subtitlecommitment": "Our Commitment",
+        "mission": "SoftSands bridges the gap between property owners and travelers, offering a variety of accommodation options for both locals and international tourists.",
+        "values": "We lead with integrity, offer a reliable service, embrace innovation, and work as a team to ensure every guest feels valued.",
+        "commitment": "We are committed to providing security, trust, and satisfying stays across a wide range of accommodations."
+
+    },
+       "operatesection": {
+            "title": "Where We Operate",
+            "description": "Our presence spans the beautiful southern coast of Mozambique — from the lively beaches of Maputo to the pristine beaches of Gaza and Inhambane. This region is known for its natural beauty, rich culture, and diverse ecosystems.",
+            "Maputo": "Maputo",
+            "Gaza": "Gaza",
+            "Inhambane": "Inhambane",
+            "MaputoInfo": "The capital offers a bustling urban experience and access to nearby beaches.",
+            "GazaInfo": "Known for its stunning beaches, the region is a paradise for relaxation and water sports.",
+            "InhambaneInfo": "The province boasts a rich cultural heritage, diverse ecosystems, and pristine beaches."
+    },
+        "hospitalitysection":{
+            "title": "Our Hospitality",
+            "description": "We believe in creating a welcoming and inclusive atmosphere for all guests. Our team is trained to provide genuine hospitality and ensure that every visitor feels comfortable and at home.",
+            "NationalPride": "National Pride",
+            "Nationaltext": "We are committed to supporting local businesses and showcasing the beauty and preservation of Mozambique to our fellow nationals.",
+            "InternationalCharm": "International Charm",
+            "Internationaltext": "We welcome international visitors, giving them a glimpse of Mozambique's rich culture and natural wonders."
+            
+              },
+              "apart": {
+                "title": "What sets us apart",
+                "personalized": "Personalized service",
+                "personalizedinfo":"We dedicate time to understanding the unique needs and preferences of each guest.",
+                "details": "Attention to detail",
+                "detailsinfo": "Each element is carefully selected to provide an unforgettable experience.",
+                "cozy": "Warm and welcoming",
+                "cozyinfo": "From the moment you arrive, our team makes you feel genuinely at home.",
+                "digitalpayment": "Secure digital payments",
+                "digitalpaymentinfo": "We offer secure and convenient payment options, including M-Pesa and Mobile Account, for a smooth, cash-free experience."
+              },
+              "tourism":{
+                 "title": "Boosting domestic tourism growth",
+                "description": "We are passionate about promoting domestic tourism in Mozambique — because exploring our own country is not only enriching but also a powerful way to support local communities and preserve our natural heritage.",
+                "localcompanys": "Support local businesses",
+                "localcompanysinfo": "We establish partnerships with local suppliers and service providers to offer authentic experiences while boosting the local economy",
+                "localjob": "Local job creation",
+                "localjobinfo": "Our platform helps generate job opportunities across the entire tourism sector, from hospitality to guided tours.",
+                "regional":"Promoting Regional Attractions",
+                "regionalinfo": "We highlight the beauty, culture, and exclusive activities of each destination, encouraging deeper and more meaningful travel.",
+                "sustainable": "Promote sustainable tourism",
+                "sustainableinfo": "We support conscious travel that respects local culture and helps protect Mozambique's coastal environments for future generations."
+            },
+            "future": {
+                "title": "Future Projects",
+                "description": "Our goal is to build a dedicated platform for beach rental accommodations, starting in Mozambique and expanding globally.",
+                "principaltext": "We are also committed to promoting coastal culture among young people through educational and recreational programs. These initiatives will support environmental awareness and, at the same time, create opportunities for diving schools, local guides, and accommodation providers — driving sustainability and economic growth in coastal communities.",
+                "subtext": "Let's build a better and more conscious tourism experience together."
+            },
+            "reservebutton": "Book Now",
+            "center": {
+                "title": "Discover the retreat of your dreams",
+                "subtitle": "Experience unforgettable days by the sea with comfort, privacy, and the ocean breeze.",
+                "destiny": "Destination",
+                "destinyselector": "Select a destination",
+                "entrydate": "Entry Date",
+                "outdate": "Departure Date",
+                "guests": "Guest",
+                "search": "Search",
+                "reserve": "Book Now",
+                "loading": "Loading map...",
+                "map": "Show map",
+                "photos": "Show all photos"
+            },
+            "explore": {
+                "loading": "Loading destinations...",
+                "destination":"Explore by Destination"
+            },
+            "featured": {
+                  "loading": "Loading houses...",
+                "title": "Discover the best beach houses at the best prices. Perfect for your next vacation!"
+            },
+            "cards": [
+            {
+            "title": "Secure Booking",
+            "description": "We use cutting-edge technology to ensure the protection of your data and security in all your bookings."
+            },
+            {
+            "title": "Guaranteed Quality",
+            "description": "We carefully select each house to offer comfort, cleanliness, and an excellent beachfront experience."
+            },
+            {
+            "title": "Best Beach Houses",
+            "description": "Our properties are located on the most beautiful beaches of Mozambique's stunning southern coast, with breathtaking views."
+            }
+        ],
+         "featuresection": {
+            "title": "Why choose",
+            "name": "SoftSands"
+        },
+        "footer":{
+            "description":"SoftSands Accommodations is a coastal tourism startup dedicated to promoting domestic tourism in southern Mozambique. Founded in 2022, we offer exceptional lodging experiences with a focus on warm hospitality for both national and international visitors.",
+            "company": "Company",
+            "aboutus": "About Us",
+            "ourmission": "Our Mission",
+            "apart":"What Sets Us Apart",
+            "operate": "Where We Operate",
+            "support": "Support",
+            "contactus": "Contact Us",
+            "conditions": "Terms and Conditions",
+            "cancellation": "Cancellation Policy",
+            "staytuned": "Stay Tuned!",
+            "build": "Let's build a better and more conscious tourism experience together.",
+            "email":"Your e-mail",
+            "rights":"All rights reserved"
+        },
+         "navbar": {
+            "home": "Home",
+            "explore":"Explore",
+            "about": "About",
+            "fav": "Favorites",
+            "reserves":"My Reservations",
+            "settings":"Settings",
+            "terms": "Terms and Conditions",
+            "cancellation": "Cancellation Policy",
+            "exit": "Exit",
+            "session": "Log in",
+            "sign": "Sign Up"
+        },
+        "reservenow":{
+            "error": "Error: Reservation data not found.",
+            "loading": "Loading house details...",
+            "payment": "Confirm Payment",
+            "method": "Select the payment method",
+            "choice": "Escolher método de pagamento",
+            "selected": "Selected method",
+             "details": "Booking Details",
+              "totalprice": "Total price"
+        },
+        "testimonial":{
+            "title": "What our guests say",
+            "subtitle": "Don't just take our word for it - see what our guests and hosts have to say."
+        },
+         "testimonials":[
+            {
+                "id":1,
+                "name": "Mariana Garção",
+                "rating": 5,
+                "review": "I loved our stay! SoftSands Accommodation makes finding the perfect holiday home in Mozambique so easy. The property was beautiful, clean, and just steps from the beach. Great service, smooth booking, and unforgettable views — I highly recommend it.",
+                "type": "Guest",
+                "filled": true
+            },
+            {
+
+                "id":2,
+                "name": "Jucira Suleimane",
+                "rating": 5,
+                "review": "António Ferrão he is very dedicated and professional. It was great working with him! – Excellent service",
+                "type": "Home Owner",
+                "filled": true
+            },
+            {
+                "id":3,
+                "name": "Dayse Pereira",
+                "rating": 4,
+                "review": "The house is just like in the photos, which is really good to know that it's not false advertising. The space created a perfect environment to relax with the family. And the staff was attentive and helpful.",
+                "type" : "Guest",
+                "filled":true
+            }
+
+            ],
+            "bookings":{
+            "confirmed": "Confirmed",
+            "cancelled": "Canceled",
+            "pendent": "Pending",
+            "loading": "Loading reservations...",
+            "myreserves":"My Reservations",
+            "activereserves": "Active Reservations",
+            "nonactive": "You have no active reservations.",
+            "details": "View details",
+            "cancellation": "Canceled Reservations",
+            "noncancellation": "You have no canceled reservations."            
+    },
+     "bookingdetails":{
+                    "loading": "Loading...",
+                    "notfound": "Reservation not found.",
+                    "back": "Back",
+                    "details": "Reservation Details",
+                    "information": "Reservation Information",
+                    "nights": "Nights",
+                    "fullpolicy":"See full policy",
+                    "summary": "Summary of the stay",
+                    "pernight": "Price per night",
+                    "cancellation": "Cancel reservation"
+                },
+                "contactus": {
+                    "contact": "Contact us",
+                    "description": "We are available to answer any questions and assist with your booking.",
+                    "phone": "Phone",
+                    "phonetitle": "Call our team directly",
+                    "mailtitle": "For inquiries, reservations, and general information",
+                    "wpptitle": "Join our WhatsApp group",
+                    "openwpp": "Open WhatsApp",
+                    "igtitle": "Follow news and photos of the houses"
+                },
+                "login": {
+                    "welcome": "Welcome to",
+                    "continue": "Log in to continue.",
+                    "log": "Continue",
+                    "or": "or",
+                    "acc": "Don't have an account?",
+                    "create": "Create Account",
+                    "pass":"Password"
+                },
+                  "card": {
+                    "errorname": "Enter the cardholder name.",
+                    "cardnumber": "Card number must contain 16 to 19 digits.",
+                    "numbererror": "Invalid card number.",
+                     "formatdata": "Expiration must be in MM/YY format.",
+                     "cvvformat": "CVV must be 3 or 4 digits.",
+                     "country": "Select a country.",
+                    "title": "Add card details",
+                    "cardholder": "Cardholder name",
+                    "select": "Select country",
+                    "cancel": "Cancel",
+                    "done": "Done"
+                },
+                "method":{
+                    "payment": "Choose the payment method",
+                    "close": "Close"
+                },
+                "payments":{
+                     "title":"Payments",
+                     "method": "Payment methods",
+                     "cards": "Add and manage cards",
+                     "manage": "Manage",
+                     "success": "Card added!",
+                     "keep": "Your payment method has been saved successfully."
+
+                },
+                "personaldata":{
+                    "save": "Save",
+                    "cancel": "Cancel",
+                    "edit":"Edit",
+                    "data": "Personal data",
+                    "update": "Update your account information."
+                },
+                "form": {
+    "name": {
+      "label": "Name",
+      "placeholder": "Full name"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Login email"
+    },
+    "phone": {
+      "label": "Phone Number",
+      "placeholder": "Enter your number"
+    }
+  },
+  "policy":{
+    "title":"Cancellation Policy",
+    "subtitle": "All cancellations must be made in writing.",
+    "text1": "Failure to pay the deposit within 36 hours, or the final balance up to 30 days before arrival, will result in the cancellation of the reservation without prior notice.",
+    "text2": "In the event of cancellation, Soft Sands may choose not to refund the amount, instead offering a credit to be used within 1 year from the date of cancellation.",
+    "text3": "There will be no refund or credit for no-shows or early departures.",
+    "cancellationtax": "Cancellation Fee",
+    "text4": "Cancellation between 30 and 14 days before arrival: 100% charge of the total reservation amount.",
+    "text5":"Cancellation of reservations paid more than 4 months before arrival: 25% fee on the total rental amount.",
+    "text6": "Cancellations of reservations paid for less than 4 months in advance will result in the paid amount being lost or credited, unless the dates can be filled by a reservation of the same value. In this case, the corresponding amount will be refunded.",
+    "text7":"Cancellations due to force majeure (such as political instability, natural disasters, or severe climate changes) will be converted into credit if the guest decides not to attend.",
+    "schedulling": "Rescheduling",
+    "schedullingtext":"Rescheduling must be requested in writing with a valid reason. The booking can be postponed, and the amount paid will be converted into credit, valid for 1 year from the date of postponement, due to possible changes in seasonal rates. Note: Seasonal rates will apply."
+  },
+      "register": {
+        "title": "Create your account",
+        "subtitle": "Sign up to start booking beach houses.",
+        "fullname": "Full name",
+        "password": "Password",
+        "confirm": "Confirm password",
+        "country": "Country",
+        "terms": "I accept the terms and conditions",
+        "creating": "Creating...",
+        "create": "Create Account",
+        "or": "or",
+        "acc":"Already have an account?"
+      },
+      "conditions": {
+        "title": "Terms and Conditions",
+        "subtitle": "Quotation and Payment",
+        "text1": "The quote/invoice is valid for 24 hours after issuance.",
+        "text2": "To secure the booking, a 50% deposit must be paid within 24 hours. Of this amount, 50% is non-refundable.",
+        "text3": "Reservations made less than 30 days in advance require full payment.",
+        "text4": "Bookings made more than 30 days in advance require 50%, with the remainder due up to 30 days before.",
+        "text5": "Damage Refundable Deposit (DRD)",
+        "text6": "The Damage Refundable Deposit (DRD) must be paid in full along with the final balance.",
+        "text7": "The DRD will be reimbursed within 1 week/5 business days after departure, provided there are no damaged or missing items.",
+        "text8": "Guests are responsible for any damage or lost items in the accommodation. These incidents must be reported to the staff before departure, and the amount will be deducted from the DRD.",
+        "text9": "Check-in Time and Check-out Time",
+        "text10": "Check-in time: between 2:00 PM and 9:00 PM. Arrivals outside this time must be communicated and scheduled with Soft Sands in advance.",
+        "text11": "Departure time: between 10:00 AM and 11:00 AM. Late departures must be scheduled in advance.",
+        "rules": "Accommodation Rules",
+        "text12": "Check if your vehicle is suitable for the type of terrain where the accommodation is located",
+        "text13": "Loud activities are not allowed after 10:00 PM and before 8:00 AM.",
+        "text14": "The maximum number of people allowed must not be exceeded.",
+        "text15": "The visit of daily guests is allowed but must be communicated to the staff present in the accommodation, as well as to the SoftSands reception."
+        
+      },
+      "settings":{
+        "acc": "Account settings",
+        "access": "To access more options",
+        "session": "Log in"
+      },
+       "language":{
+        "languagecurrency": "Language & Currency",
+        "language": "Language",
+        "currency": "Currency",
+        "portuguese": "Portuguese(PT)",
+         "english": "English(EN)"
+      },
+      "favorites":{
+        "title": "Your favorites",
+        "back": "Back",
+        "night":"night",
+        "click": "Click the heart of a house to add it here.",
+        "explore": "Start exploring"
+      },
+      
+        "pontaouro": {
+            "title": "Your Beach Retreat",
+            "subtitle": "Ponta de Ouro Beach",
+            "loading": "Loading houses..."
+        },
+        "malongane": "Ponta Malongane Beach",
+        "mamoli": "Ponta Mamoli beach",
+        "barra": "Barra Beach",
+        "bilene": "Bilene Beach",
+        "beachpage": {
+        "homes": "Houses in",
+        "found": "No houses found on this beach."
+      },
+        "tofo": "Tofo beach",
+         "configurations": {
+            "personaldata": "Personal Data",
+            "payments": "Payments",
+            "languagecurrency": "Language & Currency"
+        },
+        "housereviews":{
+            "avaliations": "Reviews and Categories",
+            "less": "See fewer comments",
+            "more": "See more comments"
+
+            
+        },
+         "categories":{
+       "Limpeza": "Cleanliness",
+       "Conforto": "Comfort",
+       "Localização": "Location",
+       "Beleza": "Beauty"
+      }
+    
+     
+}

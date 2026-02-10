@@ -1,0 +1,367 @@
+{
+    "aboutintro":{
+        "title": "SoftSands Accommodations",
+        "description":"A SoftSands Accommodations é uma startup de turismo costeiro dedicada à promoção do turismo interno no sul de Moçambique. Fundada em 2022, oferecemos experiências de alojamento excecionais com foco na calorosa hospitalidade para visitantes nacionais e internacionais."
+    },
+    "problemssection":{
+        "title": "O problema que resolvemos",
+        "description": "Apesar dos muitos e belos destinos de praia de Moçambique, o turismo interno ainda enfrenta lacunas — especialmente na ligação entre proprietários de imóveis, viajantes e outros serviços essenciais. Esta desconexão abre caminho para que oportunistas se aproveitem de hóspedes incautos.",
+        "paragraph": "Na SoftSands, estamos a colmatar esta lacuna, criando uma plataforma segura e transparente que promove experiências genuínas e fiáveis para proprietários e viajantes.",
+        "subtitlevalue": "Os Nossos Valores",
+        "subtitlemission": "A Nossa Missão",
+        "subtitlecommitment": "O Nosso Compromisso",
+        "mission": "A SoftSands preenche a lacuna entre proprietários e viajantes, oferecendo diversas opções de alojamento tanto para os locais como turistas internacionais.",
+        "value": "Lideramos com integridade, oferecemos um serviço fiável, abraçamos a inovação e trabalhamos em equipa para garantir que cada hóspede se sinta valorizado.",
+        "commitment": "Dedicamo-nos a oferecer segurança, confiança e estadias satisfatórias numa ampla gama de acomodações."
+    },
+    
+        "operatesection": {
+            "title": "Onde Operamos",
+            "description": "A nossa presença abrange a bela costa sul de Moçambique — desde as animadas praias de Maputo até às praias virgens de Gaza e Inhambane.  Esta região é conhecida pela sua beleza natural, cultura rica e ecossistemas diversificados.",
+            "Maputo": "Maputo",
+            "Gaza": "Gaza",
+            "Inhambane": "Inhambane",
+            "MaputoInfo": "A capital oferece uma experiência urbana agitada e acesso às praias próximas.",
+            "GazaInfo": "Conhecida pelas suas praias deslumbrantes, a região é um paraíso para relaxamento e desportos aquáticos.",
+            "InhambaneInfo": "A província ostenta uma rica herança cultural, ecossistemas diversificados e praias imaculadas."
+},
+        "hospitalitysection":{
+            "title": "A Nossa Hospitalidade",
+            "description": " Acreditamos na criação de uma atmosfera acolhedora e inclusiva para todos os hóspedes. A nossa equipa está treinada para oferecer hospitalidade genuína e garantir que cada visitante se sinta confortável e em casa.",
+            "NationalPride": "Orgulho Nacional",
+            "Nationaltext": "Estamos empenhados em apoiar as empresas locais e em mostrar a beleza e a preservação de Moçambique para os nossos companheiros nacionais.",
+            "InternationalCharm": "Charme Internacional",
+            "Internationaltext": "Damos as boas-vindas aos visitantes internacionais, proporcionando-lhes um vislumbre da rica cultura e maravilhas naturais de Moçambique."
+              },
+            "apart": {
+                "title": "O que nos diferencia",
+                "personalized": "Atendimento personalizado",
+                "personalizedinfo":"Dedicamos tempo para compreender as necessidades e preferências únicas de cada hóspede.",
+                "details": "Atenção aos detalhes",
+                "detailsinfo": "Cada elemento é cuidadosamente selecionado para proporcionar uma experiência inesquecível.",
+                "cozy": "Caloroso e acolhedor",
+                "cozyinfo": "Desde o momento em que chega, a nossa equipa faz com que se sinta genuinamente em casa.",
+                "digitalpayment": "Pagamentos digitais seguros",
+                "digitalpaymentinfo": "Oferecemos opções de pagamento seguras e convenientes, incluindo M-Pesa e Conta Móvel, para uma experiência tranquila e sem dinheiro."
+            },
+            "tourism": {
+                "title": "Impulsionando o crescimento do turismo interno",
+                "description": "Somos apaixonados pela promoção do turismo interno em Moçambique — porque explorar o nosso próprio país não é apenas enriquecedor, mas também uma forma poderosa de apoiar ascomunidades locais e preservar o nosso património natural.",
+                "localcompanys": "Apoiar as empresas locais",
+                "localcompanysinfo": "Estabelecemos parcerias com fornecedores e prestadores de serviços locais para proporcionar experiências autênticas e, ao mesmo tempo, impulsionar a economia local.",
+                "localjob": "Criação de emprego local",
+                "localjobinfo": "A nossa plataforma ajuda a gerar oportunidades de emprego em todo o setor do turismo, desde a hotelaria às visitas guiadas.",
+                "regional":"Promovendo Atrações Regionais",
+                "regionalinfo": "Destacamos a beleza, a cultura e as atividades exclusivas de cada destino,incentivando viagens mais profundas e significativas.",
+                "sustainable": "Incentivar o turismo sustentável",
+                "sustainableinfo": "Defendemos viagens conscientes que respeitem a cultura local e ajudem a proteger os ambientes costeiros de Moçambique para as gerações futuras."
+            },
+            "future": {
+                "title": "Projetos Futuros",
+                "description": "O nosso objetivo é construir uma plataforma dedicada para alojamento de aluguer de praia, começando em Moçambique e expandindo-se globalmente.",
+                "principaltext": "Estamos também empenhados em promover a cultura costeira entre os jovens através de programas educativos e recreativos. Estas iniciativas apoiarão a sensibilização ambiental e, ao mesmo tempo, criarão oportunidades para escolas de mergulho, guias locais e fornecedores de alojamento — impulsionando a sustentabilidade e o crescimento económico nas comunidades costeiras.",
+                "subtext": "Vamos construir uma experiência de turismo melhor e mais consciente juntos."
+            },
+            "reservebutton": "Reserve Agora",
+            "center":{
+                "title": "Descubra o refúgio dos seus sonhos",
+                "subtitle": " Viva dias inesquecíveis à beira-mar com conforto, privacidade e a brisa do oceano.",
+                "destiny": "Destino",
+                "destinyselector": "Selecione um destino",
+                "entrydate": "Data de Entrada",
+                "outdate": "Data de Saída",
+                "guests": "Hóspede",
+                "search": "Pesquisar",
+                "reserve": "Reserve Agora",
+                "loading": "Carregando mapa...",
+                "map": "Mostrar mapa",
+                "photos": "Mostrar todas as fotos"
+            },
+            "explore": {
+                "loading": "A carregar destinos...",
+                "destination":"Explore por Destino"
+                
+            },
+            "featured": {
+                "loading": "A carregar casas...",
+                "title": "Descubra as melhores casas de praia com os melhores preços. Perfeitas para suas próximas férias!"
+            },
+            "cards": [
+            {
+            "title": "Reserva Segura",
+            "description": "Fazemos uso de tecnologia de ponta para garantir a proteção dos teus dados e segurança em todas as tuas reservas."
+            },
+            {
+            "title": "Qualidade Garantida",
+            "description": "Selecionamos cuidadosamente cada casa para oferecer conforto, limpeza e uma excelente experiência à beira-mar."
+            },
+            {
+            "title": "Melhores Casas",
+            "description": "As nossas propriedades estão localizadas nas praias mais bonitas da bela costa sul de Moçambique, com vistas de tirar o fôlego."
+            }
+        ],
+        "featuresection": {
+            "title": "Por que escolher a",
+            "name": "SoftSands"
+        },
+        "footer":{
+            "description":"A SoftSands Accommodations é uma startup de turismo costeiro dedicada à promoção do turismo interno no sul de Moçambique.Fundada em 2022, oferecemos experiências de alojamento excecionais com foco na calorosa hospitalidade para visitantes nacionais e internacionais.",
+            "company": "Empresa",
+            "aboutus": "Sobre Nós",
+            "ourmission": "A Nossa Missão",
+            "apart":"O Que Nos Diferencia",
+            "operate": "Onde Operamos",
+            "support": "Suporte",
+            "contactus": "Contacte-Nos",
+            "conditions": "Termos e Condições",
+            "cancellation": "Politica de Cancelamento",
+            "staytuned": "Fique Ligado!",
+            "build": "Vamos construir uma experiência de turismo melhor e mais consciente juntos.",
+            "email":"Seu e-mail",
+            "rights":"Todos os direitos reservados"
+        },
+        "navbar": {
+            "home": "Início",
+            "explore":"Explorar",
+            "about": "Sobre",
+            "fav":"Favoritos",
+            "reserves":"Minhas Reservas",
+            "settings": "Definições",
+            "terms": "Termos e Condições",
+            "cancellation": "Política de Cancelamento",
+            "exit": "Sair",
+            "session": "Iniciar Sessão",
+            "sign": "Registar-Se"
+        },
+        "reservenow":{
+            "error": "Erro: Dados da reserva não encontrados.",
+            "loading": "Carregando detalhes da casa...",
+            "payment": "Confirmar Pagamento",
+            "method": "Selecione o método de pagamento",
+            "choice": "Escolher método de pagamento",
+            "selected": "Método selecionado",
+            "details": "Detalhes da Reserva",
+            "totalprice": "Preço total"           
+        },
+        "testimonial":{
+            "title":"O que nossos hóspedes dizem",
+            "subtitle":"Não acredite apenas na nossa palavra - veja o que nossos hóspedes e proprietários têm a dizer."
+        },
+        "testimonials":[
+   {
+    "id":1,
+    "name": "Mariana Garção",
+    "rating": 5,
+    "review": "Adorei a nossa estadia! Soft Sands Alojamento feito para encontrar a casa de férias perfeita em Moçambique tão fácil. A propriedade era bonita, limpa e a poucos passos da praia.  Ótimo serviço, reserva tranquila e vistas inesquecíveis recomendo vivamente",
+    "type": "Convidado",
+    "filled": true
+   },
+   {
+
+    "id":2,
+    "name": "Jucira Suleimane",
+    "rating": 5,
+    "review": "António Ferrão é muito dedicado e profissional. Foi ótimo trabalhar com ele!– Ótimo serviço",
+    "type": " Proprietário de casa",
+    "filled": true
+   },
+   {
+    "id":3,
+    "name": "Dayse Pereira",
+    "rating": 4,
+    "review": "A casa é mesmo como nas fotos, que é muito bom saber que não é publicidade enganosa. O espaço criou um ambiente perfeito para relaxar em família. E a equipe de trabalhadores foi atenciosa e prestativa",
+    "type" : "Convidado",
+    "filled":true
+   }
+
+  ],
+  "bookings":{
+            "confirmed": "confirmado",
+            "cancelled": "cancelado",
+            "pendent": "pendente",
+            "loading": "Carregando reservas...",
+            "myreserves":"Minhas Reservas",
+            "activereserves": "Reservas Ativas",
+            "nonactive": "Não tens reservas ativas.",
+            "details": "Ver detalhes",
+            "cancellation": "Reservas Canceladas",
+            "noncancellation": "Não tens reservas canceladas."
+
+                },
+                "bookingdetails":{
+                    "loading": "Carregando...",
+                    "notfound": "Reserva não encontrada.",
+                    "back": "Voltar",
+                    "details": "Detalhes da Reserva",
+                    "information": "Informações da Reserva",
+                    "nights": "Noites",
+                    "fullpolicy":"Ver política completa",
+                    "summary": "Resumo da estadia",
+                    "pernight": "Preço por noite",
+                    "cancellation": "Cancelar reserva"
+                },
+                "contactus":{
+                    "contact": "Contacte-nos",
+                    "description": "Estamos disponíveis para esclarecer dúvidas e ajudar na sua reserva.",
+                    "phone": "Telefone",
+                    "phonetitle": "Ligue diretamente para a nossa equipa",
+                    "mailtitle": "Para dúvidas, reservas e informações gerais",
+                    "wpptitle": "Entre no nosso grupo do Whatsapp",
+                    "openwpp": "Abrir WhatsApp",
+                    "igtitle": "Acompanhe novidades e fotos das casas"
+                },
+                "login": {
+                    "welcome": "Bem-vindo à",
+                    "continue": "Faça login para continuar.",
+                    "log": "Entrar",
+                    "or": "ou",
+                    "acc": "Não tem uma conta?",
+                    "create": "Criar Conta",
+                    "pass": "Palavra-Passe"
+                },
+                "card": {
+                    "errorname": "Digite o nome do titular do cartão.",
+                    "cardnumber": "O número do cartão deve conter de 16 a 19 dígitos.",
+                    "numbererror":"Número do cartão inválido.",
+                    "formatdata": "A data de validade deve estar no formato MM/AA.",
+                    "cvvformat": "O CVV deve ter 3 ou 4 dígitos.",
+                    "select": "Seleciona país",
+                    "country": "Selecione um país.",
+                    "title": "Adicionar detalhes do cartão",
+                    "cardholder": "Nome do titular do cartão",
+                    "Cancel": "Cancelar",
+                    "done": "Concluído"
+        },
+        "method":{
+            "payment": "Escolha o método de pagamento",
+            "close": "Fechar"
+        },
+        "payments": {
+            "title":"Pagamentos",
+            "method": "Métodos de pagamento",
+            "cards": "Adicionar e gerir cartões",
+            "manage": "Gerir",
+            "success": "Cartão adicionado!",
+            "keep": "O seu método de pagamento foi guardado com sucesso."
+        },
+        "personaldata":{
+            "save": "Salvar",
+            "cancel": "Cancelar",
+            "edit": "Editar",
+            "data":"Dados pessoais",
+            "update":"Atualize as informações da sua conta."
+        },
+         "form": {
+    "name": {
+      "label": "Nome",
+      "placeholder": "Nome completo"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "Email de login"
+    },
+    "phone": {
+      "label": "Número de Telefone",
+      "placeholder": "Digite seu número"
+    }
+  },
+      "policy":{
+        "title": "Política de Cancelamento",
+        "subtitle": "Todos os cancelamentos devem ser feitos por escrito.",
+        "text1": "O não pagamento do depósito em até 36 horas, ou do saldo final até 30 dias antes da chegada, resultará no cancelamento da reserva sem aviso prévio.",
+        "text2": "Em caso de cancelamento, a Soft Sands pode optar por não reembolsar o valor, oferecendo em troca um crédito para ser usado em até 1 ano a partir da data do cancelamento.",
+        "text3":"Não haverá reembolso ou crédito para não comparecimento (no-show) ou partidas antecipadas.",
+        "cancellationtax": "Taxa de Cancelamento",
+        "text4": "Cancelamento entre 30 e 14 dias antes da chegada: taxa de 100% sobre o valor total da reserva.",
+        "text5": "Cancelamento de reservas pagas mais de 4 meses antes da chegada: taxa de 25% sobre o valor total do aluguel.",
+        "text6": "Cancelamento de reservas pagas com menos de 4 meses de antecedência valor pago será perdido ou creditado, a menos que as datas possam ser preenchidas por reserva no mesmo valor. Neste caso, o valor correspondente será reembolsado.",
+        "text7":"Cancelamento por motivos de força maior (como instabilidade política, desastres naturais ou muda climáticas severas) serão convertidos em crédito, caso o hóspede decida não comparecer.",
+        "schedulling": "Reagendamento",
+        "schedullingtext": "Os reagendamentos devem ser solicitados por escrito com um motivo válido. A reserva pode ser adiada, e o valor pago será convertido em crédito, válido por 1 ano a partir da data de adiamento, devido a possíveis mudanças nas taxas sazonais. Nota: Taxas sazonais serão aplicadas"
+      },
+      "register": {
+        "title": "Crie sua conta",
+        "subtitle": "Registre-se para começar a reservar casas de praia.",
+        "fullname": "Nome completo",
+        "password": "Palavra-Passe",
+        "confirm": "Confirmar palavra-passe",
+        "country": "País",
+        "terms": "Aceito os termos e condições",
+        "creating": "Criando...",
+        "create": "Criar Conta",
+        "or": "ou",
+        "acc": "Já tem uma conta?"
+      },
+      "conditions": {
+        "title": "Termos e Condições",
+        "subtitle": "Cotação e Pagamento",
+        "text1": "A cotação/fatura tem validade de 24 horas após sua emissão.",
+        "text2": "Para garantir a reserva, é necessário o pagamento de um depósito de 50% em até 24 horas. Desse valor, 50% não é reembolsável.",
+        "text3": "Reservas com menos de 30 dias de antecedência exigem pagamento total.",
+        "text4": "Reservas com mais de 30 dias exigem 50% e o restante até 30 dias antes.",
+        "text5": "Depósito Reembolsável por Danos (DRD)",
+        "text6": "O Depósito Reembolsável por Danos (DRD) deve ser pago integralmente junto com o saldo final.",
+        "text7": "O DRD será reembolsado em até 1 semana/5 dias úteis após a partida, desde que não haja itens danificados ou perdidos.",
+        "text8": "Os hóspedes são responsáveis por qualquer dano ou item perdido na acomodação. Esses incidentes devem ser comunicados à equipe antes da partida e o valor será descontado do DRD.",
+        "text9": "Hora de Entrada e Hora de Saída",
+        "text10": "Horário de chegada: entre 14h00 e 21h00. Chegadas fora deste horário devem ser comunicadas e agendadas com a SoftSands com antecedência",
+        "text11": "Horário de partida: entre 10h00 e 11h00. Partidas tardias devem ser agendadas com antecedência.",
+        "rules": "Regras da Acomodação",
+        "text12": "Confirme se seu veículo é adequado para o tipo de terreno onde a acomodação está localizada",
+        "text13": "Não é permitida atividade com ruído alto após as 22h00 e antes das 08h00.",
+        "text14": "O número máximo de pessoas permitido não deve ser excedido.",
+        "text15": "A visita de hóspedes diários e permitida porem deve ser comunicada aos funcionários presentes na acomodação, assim como ao atendimento da SoftSands"
+      },
+      "settings":{
+        "acc": "Configurações da conta",
+        "access": "Para aceder mais opções",
+        "session": "Iniciar sessão"
+      },
+      "language":{
+        "languagecurrency": "Idiomas e Moeda",
+        "language": "Idioma",
+        "currency": "Moeda",
+        "portuguese": "Português(PT)",
+        "english": "Inglês(EN)"
+        },
+        "favorites":{
+            "title": "Teus favoritos",
+            "back": "Voltar",
+            "night":"noite",
+        "click": "Clique no coração de alguma casa para adicioná-la aqui.",
+        "explore": "Comece a explorar"
+      },
+      "pontaouro": {
+        "title": "O Seu Refúgio de Praia",
+        "subtitle": "Praia da Ponta de Ouro",
+        "loading": "A carregar casas..."
+      },
+      "malongane": "Praia da Ponta Malongane",
+      "mamoli": " Praia da Ponta Mamoli",
+      "barra": "Praia de Barra",
+      "bilene": "Praia de Bilene",
+      "beachpage": {
+        "homes": "Casas em",
+        "found": "Nenhuma casa encontrada nesta praia."
+      },
+        "tofo": "Praia do Tofo",
+        "configurations": {
+            "personaldata": "Dados pessoais",
+            "payments": "Pagamentos",
+            "languagecurrency": "Idiomas e moeda"
+        },
+        "housereviews":{
+            "avaliations": "Avaliações e Categorias",
+            "less": "Ver menos comentários",
+            "more": "Ver mais comentários"
+
+        },
+         "categories":{
+       "Limpeza": "Limpeza",
+       "Conforto": "Conforto",
+       "Localização": "Localização",
+       "Beleza": "Beleza"
+      }
+      
+    }
+    

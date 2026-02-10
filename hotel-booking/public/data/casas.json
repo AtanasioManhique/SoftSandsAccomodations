@@ -1,0 +1,1239 @@
+[
+{
+    "id": 1,
+    "rating": 5,
+    "location":"Ponta de Ouro",
+     "price":{
+      "low_season": 3000,
+      "high_season": 4500,
+      "currency": "ZAR" 
+    },
+    
+    "image":["/casas/PRAIA DA PONTA DE OURO/casa t1 ponta de ouro/2.png","/casas/PRAIA DA PONTA DE OURO/casa t1 ponta de ouro/7.png",
+  "/casas/PRAIA DA PONTA DE OURO/casa t1 ponta de ouro/8.webp","/casas/PRAIA DA PONTA DE OURO/casa t1 ponta de ouro/5.png", 
+   "/casas/PRAIA DA PONTA DE OURO/casa t1 ponta de ouro/6.png", "/casas/PRAIA DA PONTA DE OURO/casa t1 ponta de ouro/3.png",
+    "/casas/PRAIA DA PONTA DE OURO/casa t1 ponta de ouro/4.png"],
+    "bedroom": 1,
+    "capacity": 2,   
+    "description": "Pequeno apartamento básico, montado sobre estacas. Perfeito para um casal ou uma família com 2 crianças pequenas. Literalmente a um passo da principal praia. Próximo a pé de todos os restaurantes, lojas e atividades. Com vista para o oceano cristalino e limpo.\n\n1 Quarto Ventilado\n 2 Hóspedes\n1 WC Geral\nCozinha Equipada\nSala Mobilada\nÁrea de Lazer\nÁrea de Churrasco\nVista ao Mar\nAcesso a Carros Ligeiros",
+    "amenities": [{"name": "Ventilação" , "icon":"/icons/fan.png" }, {"name": "Cozinha equipada", "icon":"/icons/kitchen.png"}, 
+   {"name":"Vista ao Mar", "icon": "/icons/sunset.png"}, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},
+   {"name": "Estacionamento", "icon": "/icons/car.png"} , {"name": "Sala Mobilada", "icon": "/icons/sofa.png"}],
+   
+   "lat": -26.843905956357048,
+   "lng": 32.88922589794097,
+
+   "reviews":[{
+      "id": 101,
+      "user_id": 3,
+      "user_name": "Alcino Nelson",
+      "user_location": "Moçambique",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 5.0,
+       "Localização": 4.5,
+       "Beleza": 4.5
+      },
+      "comment": "A casa é ótima, muito confortável e bem equipada. A localização é excelente, perto da praia e de restaurantes. O anfitrião foi muito atencioso e prestativo. Recomendo a todos que desejam uma estadia tranquila e agradável em Ponta de Ouro.",
+      "date": "2025-08-15"        
+
+   }]
+    
+},
+{
+   "id": 2,
+   "rating": 4.5,
+ "location":"Ponta de Ouro",
+  "price":{
+      "low_season": 3000,
+      "high_season": 4500,
+      "currency": "ZAR"
+      
+    },
+
+ "image":["/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/2.jpg", "/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/1.jpg",
+"/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/3.jpg","/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/4.jpg", 
+"/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/5.jpg", "/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/6.jpg", 
+"/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/7.jpg","/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/8.jpg", "/casas/PRAIA DA PONTA DE OURO/T2 AIRBNB (LYNDA)/11.jpg"],
+"bedroom": 2,
+"capacity": 4,
+"description": "Localizada nas dunas e Cercada de vegetação indígena, onde o som das ondas bate à sua porta e a brisa entra pela janela , este apartamento minimalista dá boas vindas aos amantes de natureza sem sacrificar o conforto.\n\n1 Quartos Climatizados\n 4 Hóspedes\n1 1 WC\n Sala Mobilada\nCozinha Equipada\nAcesso Fácil a Praia\nServiços de Limpeza\nÁrea de Churrasco\nÁrea de Estacionamento",
+"amenities": [{ "name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},
+ {"name": "Serviço de Limpeza", "icon": "/icons/clean"}, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}, {"name": "Área de Estacionamento", "icon": "/icons/car.png"}, {"name": "Sala Mobilada", "icon": "/icons/sofa.png"}],
+  "lat": -26.843905956357048,
+   "lng": 32.88922589794097,
+   "reviews":[{
+
+      "id": 102,
+      "user_id": 4,
+      "user_name": "Cicero Manhique",
+      "user_location": "Moçambique",
+      "Profile": "",
+      "stars": 5,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 5.0,
+       "Localização": 4.5,
+       "Beleza": 4.5
+      },
+      "comment": "É uma experiência. Soft Sands não vai apenas acomodá-lo, ela tornará seus sonhos realidade. Confie na Soft Sands.",
+      "date": "2025-12-15"        
+
+   }]
+},
+ {
+    "id": 3,
+    "rating": 5,
+    "location":"Ponta de Ouro",
+    "price":{
+      "low_season": 2500,
+      "high_season": 4400,
+      "currency": "ZAR"
+    },
+"image":["/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/quintal.jpg", "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/varanda.jpg", 
+  "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/sala.jpg", "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/kitchen.jpg", 
+  "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/casadebanho.jpg", "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/kitchen1.jpg",
+   "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/outside.jpg", "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/outside2.jpg",
+"/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/varanda2.jpg", "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/outside2.jpg", "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/quarto1.jpg", "/casas/PRAIA DA PONTA DE OURO/t2 ponta Maria otilia/quarto2.jpg"],
+  "bedroom": 2,
+  "capacity": 4,
+  "description": "Tranquilidade e serenidade, características simples que descrevem está casa com um ambiente familiar e aconchegante.\n\n2 Quartos Climatizados\n 4 Hóspedes\n2 WC\nCozinha Equipada\nSala Mobilada\nServiços de Limpeza\nWI-FI\nÁrea de Lazer\nÁrea de Churrasco\n\nAcesso Fácil a Carros",
+  "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha-Equipada", "icon": "/icons/kitchen.png"}, {"name":"Sala Mobilada", "icon": "/icons/sofa.png"}, 
+  {"name": "WI-FI", "icon": "/icons/wi-fi.png"}, {"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}, {"name": "Área de Estacionamento", "icon":"/icons/car.png"}],
+  "lat": -26.851091 ,
+  "lng":  32.888077, 
+   "reviews":[{
+
+      "id": 103,
+      "user_id": 5,
+      "user_name": "Chilton Manhique",
+      "user_location": "Moçambique",
+      "Profile": "",
+      "stars": 5,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 4.8,
+       "Localização": 4.5,
+       "Beleza": 4.8
+      },
+      "comment": "Foi uma bela estadia. Desde o primeiro contato via Instagram até a recepção na casa. Apenas o forno não estava em condições mas a casa estava bastante confortável e Wi-Fi fez toda diferença. Obrigada Soft sands",
+      "date": "2025-08-15"        
+
+   }]
+ },
+ {
+    "id": 4,
+    "rating": 5,
+    "location":"Ponta de Ouro",
+    "price":{
+      "low_season": 3900,
+      "high_season": 5700,
+      "currency": "ZAR"
+    },
+    "image":["/casas/PRAIA DA PONTA DE OURO/T2 Jayesh/outside.jpg", "/casas/PRAIA DA PONTA DE OURO/T2 Jayesh/leftside.jpg",
+  "/casas/PRAIA DA PONTA DE OURO/T2 Jayesh/sala.jpg","/casas/PRAIA DA PONTA DE OURO/T2 Jayesh/quarto.jpg",
+   "/casas/PRAIA DA PONTA DE OURO/T2 Jayesh/quarto2.jpg", "/casas/PRAIA DA PONTA DE OURO/T2 Jayesh/viewbalcony.jpg", "/casas/PRAIA DA PONTA DE OURO/T2 Jayesh/stairs.jpg", "/casas/PRAIA DA PONTA DE OURO/T2 Jayesh/kitchen.jpg"],
+   "bedroom":2,
+   "capacity": 5,
+   "description": "Casa projetada para oferecer lazer e conforto, localizada em uma área tranquila, longe da agitação da vila, mas próxima à praia. \n\n 2 Quartos Climatizados\n2 WC\nCozinha Equipada\nSala Mobilada\nServiços de Limpeza\nWI-FI\nÁrea de Lazer\nÁrea de Churrasco\nAcesso Fácil a Carros",
+   "amenities": [{"name": "Air-Condicionado", "icon":"/icons/air-conditioner.png"}, {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"}, {"name": "Sala Mobilada", "icon": "/icons/sofa.png"}, {"name": "Serviço de Limpeza", "icon": "/icons/clean.png"}, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}],
+   "lat": -26.851091 ,
+   "lng": -32.888077,
+
+   "reviews":[{
+
+      "id": 104,
+      "user_id": 6,
+      "user_name": "Chilton Manhique",
+      "user_location": "Moçambique",
+      "Profile": "",
+      "stars": 5,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 4.8,
+       "Localização": 4.5,
+       "Beleza": 4.9
+      },
+      "comment": "À equipe da Soft Sands, Gostaria de felicitar-vos pela excelente gestão do alojamento. O vosso profissionalismo, dedicação e atenção aos detalhes fazem toda a diferença na experiência de quem vos procura.É gratificante ver uma agência que alia qualidade, organização e hospitalidade, tornando cada estadia confortável e memorável. O vosso trabalho é, sem dúvida, um contributo valioso para o turismo na região.",
+      "date": "2025-11-30"        
+
+   }]
+ },
+ {
+    "id": 5,
+    "rating"  : 4,
+    "location":"Ponta de Ouro",
+    "price":{
+      "low_season": 3900,
+      "high_season": 5700,
+      "currency": "ZAR"
+    },
+    
+    "image":["/casas/PRAIA DA PONTA DE OURO/t3 glass pool/1.jpg", "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/2.jpg", 
+  "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/4.jpg", "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/7.jpg", "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/3.jpg", "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/5.jpg", "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/6.jpg",
+   "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/8.jpg", "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/9.jpg", "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/10.jpg", "/casas/PRAIA DA PONTA DE OURO/t3 glass pool/11.jpg"],
+    "bedroom": 3,
+    "capacity": 6,
+    "description": "A Casa de Vidro Ponta é o lugar perfeito para um pouco de paz e relaxamento Perto o suficiente da cidade mas apenas fora do caminho batido com vistas deslumbrantes para o mar A sala de estar e a cozinha em plano aberto rodeadas de janelas de vidro criam uma atmosfera única convidando a deslumbrante paisagem exterior a entrar Aproveite o seu almoço no pátio voltado para o mar ao lado da piscina ou sob a pagode coberta de bougainvilea em estilo el fresco Ou simplesmente relaxe com um livro com vista para o oceano Uma escapada perfeita. \n\n 3 Quartos Climatizados\n 6 Hóspedes\n3 WC\nCozinha Equipada\nSala Mobilada\nÁrea de Lazer\nPiscina Privada\nVista ao Mar\nAcesso a carros ligeiros\nServiços de Limpeza\nÁrea de Churrasco",
+
+    "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"}, 
+    {"name": "Piscina", "icon": "/icons/swimming.png"}, {"name": "Sala Mobilada", "icon": "/icons/sofa.png"},  {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},
+   {"name": "Serviços de Limpeza", "icon": "/icons/clean.png" }, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}],
+   "lat": -26.851091 ,
+    "lng": 32.888077,
+    "reviews":[{
+
+      "id": 105,
+      "user_id": 7,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.8,
+        "categories":{
+       "Limpeza": 4.7,
+       "Conforto": 4.5,
+       "Localização": 4.8,
+       "Beleza": 4.3
+      },
+      "comment": "",
+      "date": "2025-12-30"        
+
+   }]
+ },
+ {
+"id": 6, 
+"rating":5,
+"location":"Ponta de Ouro",
+"price":{
+      "low_season": 3750,
+      "high_season": 5000,
+      "currency": "ZAR"
+    },
+"image":["/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/1.png", "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/3.png",
+   "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/5.png", "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/6.webp", "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/7.png", "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/9.png"
+, "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/10.png", "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/15.webp", "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/16.webp", "/casas/PRAIA DA PONTA DE OURO/t3 clint ponta/12.png"],
+    "bedroom": 3,
+    "capacity": 6,
+    "description": "Aninhada entre o matagal natural e o jardim arborizado onde a observação de pássaros pode ser feita a partir da varanda. Uma caminhada de 100m até a praia e com 1000m² de jardim.\n\n 3 Quartos Climatizados\n 6 Hóspedes\n2 WC\nCozinha Equipada\nSala Mobilada\nServiços de Limpeza\nÁrea de Lazer\nFácil Acesso a Praia\nAcesso Fácil a Carros",
+    "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+    "lat": -26.851091 ,
+    "lng": 32.888077,
+    "reviews":[{
+
+      "id": 106,
+      "user_id": 8,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.8,
+        "categories":{
+       "Limpeza": 4.7,
+       "Conforto": 4.5,
+       "Localização": 4.8,
+       "Beleza": 4.3
+      },
+      "comment": "",
+      "date": "2026-01-30"        
+
+   }]
+},
+{
+    "id": 7,
+    "rating":4.5,
+    "location":"Ponta de Ouro",
+    "price":{
+      "low_season": 2800,
+      "high_season": 4400,
+      "currency": "ZAR"
+    },
+    "image": ["/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/1.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/2.jpg",
+   "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/4.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/7.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/3.jpg",
+"/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/5.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/6.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/8.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/9.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/10.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/11.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/12.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/13.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/14.jpg",
+"/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/15.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/16.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/17.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/19.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/21.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/22.jpg", "/casas/PRAIA DA PONTA DE OURO/Erna t2 ponta/23.jpg"],
+    "bedroom": 3,
+    "capacity": 6,
+    "description": "Uma estadia aconchegante e perfeita para famílias que desejam aproveitar um fim de semana especial, onde os almoços ao ar livre se tornam momentos inesquecíveis enquanto as crianças se divertem no Patio. \n\n 2 Quartos Climatizados\n1 Loft no Primeiro Andar ( Serve como 3° Quarto)\n 6 Hóspedes\n2 WC\nCozinha Equipada\nSala Mobilada\nÁrea de Estacionamento\nDista a 700M até a Praia, sem vista ao mar!\nÁrea de Lazer\nÁrea de Churrasco\nAcesso Fácil a Carros",
+    "amenities":[{"name": "Ar-Condicionado", "icon": "/icons/air/conditioner.png"}, {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},
+    {"name": "Área de Estacionamento", "icon": "/icons/car.png"}],
+    "lat": -26.851091 ,
+    "lng": 32.888077,
+    "reviews":[{
+
+      "id": 107,
+      "user_id": 9,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.8,
+        "categories":{
+       "Limpeza": 4.7,
+       "Conforto": 4.5,
+       "Localização": 4.8,
+       "Beleza": 4.3
+      },
+      "comment": "",
+      "date": "2026-01-15"        
+
+   }]
+},
+{
+    "id":8,
+    "rating": 5,
+  "location":"Ponta de Ouro",
+  "price": {
+         "low_season":"3900",
+         "high_season": "7300",
+         "currency": "ZAR"
+  },
+  "image": ["/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/6.jpg", "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/3.jpg",
+     "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/5.jpg", "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/11.jpg", "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/1.jpg",
+     "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/2.jpg", "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/4.jpg", "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/7.jpg",
+      "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/8.jpg", "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/9.jpg", "/casas/PRAIA DA PONTA DE OURO/bruno t4 ponta/10.jpg"],
+      "bedroom":4,
+      "capacity": 8,
+      "description": "Ideal para grupos familiares ou amigos, procurando uma estadia diferente e longe dos barulhos da cidade, uma acomodação confortável onde cada detalhe foi concebido para te trazer par e descanso. \n\n 4 Quartos Climatizados\n 8 Hóspedes\n3 WC\nCozinha Equipada\nSala Ampla e Mobilada\nÁrea de Lazer\nÁrea de Churrasco\nVista ao Mar\nAcesso Fácil a Carros\nServiços de Limpeza",
+      "amenities": [{"name": "Ar-condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},
+      {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},
+      {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}, {"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+      "lat": -25.9354038 ,
+      "lng":  32.5484227,
+       "reviews":[{
+
+      "id": 108,
+      "user_id":  10,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 5.0,
+       "Localização": 4.4,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2026-05-15"        
+
+   }]
+},
+{
+    "id":9,
+   "rating": 4,
+  "location": "Ponta de Ouro",
+  "price" : {
+   "low_season": 4000,
+    "high_season": 7600,
+    "currency": "ZAR" 
+  },
+  "image": ["/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/3.jpg", "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/4.jpg", 
+    "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/5.jpg", "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/6.jpg","/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/1.jpg", "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/2.jpg",
+      "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/7.jpg", "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/8.jpg", "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/9.jpg",
+       "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/10.jpg",  "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/11.jpg",  "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/12.jpg",  "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/13.jpg",
+       "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/14.jpg", "/casas/PRAIA DA PONTA DE OURO/T3 Angelina ponta/15.jpg"],
+       "bedroom":3,
+       "capacity": 8,
+       "description": "Uma acomodação acolhedora e confortável, típica para uma família que queria desfrutar um final de semana diferente onde os almoços serão ao ar livre enquanto as crianças se divertem na piscina.\n\n 3 Quartos Climatizados\n 8 Hóspedes\n2 WC(1 suite)\nCozinha Equipada\nSala Mobilada\nPiscina Privada\nÁrea de Lazer\nÁrea de Churrasco\nÁrea de Estacionamento\nServiços de Limpeza\nSegurança\n10min a pé até a praia",
+       "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},
+       {"name": "Sala Mobilada", "icon": "/icons/sofa.png"}, {"name": "Piscina Privada", "icon": "/icons/swimming.png"},
+       {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}, {"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+       "lat": -26.8510,
+       "lng": 32.888077,
+        "reviews":[{
+
+      "id": 109,
+      "user_id":  11,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 5.0,
+       "Localização": 4.8,
+       "Beleza": 4.4
+      },
+      "comment": "",
+      "date": "2026-02-25"        
+
+   }]
+},
+{
+      "id":10,
+      "rating":4.5,
+  "location": "Ponta de Ouro",
+   "price": {
+      "low_season": 4600,
+      "high_season": 6000,
+      "currency": "ZAR"
+   },
+    "image": ["/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/4.png", "/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/3.png", 
+    "/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/5.png", "/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/8.png", "/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/1.png",
+   "/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/2.png","/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/6.png","/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/9.png", 
+    "/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/10.png", "/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/11.png", 
+"/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/12.png", "/casas/PRAIA DA PONTA DE OURO/t4 ponta ilandine/13.png"],
+    "bedroom": 4,
+    "capacity": 8,
+    "description": "Ideal para 4 casais amigos, procurando uma estadia diferente e longe dos barulhos da cidade, uma acomodação confortável onde cadê detalhe foi concebido para te trazer par e descanso\n\n 4 Quartos Ventilados\n 8 Hóspedes \n 4 WC\nSala Ampla e Mobilada\nCozinha Equipada\nVista ao mar\nÁrea de Lazer\nÁrea de Churrasco\nServiços de Limpeza\nAcesso fácil a carros",
+    "amenities": [{"name": "Ventilação", "icon": "/icons/fan.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},
+    {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Vista ao mar", "icon": "/icons/sunset.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Serviços de Limpeza", "icon": "clean.png"}],
+    "lat": 25,
+    "lng": 22,
+     "reviews":[{
+
+      "id": 110,
+      "user_id":  12,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 5.0,
+       "Localização": 4.8,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-11-25"        
+
+   }]
+},
+{
+   "id":11,
+   "rating": 4,
+  "location": "Bilene",
+  "price": {
+   "low_season": 4285,
+   "high_season":7500,
+   "currency": "ZAR"
+  },
+  "image": ["/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/3.jpg", "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/21.jpg", 
+    "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/12.jpg", "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/18.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/1.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/2.jpg",
+    "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/4.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/5.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/6.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/7.jpg", "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/8.jpg", "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/9.jpg",
+    "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/10.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/12.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/14.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/15.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/16.jpg", "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/20.jpg",  "/casas/PRAIA DO BILENE/t3 bilene - Ivan & Laisa/24.jpg"],
+    "bedroom": 3,
+    "capacity": 6,
+    "amenities":[{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"}, {"name": "Sala Mobilada", "icon": "/icons/sofa.png"}, {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"}, {"name": "Piscina Privada", "icon": "/icons/swimming.png"}, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}, {"name": "Área de Estacionamento", "icon": "/icons/car.png"}, {"name": "Serviços de Limpeza", "icon": "/icons/clean.png"} ],
+    "description": "Bilene tem muito a oferecer em termos de experiências e lazer. Esta casa foi concebida para tornar suas férias únicas e relaxantes, proporcionando desde camas confortáveis até ambientes acolhedores e tranquilos. Desfrute de momentos agradáveis na ampla área de lazer, que inclui um espaço para refeições com churrasqueira, ideal para confraternizações. A piscina com banheiro de apoio proporciona diversão e relaxamento ao ar livre. \n\n3 Quartos Climitizados \n 6 Hóspedes\n4 WCs(2 internos e 2 externos)\nCozinha Equipada\nSala Mobilada\nPiscina Privada\nÁrea de Churrasco\nServiços de Limpeza\nÁrea de Estacionamento\nFácil Acesso a Carros",
+     "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 111,
+      "user_id":  13,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 5.0,
+       "Localização": 4.8,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-12-25"        
+
+   }]
+   },
+
+{
+    "id":13,
+    "rating": 5,
+  "location": "Bilene",
+   "price": {
+   "low_season": 4000,
+   "high_season": 7000,
+   "currency": "ZAR"
+   },
+  "image": ["/casas/PRAIA DO BILENE/t3 bilene frederico/2.webp","/casas/PRAIA DO BILENE/t3 bilene frederico/11.webp",
+     "/casas/PRAIA DO BILENE/t3 bilene frederico/10.webp", "/casas/PRAIA DO BILENE/t3 bilene frederico/13.webp", "/casas/PRAIA DO BILENE/t3 bilene frederico/3.webp", "/casas/PRAIA DO BILENE/t3 bilene frederico/4.webp", "/casas/PRAIA DO BILENE/t3 bilene frederico/5.webp", "/casas/PRAIA DO BILENE/t3 bilene frederico/6.webp", "/casas/PRAIA DO BILENE/t3 bilene frederico/7.webp",
+     "/casas/PRAIA DO BILENE/t3 bilene frederico/8.webp", "/casas/PRAIA DO BILENE/t3 bilene frederico/9.webp", "/casas/PRAIA DO BILENE/t3 bilene frederico/12.webp"],
+     "bedroom": 3 ,
+     "capacity":6,
+     "amenities": [{"name": "Sala Mobilada", "icon": "/icons/sofa.png"}, {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},
+     {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}, {"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}, {"name": "Piscina Privada", "icon": "swimming.png"}],
+     "description": "(T2+1) 3 QUARTOS CLIMATIZADOS\n6HOSPEDES\nSALA MOBILADA\nCOZINHA EQUIPADA\nPISCINA PRIVADA\nMESA DE BILHAR\nAREA DE LAZER\nAREA DE CHURRASCO\nAREA DE ESTACIONAMENTO\nSERVIÇOS DE LIMPEZA\nQUINTAL AMPLO\nPRÓXIMO A PRAIA (ZONA DE HUMULA 1)",
+      "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 112,
+      "user_id":  14,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 5.0,
+       "Localização": 4.6,
+       "Beleza": 4.7
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+},
+
+{
+   "id": 17,
+   "rating": 5,
+   "location": "Bilene",
+   "price" : {
+      "low_season": 3200,
+      "high_season": 6000,
+       "currency": "ZAR"
+   },
+   "image" : ["/casas/PRAIA DO BILENE/T3 AMINA BILENE/5.jpg", "/casas/PRAIA DO BILENE/T3 AMINA BILENE/2.jpg",
+   "/casas/PRAIA DO BILENE/T3 AMINA BILENE/3.jpg","/casas/PRAIA DO BILENE/T3 AMINA BILENE/4.jpg", "/casas/PRAIA DO BILENE/T3 AMINA BILENE/1.jpg","/casas/PRAIA DO BILENE/T3 AMINA BILENE/10.jpg","/casas/PRAIA DO BILENE/T3 AMINA BILENE/11.jpg","/casas/PRAIA DO BILENE/T3 AMINA BILENE/12.jpg",
+"/casas/PRAIA DO BILENE/T3 AMINA BILENE/13.jpg"],
+  "bedroom": 3,
+  "capacity": 6,
+   "amenities": [{"name": "Sala Mobilada", "icon": "/icons/sofa.png"}, {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},
+     {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}, {"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+     "description" : "T3\n2wc\n6 convidados\nSala Mobilada\nCozinha equipada\nQuintal Amplo\nÁrea de lazer\nÁrea de Estacionamento\nÁrea de Churrasco\nServiços de Limpeza\nPróximo a Praia\nVista Parcial a Lagoa\nSegurança 24/7",
+          "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 114,
+      "user_id":  16,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 4.5,
+       "Conforto": 4.2,
+       "Localização": 4.6,
+       "Beleza": 4.3
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+
+
+},
+{
+   "id" : 18,
+   "rating":4.5,
+   "location": "Bilene",
+   "price": {
+      "low_season": 5000,
+      "high_season" :7500,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO BILENE/t2 san martin/1.jpg","/casas/PRAIA DO BILENE/t2 san martin/3.jpg", 
+    "/casas/PRAIA DO BILENE/t2 san martin/4.jpg", "/casas/PRAIA DO BILENE/t2 san martin/5.jpg", "/casas/PRAIA DO BILENE/t2 san martin/2.jpg", "/casas/PRAIA DO BILENE/t2 san martin/7.jpg", "/casas/PRAIA DO BILENE/t2 san martin/8.jpg", "/casas/PRAIA DO BILENE/t2 san martin/9.jpg", "/casas/PRAIA DO BILENE/t2 san martin/10.jpg"],
+    "bedroom": 2,
+    "capacity": 4,
+    "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"}, {"name": "Piscina Privada", "icon": "/icons/swimming.png"}, {"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"}, {"name": "Sala Mobilada", "icon": "/icons/sofa.png"}, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}],
+    "description": "Apenas a alguns passos da praia poderás desfrutar da bela acomodação no San Martin\n\n 4 Hóspedes\n2 Quartos Climatizados\n2 WC\nPiscina Privada\nCozinhaEquipada\nSala Mobilada\nÁrea de Lazer\nÁrea de Churrasco\nÁcesso Fácil a Carros",
+     "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 115,
+      "user_id":  17,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 4.5,
+       "Conforto": 4.2,
+       "Localização": 4.6,
+       "Beleza": 4.3
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+
+    
+    
+}, 
+{
+   "id":19,
+   "rating": 5,
+   "location": "Bilene",
+   "price": {
+      "low_season" : 3200,
+      "high_season": 4200,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO BILENE/t4/5.webp", "/casas/PRAIA DO BILENE/t4/1.webp","/casas/PRAIA DO BILENE/t4/9.jpeg","/casas/PRAIA DO BILENE/t4/11.jpeg","/casas/PRAIA DO BILENE/t4/3.jpeg", "/casas/PRAIA DO BILENE/t4/4.webp", "/casas/PRAIA DO BILENE/t4/6.jpeg", "/casas/PRAIA DO BILENE/t4/7.webp", "/casas/PRAIA DO BILENE/t4/8.webp", "/casas/PRAIA DO BILENE/t4/10.webp", "/casas/PRAIA DO BILENE/t4/2.webp", "/casas/PRAIA DO BILENE/t4/12.webp", "/casas/PRAIA DO BILENE/t4/13.webp", "/casas/PRAIA DO BILENE/t4/15.jpeg", "/casas/PRAIA DO BILENE/t4/14.webp"], 
+   "bedroom": 4,
+   "capacity": 10, 
+   "amenities":[{"name": "Cozinha Equipada","icon": "/icons/kitchen.png"},{"name": "Sala Mobilada","icon": "/icons/sofa.png"},{"name": "Área de estacionamento","icon": "/icons/car.png"},{"name": "Serviços de Limpeza","icon": "/icons/clean.png"}, {"name": "Piscina Privada","icon": "/icons/swimming.png"}],
+   "description": "T4\n3WC\n10 Hóspedes\nPiscina\nVista a lagoa\nCozinha Equipada & Open Space\nSala Mobilada\nÁrea de Lazer\nÁrea de estacionamento\nServiços de Limpeza\nSegurança 24/24",
+    "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 116,
+      "user_id":  18,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 4.5,
+       "Localização": 4.6,
+       "Beleza": 4.3
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+},
+{
+   "id":20,
+   "rating":5,
+   "location": "Praia do Tofo",
+   "price": {
+      "low_season": 4000,
+      "high_season": 8230,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO TOFO/T3 thomas/1.jpg", "/casas/PRAIA DO TOFO/T3 thomas/2.jpg",
+   "/casas/PRAIA DO TOFO/T3 thomas/3.jpg", "/casas/PRAIA DO TOFO/T3 thomas/4.jpg", "/casas/PRAIA DO TOFO/T3 thomas/4.jpg","/casas/PRAIA DO TOFO/T3 thomas/5.jpg","/casas/PRAIA DO TOFO/T3 thomas/6.jpg","/casas/PRAIA DO TOFO/T3 thomas/7.jpg", "/casas/PRAIA DO TOFO/T3 thomas/8.jpg", "/casas/PRAIA DO TOFO/T3 thomas/9.jpg","/casas/PRAIA DO TOFO/T3 thomas/10.jpg"],
+   "bedroom": 3,
+   "capacity": 6,
+   "amenities":[{"name": "Ventilação", "icon":"/icons/fan.png"},{"name": "Vista ao mar", "icon":"/icons/sunset.png"},{"name": "Sala Mobilada", "icon":"icons/sofa.png"},{"name": "Cozinha Equipada", "icon":"/icons/kitchen.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}, {"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+   "description": "Perfeita para quem busca uma escapada tranquila, esta casa combina conforto e serenidade em um só lugar. Imagine acordar todos os dias com o som suave das ondas e desfrutar de um ambiente que abraça tanto a natureza quanto o conforto moderno. Seja para uma estadia curta ou prolongada, aqui você encontrará o refúgio ideal para renovar suas energias e criar memórias inesquecíveis\n\n3 Quartos Ventilados\n6 Hóspedes\n2 WC(1 suite)\nVista ao Mar\nPróximo a praia\nAcesso directo a praia\nSala Mobilada\nCozinha Equipada\nÁrea de Lazer\nÁrea de Churrasco\nAcesso Fácil a Carros\nServiços de Limpeza",
+    "lat": -23.86489771590098,
+    "lng": 35.551677433789045,
+     "reviews":[{
+
+      "id": 117,
+      "user_id":  19,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 5.0,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 5.0,
+       "Localização": 5.0,
+       "Beleza": 5.0
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+
+},
+{
+   "id": 21,
+   "rating": 5,
+   "location": "Praia do Tofo",
+   "price": {
+      "low_season": 4000 ,
+      "high_season": 8230,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO TOFO/t3 tofo david/34.png", "/casas/PRAIA DO TOFO/t3 tofo david/28.png",
+    "/casas/PRAIA DO TOFO/t3 tofo david/27.png", "/casas/PRAIA DO TOFO/t3 tofo david/2.png", "/casas/PRAIA DO TOFO/t3 tofo david/3.png", "/casas/PRAIA DO TOFO/t3 tofo david/6.png", "/casas/PRAIA DO TOFO/t3 tofo david/7.png", "/casas/PRAIA DO TOFO/t3 tofo david/8.png", "/casas/PRAIA DO TOFO/t3 tofo david/9.png",
+   "/casas/PRAIA DO TOFO/t3 tofo david/12.png", "/casas/PRAIA DO TOFO/t3 tofo david/14.png", "/casas/PRAIA DO TOFO/t3 tofo david/15.png", "/casas/PRAIA DO TOFO/t3 tofo david/16.png", "/casas/PRAIA DO TOFO/t3 tofo david/17.png", "/casas/PRAIA DO TOFO/t3 tofo david/18.png", "/casas/PRAIA DO TOFO/t3 tofo david/19.png", "/casas/PRAIA DO TOFO/t3 tofo david/20.png",
+   "/casas/PRAIA DO TOFO/t3 tofo david/24.png","/casas/PRAIA DO TOFO/t3 tofo david/25.png","/casas/PRAIA DO TOFO/t3 tofo david/30.png"],
+   "bedroom": 3,
+   "capacity": 6,
+   "amenities":[{"name": "Ventilação", "icon": "/icons/fan.png"},{"name": "Sala Mobilada", "icon": "sofa.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "WI-FI", "icon": "/icons/wi-fi.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}],
+   "description": "Esqueça suas preocupações neste espaço espaçoso e sereno, mesmo à beira da praia. Luxo minimalistico com detalhes artesanais especificamente concebidos para este tipo de ambiente. Com dois restaurantes nas pousadas vizinhas à praia e o mercado central de Tofo a apenas 10 minutos de caminhada pela praia, perfeitamente localizados para umas férias.\n\n 3 Quartos Ventilados\n6 Hóspedes\n2WC\nSala Mobilada\nCozinha Equipada\nWI-FI\nÁrea de Lazer\nÁrea de Churrasco\nAcesso directo a praia\nVista ao Mar\nServiços de Limpeza\nÁrea de Estacionamento ",
+   "lat":  -23.84456155157964,
+    "lng": 35.539146169320105,
+     "reviews":[{
+      "id": 118,
+      "user_id":  20,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 5.0,
+        "categories":{
+       "Limpeza": 4.9,
+       "Conforto": 4.8,
+       "Localização": 5.0,
+       "Beleza": 5.0
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }],
+       "availability": {
+      "start_date": "",
+      "end_date": "",
+      "status": ""
+    }
+
+},
+{
+   "id":22,
+   "rating":4,
+   "location": "Praia do Tofo",
+   "price": {
+      "low_season": 3000,
+      "high_season": 4500,
+      "currency": "ZAR"  
+    },
+   "image": ["/casas/PRAIA DO TOFO/T2 TOFO JUDITH/5.png","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/16.jpg","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/1.png","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/2.png","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/3.png","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/4.png", "/casas/PRAIA DO TOFO/T2 TOFO JUDITH/6.png", "/casas/PRAIA DO TOFO/T2 TOFO JUDITH/8.png","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/9.png","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/11.jpg","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/12.jpg","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/13.jpg","/casas/PRAIA DO TOFO/T2 TOFO JUDITH/15.jpg"],
+   "bedroom": 2,
+   "capacity": 6,
+   "amenities":[{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "WI-FI", "icon": "/icons/"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}],
+   "description":"Uma acomodação à beira-mar com ambiente familiar e acolhedor, um espaço minimalista de fácil acesso onde os ventos batem suavemente na janela do seu quarto\n\n2 Quartos Climatizados\n6 Hóspedes\n2 WC\nCozinha Equipada\nSala Mobilada\nWI-FI\nVista ao Mar\nAcesso directo a praia\nServiços de Limpeza\nÁrea de Lazer\nÁrea de Churrasco\nÁrea de estacionamento\nAcesso fácil a carros",
+   "lat": -23.86489771590098,
+    "lng": 35.551677433789045,
+     "reviews":[{
+
+      "id": 119,
+      "user_id":  21,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 5.0,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 5.0,
+       "Localização": 5.0,
+       "Beleza": 5.0
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+
+},
+{
+   "id":23,
+   "rating": 4,
+   "location": "Praia do Tofo",
+   "price":{
+      "low_season": 4100,
+      "high_season": 7500,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO TOFO/T4 tofinho Yola/17.jpg", "/casas/PRAIA DO TOFO/T4 tofinho Yola/16.jpg",
+   "/casas/PRAIA DO TOFO/T4 tofinho Yola/18.jpg", "/casas/PRAIA DO TOFO/T4 tofinho Yola/1.webp","/casas/PRAIA DO TOFO/T4 tofinho Yola/3.webp","/casas/PRAIA DO TOFO/T4 tofinho Yola/4.webp","/casas/PRAIA DO TOFO/T4 tofinho Yola/5.webp","/casas/PRAIA DO TOFO/T4 tofinho Yola/7.png","/casas/PRAIA DO TOFO/T4 tofinho Yola/9.jpg","/casas/PRAIA DO TOFO/T4 tofinho Yola/12.jpg"],
+   "bedroom":4,
+   "capacity": 12,
+   "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}],
+   "description": "O mar por si só tem um efeito terapêutico e relaxador, onde a alma e a mente se acalmam e a paz floresce. Para uma família de 12, que procura desconectar-se para reconectar-se aqui temos o vosso cantinho.\n\n4 Quartos Climatizados\n12 Hóspedes\n5 WCs\nCozinha Equipada\nSala Mobilada\nServiços de Limpeza\nAcesso directo a praia\nÁrea de Lazer\nÁrea de Churrasco\nÁrea de Estacionamento\nSegurança",
+    "lat":   -23.864900073087394,
+    "lng": 35.5506111693201,
+     "reviews":[{
+
+      "id": 120,
+      "user_id":  22,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 5.0,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 4.7,
+       "Localização": 4.5,
+       "Beleza": 5.0
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+},
+{
+   "id": 24,
+   "rating": 4.5,
+   "location": "Praia do Tofo",
+   "price": {
+      "low_season":2500,
+      "high_season": 5140,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO TOFO/T2 orlando/9.jpg", "/casas/PRAIA DO TOFO/T2 orlando/3.jpg",
+   "/casas/PRAIA DO TOFO/T2 orlando/7.jpg", "/casas/PRAIA DO TOFO/T2 orlando/1.jpg","/casas/PRAIA DO TOFO/T2 orlando/2.jpg","/casas/PRAIA DO TOFO/T2 orlando/4.jpg","/casas/PRAIA DO TOFO/T2 orlando/5.jpg","/casas/PRAIA DO TOFO/T2 orlando/16.jpg","/casas/PRAIA DO TOFO/T2 orlando/8.jpg","/casas/PRAIA DO TOFO/T2 orlando/10.jpg","/casas/PRAIA DO TOFO/T2 orlando/12.jpg","/casas/PRAIA DO TOFO/T2 orlando/13.jpg","/casas/PRAIA DO TOFO/T2 orlando/15.jpg"],
+   "bedroom": 2,
+   "capacity":4,
+   "amenities":[{"name": "Ar-Condicionado","icon": "/icons/air-conditioner.png"},{"name": "Sala Mobilada","icon": "/icons/sofa.png"},{"name": "Cozinha Equipada","icon": "/icons/kitchen.png"},{"name": "Área de Churrasco","icon": "/icons/barbecue.png"},{"name": "Serviços de Limpeza","icon": "/icons/clean.png"}],
+   "description": "T2\n2WC(1 suite)\n4 Hóspedes\nQuartos Climatizados\nCozinha Equipada\nSala Mobilada\nÁrea de Churrasco\nÁrea de Lazer\nQuintal Amplo\nServiços de Limpeza\nAcesso fácil a carros\nZona calma e tranquila",
+    "lat":   0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 121,
+      "user_id":  23,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 5.0,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 4.7,
+       "Localização": 4.5,
+       "Beleza": 4.0
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+},
+{
+   "id":25,
+   "rating": 4,
+   "location": "Praia do Tofo",
+   "price": {
+      "low_season": 3500,
+      "high_season": 6000,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO TOFO/t4 tofo manuel/4.webp", "/casas/PRAIA DO TOFO/t4 tofo manuel/3.webp",
+   "/casas/PRAIA DO TOFO/t4 tofo manuel/5.webp", "/casas/PRAIA DO TOFO/t4 tofo manuel/1.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/2.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/6.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/7.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/8.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/9.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/10.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/11.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/13.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/14.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/15.webp","/casas/PRAIA DO TOFO/t4 tofo manuel/16.webp"],
+   "bedroom": 4,
+   "capacity": 9,
+   "amenities":[{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "WI-FI", "icon": "/icons/wi-fi.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+   "description": "Um ambiente rústico e aconchegante, incorporando o natural com o moderno e trazendo paz e relaxo a mente.\n4 Quartos Climatizados\n4WCs\n 9 Hóspedes\n WI-FI\n Cozinha Open-Space e Equipada\nSala Mobilada\n Área de Lazer\nÁrea de Churrasco\nÁrea de Estacionamento\nServiços de Limpeza\nSegurança\n A 1 minuto da praia",
+    "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 122,
+      "user_id":  24,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 4.9,
+       "Localização": 4.8,
+       "Beleza": 4.8
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+},
+
+{
+   "id": 27,
+   "location": "Praia do Tofo",
+   "rating": 5,
+   "price":{
+      "low_season":  2285,
+      "high_season": 4285,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO TOFO/Monika T1 -Tofo/3.webp", "/casas/PRAIA DO TOFO/Monika T1 -Tofo/6.webp",
+   "/casas/PRAIA DO TOFO/Monika T1 -Tofo/14.jpg", "/casas/PRAIA DO TOFO/Monika T1 -Tofo/11.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/1.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/2.webp","/casas/PRAIA DO TOFO/Monika T1 -Tofo/4.webp","/casas/PRAIA DO TOFO/Monika T1 -Tofo/5.webp","/casas/PRAIA DO TOFO/Monika T1 -Tofo/7.webp","/casas/PRAIA DO TOFO/Monika T1 -Tofo/8.webp","/casas/PRAIA DO TOFO/Monika T1 -Tofo/10.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/12.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/13.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/14.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/15.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/16.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/17.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/18.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/19.jpg","/casas/PRAIA DO TOFO/Monika T1 -Tofo/20.jpg"],
+   "bedroom":1,
+   "capacity": 2,
+   "amenities":[{"name": "Ventilação", "icon": "/icons/fan.png"},{"name": "Vista ao mar", "icon": "/icons/sunset.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+   "description": "A espaçosa villa oferece vistas panorâmicas únicas sobre o oceano e a área de Tofo/Tofinho. Projetada para maximizar a alegria de contemplar os arredores, ela fica no topo de uma duna secundária e se mistura a ela. Recentemente construída com muito amor; simples, porém confortável, espaçosa, moderna com um toque rústico. Construída com materiais naturais, mantém-se fresca e arejada mesmo nos dias quentes. As vistas para o oceano do nascer do sol, lindos entardeceres e visitas de corujas residentes são apenas alguns destaques que farão você amar este lugar. \n\n1 Quarto Ventilado\n2 Hóspedes\nVista ao Mar\nÁrea de Lazer\nÁrea de Estacionamento\nAcesso com carro 4x4\nFácil Acesso a praia\nServiços de Limpeza",
+   "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 123,
+      "user_id":  25,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 5.0,
+       "Conforto": 5.0,
+       "Localização": 4.8,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+
+},
+ {
+   "id":28,
+   "rating": 5,
+   "location": "Praia do Tofo",
+   "price":{
+      "low_season": 7310,
+      "high_season":8570,
+      "currency": "ZAR"
+   } ,
+   "image": ["/casas/PRAIA DO TOFO/Corosita T5/3.jpg", "/casas/PRAIA DO TOFO/Corosita T5/6.jpg",
+   "/casas/PRAIA DO TOFO/Corosita T5/11.jpg", "/casas/PRAIA DO TOFO/Corosita T5/23.jpg","/casas/PRAIA DO TOFO/Corosita T5/1.jpg","/casas/PRAIA DO TOFO/Corosita T5/2.jpg","/casas/PRAIA DO TOFO/Corosita T5/4.jpg","/casas/PRAIA DO TOFO/Corosita T5/5.jpg","/casas/PRAIA DO TOFO/Corosita T5/7.jpg","/casas/PRAIA DO TOFO/Corosita T5/8.jpg","/casas/PRAIA DO TOFO/Corosita T5/9.jpg","/casas/PRAIA DO TOFO/Corosita T5/10.jpg","/casas/PRAIA DO TOFO/Corosita T5/12.jpg","/casas/PRAIA DO TOFO/Corosita T5/14.jpg","/casas/PRAIA DO TOFO/Corosita T5/15.jpg","/casas/PRAIA DO TOFO/Corosita T5/17.jpg","/casas/PRAIA DO TOFO/Corosita T5/18.jpg","/casas/PRAIA DO TOFO/Corosita T5/19.jpg","/casas/PRAIA DO TOFO/Corosita T5/20.jpg","/casas/PRAIA DO TOFO/Corosita T5/21.jpg","/casas/PRAIA DO TOFO/Corosita T5/22.jpg","/casas/PRAIA DO TOFO/Corosita T5/24.jpg","/casas/PRAIA DO TOFO/Corosita T5/25.jpg"],
+   "bedroom": 5,
+   "capacity":10,
+   "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "WI-FI", "icon": "/icons/wi-fi.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}],
+   "description": "Abra as janelas e receba a brisa do Índico, renovando suas energias e refrescando a mente. Aqui, você encontra o conforto que merece: \n5 Quartos Climatizados(todos suítes)\n10 Hóspedes\nCozinha Equipada\nSala Mobilada\nPiscina Privada\nÁrea de Churrasco\nÁrea de Lazer\nWI-FI\nVista ao Mar\nServiços de Limpeza\nEstacionamento amplo\nAcesso directo a praia\nFácil acesso para todos os tipos de veículos",
+   "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 124,
+      "user_id":  26,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4.9,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 5.0,
+       "Localização": 5.0,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+
+
+ },
+ {
+   "id": 29,
+   "rating": 5,
+   "location": "Praia do Tofo",
+   "price": {
+      "low_season":  7315,
+      "high_season": 8570,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DO TOFO/T5 Tofo blue/1.jpg", "/casas/PRAIA DO TOFO/T5 Tofo blue/5.jpg",
+   "/casas/PRAIA DO TOFO/T5 Tofo blue/3.jpeg", "/casas/PRAIA DO TOFO/T5 Tofo blue/21.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/2.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/6.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/7.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/9.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/11.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/13.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/14.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/15.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/16.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/17.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/18.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/20.jpg","/casas/PRAIA DO TOFO/T5 Tofo blue/21.jpg"],
+   "bedroom":5,
+   "capacity":13,
+   "amenities":[{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "WI-FI", "icon": "/icons/wi-fi.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}],
+   "description":"Abra as janelas e receba a brisa do Índico, renovando suas energias e refrescando a mente. Aqui, você encontra o conforto que merece:\n5 Quartos climatizados (todos suítes)\n13 Hóspedes\nCozinha Equipada\nSala Mobilada\nPiscina Privada\nÁrea de lazer e espaço para churrasco\nWI-FI\nVista deslumbrante ao mar\nServiço de limpeza\nÁrea de estacionamento\nAcesso direto à praia\nFácil acesso para todos os tipos de veículosn",
+   "lat": 0,
+    "lng": 0,
+     "reviews":[{
+
+      "id": 125,
+      "user_id":  27,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 5,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 5.0,
+       "Localização": 5.0,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+
+   }]
+ },
+ {
+   "id":31,
+   "rating": 4,
+   "location": "Ponta Malongane",
+   "price": {
+      "low_season":2900,
+      "high_season": 4400,
+      "currency": "ZAR"
+      },
+   "image": ["/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/8.jpg", "/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/11.jpg",
+   "/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/15.jpg", "/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/4.jpg", "/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/1.jpg", "/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/2.jpg", "/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/3.jpg", "/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/5.jpg","/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/6.jpg","/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/7.jpg","/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/9.jpg","/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/12.jpg","/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/13.jpg","/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/14.jpg", "/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/15.jpg","/casas/PRAIA DA PONTA MALONGANE/T2 Ponta Henrique/16.jpg"],
+   "bedroom":2,
+   "capacity": 4,
+   "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "", "icon": ""},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}],
+   "description": "Casa projetada para oferecer lazer e conforto, localizada em uma área tranquila, longe da agitação da vila, mas próxima à praia.\n2 Quartos Climatizados\n4 Hóspedes\n1WC\nCozinha Equipada\nSala Mobilada\nServiços de Limpeza\nÁrea de Lazer\nÁrea de Churrasco\nAcesso com carro 4x4",
+   "lat":-26.803638550012042,
+    "lng": 32.88881774205866,
+     "reviews":[{
+
+      "id": 126,
+      "user_id":  28,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 4.6,
+       "Localização": 4.8,
+       "Beleza": 4.2
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]
+   },
+ 
+{
+   "id": 32,
+   "rating": 4,
+   "location": "Ponta Malongane",
+   "price": {
+      "low_season":5000,
+      "high_season": 7300,
+      "currency": "ZAR"
+   },
+   "image":["/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/3.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/5.png",
+   "/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/4.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/10.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/1.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/2.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/6.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/7.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/8.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/9.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/11.png", "/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/12.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/13.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/14.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/16.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/17.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/18.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/19.png","/casas/PRAIA DA PONTA MALONGANE/t4 malongane fauso/20.png"],
+   "bedroom":2,
+   "capacity": 6,
+   "amenities": [{"name": "Ventilação", "icon": "/icons/fan.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "WI-FI", "icon": "/icons/wi-fi.png"},{"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+   "description": "Onde a simplicidade acolhedora encontra o conforto essencial. Esta residência modesta e familiar oferece tudo o que você precisa para se sentir em casa. Localizada no coração da deslumbrante Ponta Malongane, é o cenário perfeito para uma experiência inesquecível.\n2 Quartos Suite\n6 Hóspedes\nCozinha Equipada\nLayout em espaço aberto\nSala Mobilada\nÁrea de Lazer\nÁrea de churrasco\nServiços de Limpeza\nPróximo a praia\nAcesso para veiculos 4x4\n2 minutos de descida até a praia\nWI-FI e DSTV\nPiscina Privada",
+   "lat":-26.803526054074734,
+    "lng": 32.888820428835054,
+    
+     "reviews":[{
+      "id": 127,
+      "user_id":  29,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 4.7,
+       "Localização": 4.8,
+       "Beleza": 4.3
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]
+},
+   {
+
+   "id":33,
+   "rating":5,
+   "location": "Ponta Malongane",
+   "price": {
+      "low_season":4300,
+      "high_season": 6500,
+      "currency": "ZAR"
+   },
+   "image": ["/casas/PRAIA DA PONTA MALONGANE/T4 bush house/14.jpg","/casas/PRAIA DA PONTA MALONGANE/T4 bush house/1.jpg",
+    "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/15.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/7.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/2.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/3.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/4.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/5.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/6.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/8.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/9.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/10.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/11.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/12.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/17.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4 bush house/18.jpg"],
+    "bedroom": 4,
+    "capacity": 8,
+    "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}],
+    "description": "Uma casa de férias com tudo o que precisas para renovar as energias e descansar a mente. Com uma vista panorâmica de 180 graus para o mar e um conforto relaxante, esta casa é verdadeiramente de tirar o fôlego.\n4 QUARTOS CLIMATIZADOS\n4 SUÍTES\nACOMODA 8 HÓSPEDES\nCOZINHA EQUIPADA\nSALA MOBILADA\nÁREA DE LAZER\nÁREA DE CHURRASCO\nVISTA PARA O MAR\nPISCINA PRIVADA\nACESSO FÁCIL À PRAIA\nÁREA DE ESTACIONAMENTO\nACESSO COM VEÍCULO 4X4\n",
+     "lat":0,
+    "lng": 0,
+    
+     "reviews":[{
+      "id": 128,
+      "user_id":  30,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 4.7,
+       "Localização": 4.8,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]
+
+   }, 
+   {
+      "id": 34,
+      "rating":4,
+      "location": "Ponta Malongane",
+      "price": {
+         "low_season": 4300,
+         "high_season": 6500,
+         "currency": "ZAR"
+      },
+      "image" : ["/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/12.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/16.jpg",
+         "/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/19.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/20.jpg", "/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/1.webp","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/2.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/3.webp","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/4.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/5.webp","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/6.webp","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/7.webp","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/8.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/10.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/11.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/13.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/15.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/18.jpg","/casas/PRAIA DA PONTA MALONGANE/T4Camping Ninho/21.jpg"],
+      "bedroom":4,
+      "capacity":8,
+      "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+      "description":"Casa de férias bem detalhada e concebida e preparada para oferecer o máximo conforme e lazer, distante de toda agitação mas próxima a praia onde poderás apreciar o belo Índico.\n4 QUARTOS CLIMATIZADOS\n4WC\n8 HÓSPEDES\nCOZINHA EQUIPADA\nSALA MOBILADA\nAREA DE LAZER\nAREA DE CHURRASCO\nPISCINA\nAREA DE FOGUEIRA\nACESSO COM CARRO 4X4\nSERVIÇOS DE LIMPEZA\nSUNSET & SUNRISE\nCURTA DISTÂNCIA A PRAIA",
+        "lat": -26.802438685648287,
+       "lng":  32.88950521534021,  
+     "reviews":[{
+      "id": 129,
+      "user_id":  31,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.6,
+       "Conforto": 4.6,
+       "Localização": 4.8,
+       "Beleza": 4.7
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]
+
+   },
+   {
+      "id": 35,
+      "rating":4,
+      "location": "Ponta Malongane",
+      "price": {
+         "low_season":4300,
+         "high_season":6500,
+         "currency": "ZAR"
+      },
+      "image": ["/casas/PRAIA DA PONTA MALONGANE/T4 kids/12.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/1.png", 
+      "/casas/PRAIA DA PONTA MALONGANE/T4 kids/9.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/3.png",  "/casas/PRAIA DA PONTA MALONGANE/T4 kids/2.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/5.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/6.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/7.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/8.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/9.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/10.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/13.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/14.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/16.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/17.png", "/casas/PRAIA DA PONTA MALONGANE/T4 kids/18.png"],
+      "bedroom": 4,
+      "capacity":8,
+      "amenities":[{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+      "description": "Perfeita para quem busca uma escapada tranquila, esta casa combina comforto e serenidade em um só lugar. Imagine acordar todos os dias com o som suave das ondas e desfrutar de um ambiente que abraça tanto a natureza quanto o conforto moderno. Seja para uma estadia curta ou prolongada, aqui você encontrará o refúgio ideal para renovar suas energias e criar memórias inesquecíveis.\n4 QUARTOS CLIMATIZADOS\n3WC\n8 HÓSPEDES\nCOZINHA EQUIPADA\nSALA MOBILADA\nVISTA AO MAR\nACESSO DIRECTO A PRAIA\nPISCINA PRIVADA\nACESSO COM CARRO 4X4\nSERVIÇOS DE LIMPEZA( EXTRA)\n",
+          "lat":-26.802515295229032,
+       "lng":  32.88941938465979,  
+     
+     "reviews":[{
+      "id": 130,
+      "user_id":  32,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.6,
+       "Conforto": 4.6,
+       "Localização": 4.8,
+       "Beleza": 4.8
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]
+   },
+   {
+      "id": 36,
+      "rating":5,
+      "location": "Ponta Malongane",
+      "price": {
+         "low_season": "5600",
+         "high_season": "7800",
+         "currency": "ZAR"
+      },
+      "image":["/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/9.png", "/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/4.jpg", 
+      "/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/14.jpg", "/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/3.jpg","/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/1.jpg","/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/2.jpg","/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/3.jpg","/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/6.webp", "/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/7.jpg","/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/8.png","/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/15.jpg","/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/18.png",
+      "/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/17.png", "/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/12.jpg", "/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/13.jpg", "/casas/PRAIA DA PONTA MALONGANE/t4 14 pessoas/11.png"],
+      "bedroom": 4,
+      "capacity":14,
+      "amenities":[{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+      "description":"Desde vistas deslumbrantes a comodidade e conforto. A casa Mell oferece experiências únicas a todos que lá se hospedam.\n4 quartos climatizados\n14 hóspedes\n4wc\nSala mobilada\nCozinha equipada\nPiscina privada\nÁrea de lazer\nÁrea de Churrasco\nFácil acesso a praia\nAcesso com carro 4x4\nServiços de limpeza",
+      "lat":0,
+       "lng":0,
+        "reviews":[{
+      "id": 131,
+      "user_id":  33,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 4.7,
+       "Localização": 4.9,
+       "Beleza": 4.8
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]  
+
+   },
+  
+   {
+      "id":38,
+      "location": "Ponta Mamoli",
+      "price": {
+         "low_season":2860,
+         "high_season": 4500,
+         "currency": "ZAR"
+      },
+      "image":["/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/1.png","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/15.jpg",
+      "/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/6.png","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/2.png", "/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/3.png","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/4.png","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/5.png","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/7.png", "/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/8.png", "/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/9.png", "/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/10.png","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/11.png","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/12.png","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/13.jpg","/casas/PRAIA DA PONTA MAMOLI/T1 Petal MAmoli/14.jpg"],
+      "bedroom": 1,
+      "capacity":4,
+      "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+      "description": "Explore um destino pouco conhecido, repleto de maravilhas, onde os recifes de corais e a vida marinha encantam as marés, enquanto a serenidade abraça a costa. Desfrute de acomodações minimalistas, porém confortáveis, em um ambiente tranquilo e relaxante.\n1 Quarto Climatizado\n4 Hóspedes\nCozinha Equipada\nÁrea de Churrasco\nVista ao Mar\nServiços de Limpeza\nAcesso direto à praia\nFácil acesso para todos os tipos de veículos",
+      "lat":0,
+      "lng":0,
+         "reviews":[{
+      "id": 132,
+      "user_id":  34,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.6,
+       "Conforto": 4.8,
+       "Localização": 4.8,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]  
+
+
+   },
+   {
+      "id": 39,
+      "location": "Ponta Mamoli",
+      "price": {
+         "low_season":10000,
+         "high_season":15000,
+         "currency": "ZAR"
+      },
+      "image": ["/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/1.png", "/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/5.png",
+       "/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/13.png", "/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/16.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/2.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/3.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/4.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/6.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/7.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/8.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/9.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/10.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/11.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/12.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/14.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/15.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/17.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/18.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/19.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/20.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/21.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/22.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/23.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/24.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/25.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/26.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/27.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/28.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/29.png","/casas/PRAIA DA PONTA MAMOLI/T4 Ponta mamoli/30.png"],
+       "bedroom":4,
+       "capacity":4,
+       "amenities":[{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"},{"name": "Vista ao Mar", "icon": "/icons/sunset.png"},{"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"},{"name": "WI-FI", "icon": "/icons/wi-fi.png"},{"name": "Área de Estacionamento", "icon": "/icons/car.png"}],
+       "description": "Relaxa nesta escapada única e tranquila inspirada na natureza.Localizada à beira da praia, a meio caminho, esta linda vila oferece vistas privilegiadas e requintadas sobre o oceano, proporcionando aos hóspedes tranquilidade, exclusividade e vistas gloriosas do nascer do sol.\n4 Quartos(suíte) climatizados\n1 sala de estar com ar-condicionado\nCozinha Equipada\nSala Mobilada\nVista ao Mar\nPiscina Privada\nWiFi e DSTV\nÁrea de Churrasco\nServiços de Limpeza\nAcesso privativo à praia\nÁrea de Estacionamento\n Entrada ecológica\nServiço de limpeza incluído + configuração de praia (sombras e cadeiras)\nEspaço Zen (massagem, yoga, pilates)\n Chef de cozinha (opcional)",
+       "lat":0,
+      "lng":0,
+         "reviews":[{
+      "id": 132,
+      "user_id":  34,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.6,
+       "Conforto": 4.8,
+       "Localização": 4.8,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]  
+   },
+   {
+      "id":40,
+      "location": "Ponta Mamoli",
+      "price": {
+         "low_season":9000,
+         "high_season":12000,
+         "currency": "ZAR"
+      },
+      "image":["/casas/PRAIA DA PONTA MAMOLI/Anton T2 Mamoli/3.webp","/casas/PRAIA DA PONTA MAMOLI/Anton T2 Mamoli/1.webp",
+      "/casas/PRAIA DA PONTA MAMOLI/Anton T2 Mamoli/4.webp","/casas/PRAIA DA PONTA MAMOLI/Anton T2 Mamoli/9.webp"]
+   },
+   {
+      "id": 41,
+      "location": "Praia da Barra",
+       "price": 11000,
+       "image": ["/casas/PRAIA DA BARRA/T4 Reitte/23.jpg", "/casas/PRAIA DA BARRA/T4 Reitte/3.jpg",
+       "/casas/PRAIA DA BARRA/T4 Reitte/6.jpg", "/casas/PRAIA DA BARRA/T4 Reitte/24.jpg"]
+   },
+   {
+      "id": 42,
+      "location": "Praia da Barra",
+      "price": 10000,
+      "image": ["/casas/PRAIA DA BARRA/Sia Sente/Villa 8/5.jpg", "/casas/PRAIA DA BARRA/Sia Sente/Villa 8/3.jpg",
+      "/casas/PRAIA DA BARRA/Sia Sente/Villa 8/4.jpg", "/casas/PRAIA DA BARRA/Sia Sente/Villa 8/1.jpg"]
+   }
+
+]
