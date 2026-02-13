@@ -27,8 +27,8 @@ const BeachCard = ({ house }) => {
   );
 
   return (
-    <div className="relative block bg-white rounded-2xl overflow-hidden shadow-md transition hover:scale-[1.02]">
-      
+    <div className="relative block bg-white rounded-2xl overflow-hidden shadow-md transition hover:scale-[1.02] sm:mx-0">
+
       <FavoriteButton house={house} />
 
       <Link
@@ -38,10 +38,10 @@ const BeachCard = ({ house }) => {
         <img
           src={house.image[0]}
           alt={house.location}
-          className="w-full h-48 sm:h-56 object-cover"
+          className="w-full h-40 sm:h-44 md:h-48 object-cover"
         />
 
-        <div className="p-3 flex flex-col gap-2">
+        <div className="p-2 flex flex-col gap-1.5">
           <div className="flex items-center text-sm text-gray-600 gap-1">
             <img src={locationicon} alt="localização" className="w-4 h-4" />
             <span className="truncate">{house.location}</span>

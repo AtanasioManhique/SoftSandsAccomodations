@@ -67,11 +67,12 @@ const FeaturedDestination = () => {
         <p className="px-6 md:px-16 lg:px-24 text-xl md:text-xl text-gray-600/90 -mt-8 max-2-174">{t("featured.title")}</p>
     
 
-      <div className="relative w-full max-w-7xl mt-10">
+      <div className="relative w-full max-w-7xl mx-auto mt-10">
         {/* Botão Esquerdo */}
         <button
           onClick={handlePrev}
-          className="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
+          className="hidden md:flex absolute md:left-0 top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
+
         >
           <img src={leftarrow} className="w-5 h-5" alt="Anterior" />
         </button>
@@ -83,13 +84,31 @@ const FeaturedDestination = () => {
           autoplay={{ delay: 3000, disableOnInteraction: false }}
           spaceBetween={20}
           loop={true}
+
           breakpoints={{
-            320: { slidesPerView: 1.1 },
-            480: { slidesPerView: 1.5 },
-            640: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            1024: { slidesPerView: 3.5 },
-            1280: { slidesPerView: 4 },
+           320: {
+      slidesPerView: 1.15,
+      slidesOffsetBefore: 16,
+      slidesOffsetAfter: 16,
+    },
+    640: {
+      slidesPerView: 2,
+      slidesOffsetBefore: 0,
+      slidesOffsetAfter: 0,
+    },
+    768: {
+      slidesPerView: 3,
+      slidesOffsetBefore: 0,
+      slidesOffsetAfter: 0,
+    },
+    1024: {
+      slidesPerView: 3.5,
+      slidesOffsetBefore: 0,
+      slidesOffsetAfter: 0,
+    },
+            1280: { slidesPerView: 4, slidesOffsetBefore: 0, slidesOffsetAfter: 0 
+
+            },
           }}
         >
           {houses.map((house) => (
@@ -103,7 +122,8 @@ const FeaturedDestination = () => {
         {/* Botão Direito */}
         <button
           onClick={handleNext}
-          className="absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
+          className="hidden md:flex absolute md:right-0 top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
+
         >
           <img src={rightarrow} className="w-5 h-5" alt="Próximo" />
         </button>
