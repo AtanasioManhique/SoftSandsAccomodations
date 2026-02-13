@@ -61,9 +61,10 @@ const FeaturedDestination = () => {
   };
 
   return (
-    <div className="flex flex-col items-center px-6 md:px-16 lg:px-24 bg-slate-50 py-20 pb-15">
+      <div className="flex flex-col items-center bg-slate-50 py-20 pb-15">
+
       
-        <p className="text-xl md:text-xl text-gray-600/90 -mt-8 max-2-174">{t("featured.title")}</p>
+        <p className="px-6 md:px-16 lg:px-24 text-xl md:text-xl text-gray-600/90 -mt-8 max-2-174">{t("featured.title")}</p>
     
 
       <div className="relative w-full max-w-7xl mt-10">
