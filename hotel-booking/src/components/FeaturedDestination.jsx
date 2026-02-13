@@ -61,7 +61,7 @@ const FeaturedDestination = () => {
   };
 
   return (
-      <div className="flex flex-col items-center bg-slate-50 py-20 pb-15">
+      <div className="flex flex-col items-center bg-slate-50 py-16 pb-10">
 
       
         <p className="px-6 md:px-16 lg:px-24 text-xl md:text-xl text-gray-600/90 -mt-8 max-2-174">{t("featured.title")}</p>
@@ -71,8 +71,7 @@ const FeaturedDestination = () => {
         {/* Botão Esquerdo */}
         <button
           onClick={handlePrev}
-          className="hidden md:flex absolute md:left-0 top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
-
+          className="hidden md:flex absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
         >
           <img src={leftarrow} className="w-5 h-5" alt="Anterior" />
         </button>
@@ -122,8 +121,7 @@ const FeaturedDestination = () => {
         {/* Botão Direito */}
         <button
           onClick={handleNext}
-          className="hidden md:flex absolute md:right-0 top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
-
+         className="hidden md:flex absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
         >
           <img src={rightarrow} className="w-5 h-5" alt="Próximo" />
         </button>

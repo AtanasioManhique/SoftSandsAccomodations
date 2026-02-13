@@ -27,7 +27,7 @@ const BeachCard = ({ house }) => {
   );
 
   return (
-    <div className="relative block bg-white rounded-2xl overflow-hidden shadow-md transition hover:scale-[1.02] sm:mx-0">
+    <div className="relative block bg-white rounded-2xl overflow-hidden border border-gray-100 transition hover:scale-[1.02] sm:mx-0">
 
       <FavoriteButton house={house} />
 

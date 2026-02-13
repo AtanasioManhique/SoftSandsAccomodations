@@ -60,17 +60,19 @@ const ExploreDestination = () => {
   };
 
   return (
-    <div className="flex flex-col items-center px-6 md:px-16 lg:px-24 xl:px-32 pt-3 py-8 pb-15">
-      {/* Título */}
-      <div className="flex flex-col md:flex-row items-center justify-between w-full">
+  <div className="flex flex-col items-center pt-3 py-8 pb-15">
+    
+    <div className="w-full max-w-7xl">
+      {/* Título alinhado com os cards */}
+      <div className="">
         <Title align="left" title={t("explore.destination")} />
       </div>
 
-      <div className="relative w-full max-w-7xl mt-6">
+      <div className="relative mt-6">
         {/* Botão Esquerdo */}
         <button
           onClick={handlePrev}
-          className="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
+          className="hidden md:flex absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
         >
           <img src={leftarrow} className="w-5 h-5" alt="Anterior" />
         </button>
@@ -83,20 +85,20 @@ const ExploreDestination = () => {
           spaceBetween={20}
           loop={true}
           breakpoints={{
-            320: { slidesPerView: 1.2 },
-            480: { slidesPerView: 1.5 },
-            640: { slidesPerView: 2 },
-            768: { slidesPerView: 3 },
-            1024: { slidesPerView: 3.5 },
-            1280: { slidesPerView: 4 },
+            320: { slidesPerView: 1.2, slidesOffsetBefore: 16, slidesOffsetAfter: 16 },
+            480: { slidesPerView: 1.5, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
+            640: { slidesPerView: 2, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
+            768: { slidesPerView: 3, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
+            1024: { slidesPerView: 3.5, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
+            1280: { slidesPerView: 4, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
           }}
         >
           {destinos.map((destino, index) => (
             <SwiperSlide key={index}>
               <Link
                 to={`/praias/${encodeURIComponent(destino.name)}`}
-                className="relative rounded-xl overflow-hidden shadow-md group block"
->
+                className="relative rounded-xl overflow-hidden shadow-sm hover:shadow-md group block"
+              >
                 <img
                   src={destino.image}
                   alt={destino.name}
@@ -113,13 +115,15 @@ const ExploreDestination = () => {
         {/* Botão Direito */}
         <button
           onClick={handleNext}
-          className="absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
+          className="hidden md:flex absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
         >
           <img src={rightarrow} className="w-5 h-5" alt="Próximo" />
         </button>
       </div>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default ExploreDestination;
