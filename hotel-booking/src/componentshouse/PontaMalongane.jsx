@@ -67,19 +67,14 @@ const PontaMalongane = () => {
 
       {/* 🔸 MOBILE — swiper */}
       <div className="w-full md:hidden relative">
-        <button
-          onClick={() => swiperRef.current?.slidePrev()}
-          className="absolute left-[-10px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10"
-        >
-          <img src={leftarrow} className="w-5 h-5" />
-        </button>
 
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
-          autoplay={{ delay: 3000 }}
+          autoplay={{ delay: 2500 }}
           pagination={{ clickable: true }}
           spaceBetween={20}
           slidesPerView={1.1}
+          className="!pb-7 !px-2"
           loop={true}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
@@ -89,13 +84,6 @@ const PontaMalongane = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-
-        <button
-          onClick={() => swiperRef.current?.slideNext()}
-          className="absolute right-[-10px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10"
-        >
-          <img src={rightarrow} className="w-5 h-5" />
-        </button>
       </div>
 
       {/* 🔸 DESKTOP — grid paginada */}

@@ -6,6 +6,9 @@ import { BrowserRouter } from 'react-router-dom'
 import {GoogleOAuthProvider} from "@react-oauth/google"
 import { CurrencyProvider } from "./FormDropDown/CurrencyContext";
 import "./i18n";
+import { LoginModalProvider } from "./context/LoginModalContext";
+import LoginModal from "./context/LoginModal";
+
 
 
 // Import your Publishable Key
@@ -22,7 +25,10 @@ createRoot(document.getElementById('root')).render(
       
       <CurrencyProvider>
       <BrowserRouter>
+      <LoginModalProvider>
         <App />
+        <LoginModal />
+      </LoginModalProvider>
       </BrowserRouter>
       </CurrencyProvider>
         </GoogleOAuthProvider>

@@ -80,10 +80,11 @@ const PraiaTofo = () => {
 
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          autoplay={{ delay: 2500, disableOnInteraction: false }}
           pagination={{ clickable: true }}
           spaceBetween={20}
           slidesPerView={1.1}
+          className="!pb-7 !px-2"
           loop={true}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >

@@ -13,7 +13,7 @@ const Testimonial = () => {
   const swiperRef = useRef(null);
 
   return (
-    <div className="flex flex-col items-center bg-slate-50 pt-10 pb-16">
+    <div className="flex flex-col items-center bg-slate-50 pt-8 pb-2">
 
       {/* ✅ Title com padding correto */}
       <div className="w-full px-6 md:px-16 lg:px-24">

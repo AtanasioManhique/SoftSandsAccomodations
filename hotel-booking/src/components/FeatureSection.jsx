@@ -8,7 +8,7 @@ import {useTranslation} from "react-i18next"
 const FeatureSection = () => {
   const {t}= useTranslation();
   return (
-    <section className="bg-white py-10 px-2 text-center">
+    <section className="bg-white py-10 px-2 text-center -pt-5">
       {/* Título */}
       <h2 className="text-4xl font-bold text-gray-800 mb-10">
         {t("featuresection.title")}{" "}
@@ -22,12 +22,13 @@ const FeatureSection = () => {
           autoplay={{ delay: 2500, disableOnInteraction: false }}
           spaceBetween={16}
           slidesPerView={1}
+          className="!pb-12 !px-2"
         >
           {cards.map((card, index) => (
             <SwiperSlide key={index}>
               <div
                 className="bg-white p-6 rounded-xl shadow-md border border-gray-100 
-                           flex flex-col justify-between h-[250px]"
+                           flex flex-col justify-between h-full"
               >
                 <div className="flex flex-col items-center flex-grow">
                   <img

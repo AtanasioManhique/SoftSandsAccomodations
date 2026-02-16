@@ -12,7 +12,7 @@ const Footer = () => {
 
   return (
     <div>
-      <div className='bg-[#F6F9FC] text-gray-500/80 pt-8 px-6 md:px-16 lg:px-24 xl:px-32 mt-7'>
+      <div className='bg-[#F6F9FC] text-gray-500/80 pt-3 px-6 md:px-16 lg:px-24 xl:px-32 mt-7'>
         <div className='flex flex-wrap justify-between gap-12 md:gap-6'>
 
           {/* LOGO + TEXTO */}

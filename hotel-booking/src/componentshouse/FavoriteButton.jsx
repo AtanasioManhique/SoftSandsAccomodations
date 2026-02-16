@@ -1,13 +1,25 @@
 import { Heart } from "lucide-react";
 import { useFavorites } from "./FavoriteStore";
+import { useAuth } from "../context/AuthContext";
+import { useLoginModal } from "../context/LoginModalContext";
 
 export default function FavoriteButton({ house }) {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const { user } = useAuth();
+  const { openLogin } = useLoginModal();
+
   const active = isFavorite(house.id);
 
   const handleClick = (e) => {
     e.preventDefault();      // evita navegação do <Link>
     e.stopPropagation();     // evita clique borbulhar para Card ou Link
+
+    // ✅ NOVO: verificar login
+    if (!user) {
+      openLogin();
+      return;
+    }
+
     toggleFavorite(house);
   };
 
