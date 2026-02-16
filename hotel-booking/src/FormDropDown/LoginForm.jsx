@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import logo from "../assets/palmtree.png";
 import {useTranslation} from "react-i18next"
 
-const LoginPage = () => {
+const LoginPage = ({ isModal = false }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const {t}= useTranslation();
@@ -45,7 +45,11 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-4 pt-24">
+    <div className={
+    isModal
+      ? "w-full"
+      : "min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-4 pt-24"
+  }>
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center">
 
         <img src={logo} alt="Logo" className="h-16 mx-auto mb-3" />

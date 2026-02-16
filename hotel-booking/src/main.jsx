@@ -8,6 +8,8 @@ import { CurrencyProvider } from "./FormDropDown/CurrencyContext";
 import "./i18n";
 import { LoginModalProvider } from "./context/LoginModalContext";
 import LoginModal from "./context/LoginModal";
+import { AuthProvider } from "./context/AuthContext";
+
 
 
 
@@ -25,10 +27,12 @@ createRoot(document.getElementById('root')).render(
       
       <CurrencyProvider>
       <BrowserRouter>
+         <AuthProvider>
       <LoginModalProvider>
         <App />
         <LoginModal />
       </LoginModalProvider>
+      </AuthProvider>
       </BrowserRouter>
       </CurrencyProvider>
         </GoogleOAuthProvider>
