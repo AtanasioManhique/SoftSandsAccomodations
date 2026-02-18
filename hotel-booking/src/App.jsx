@@ -22,6 +22,7 @@ import TermosECondicoes from "./FormDropDown/Termsandconditions"
 import PoliticaCancelamento from "./FormDropDown/PoliticaCancelamento"
 import ContacteNos from "./FormDropDown/ContacteNos"
 
+
 function App() {
 
   const location = useLocation();

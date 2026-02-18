@@ -1144,6 +1144,7 @@
   
    {
       "id":38,
+      "rating": 4,
       "location": "Ponta Mamoli",
       "price": {
          "low_season":2860,
@@ -1179,6 +1180,7 @@
    },
    {
       "id": 39,
+      "rating": 4,
       "location": "Ponta Mamoli",
       "price": {
          "low_season":10000,
@@ -1211,29 +1213,72 @@
    }]  
    },
    {
-      "id":40,
-      "location": "Ponta Mamoli",
-      "price": {
-         "low_season":9000,
-         "high_season":12000,
-         "currency": "ZAR"
-      },
-      "image":["/casas/PRAIA DA PONTA MAMOLI/Anton T2 Mamoli/3.webp","/casas/PRAIA DA PONTA MAMOLI/Anton T2 Mamoli/1.webp",
-      "/casas/PRAIA DA PONTA MAMOLI/Anton T2 Mamoli/4.webp","/casas/PRAIA DA PONTA MAMOLI/Anton T2 Mamoli/9.webp"]
-   },
-   {
       "id": 41,
+      "rating":4,
       "location": "Praia da Barra",
-       "price": 11000,
+       "price": {
+         "low_season": 4000,
+         "high_season": 6500,
+         "currency": "ZAR"
+       },
        "image": ["/casas/PRAIA DA BARRA/T4 Reitte/23.jpg", "/casas/PRAIA DA BARRA/T4 Reitte/3.jpg",
-       "/casas/PRAIA DA BARRA/T4 Reitte/6.jpg", "/casas/PRAIA DA BARRA/T4 Reitte/24.jpg"]
+       "/casas/PRAIA DA BARRA/T4 Reitte/6.jpg", "/casas/PRAIA DA BARRA/T4 Reitte/24.jpg","/casas/PRAIA DA BARRA/T4 Reitte/1.jpg","/casas/PRAIA DA BARRA/T4 Reitte/2.jpg","/casas/PRAIA DA BARRA/T4 Reitte/4.jpg","/casas/PRAIA DA BARRA/T4 Reitte/5.jpg","/casas/PRAIA DA BARRA/T4 Reitte/7.jpg","/casas/PRAIA DA BARRA/T4 Reitte/8.jpg","/casas/PRAIA DA BARRA/T4 Reitte/9.jpg","/casas/PRAIA DA BARRA/T4 Reitte/10.jpg","/casas/PRAIA DA BARRA/T4 Reitte/11.jpg","/casas/PRAIA DA BARRA/T4 Reitte/12.jpg","/casas/PRAIA DA BARRA/T4 Reitte/13.jpg","/casas/PRAIA DA BARRA/T4 Reitte/14.jpg","/casas/PRAIA DA BARRA/T4 Reitte/15.jpg","/casas/PRAIA DA BARRA/T4 Reitte/16.jpg","/casas/PRAIA DA BARRA/T4 Reitte/17.jpg","/casas/PRAIA DA BARRA/T4 Reitte/18.jpg","/casas/PRAIA DA BARRA/T4 Reitte/19.jpg","/casas/PRAIA DA BARRA/T4 Reitte/20.jpg","/casas/PRAIA DA BARRA/T4 Reitte/21.jpg","/casas/PRAIA DA BARRA/T4 Reitte/22.jpg","/casas/PRAIA DA BARRA/T4 Reitte/23.jpg","/casas/PRAIA DA BARRA/T4 Reitte/25.jpg"],
+       "bedroom": 4,
+       "capacity": 10,
+       "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"}, {"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Área de estacionamento", "icon": "/icons/car.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+       "description":"A província de Inhambane tem muitos cantos, e este é um deles, a praia da Barra. Onde a oscilação da maré cria uma lagoa de águas cristalinas e pouco profundas , tu mereces vir desfrutar das suas férias aqui.\n4 QUARTOS CLIMATIZADOS\n3 WCS\n10 HÓSPEDES\nCOZINHA EQUIPADA & AMPLA\nSALA MOBILADA\nPISCINA PRIVADA\nAREA DE LAZER\nAREA DE CHURRASCO\nAREA DE ESTACIONAMENTO\nSERVIÇOS DE LIMPEZA\nLAVANDARIA\nOFERECEMOS CADEIRAS DE PRAIA E SOMBRAS PARA DESFRUTARES DA SUA ESTADIA",
+        "lat":-23.7964020200902,
+      "lng":35.52914859653645,
+         "reviews":[{
+      "id": 133,
+      "user_id":  35,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.8,
+       "Conforto": 4.7,
+       "Localização": 4.7,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]  
    },
    {
       "id": 42,
+      "rating": 5,
       "location": "Praia da Barra",
-      "price": 10000,
+      "price": {
+         "low_season":7200,
+         "high_season": 12000,
+         "curreny": "ZAR"
+      },
       "image": ["/casas/PRAIA DA BARRA/Sia Sente/Villa 8/5.jpg", "/casas/PRAIA DA BARRA/Sia Sente/Villa 8/3.jpg",
-      "/casas/PRAIA DA BARRA/Sia Sente/Villa 8/4.jpg", "/casas/PRAIA DA BARRA/Sia Sente/Villa 8/1.jpg"]
+      "/casas/PRAIA DA BARRA/Sia Sente/Villa 8/4.jpg", "/casas/PRAIA DA BARRA/Sia Sente/Villa 8/1.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/2.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/6.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/7.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/8.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/9.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/10.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/11.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/12.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/13.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/14.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/15.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/16.jpg","/casas/PRAIA DA BARRA/Sia Sente/Villa 8/17.jpg"],
+      "bedroom":5,
+      "capacity":12,
+      "amenities": [{"name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},{"name": "Sala Mobilada", "icon": "/icons/sofa.png"}, {"name": "Piscina Privada", "icon": "/icons/swimming.png"},{"name": "Área de Churrasco", "icon": "/icons/barbecue.png"},{"name": "Vista ao mar", "icon": "/icons/sunset.png"},{"name": "Serviços de Limpeza", "icon": "/icons/clean.png"}],
+      "description":"Há sempre um lugar onde podemos considerar Casa e desfrutar de experiências únicas de vida costeira. Os arquitectos conceberam um lar onde o luxo encontra o rústico e forma um destino de praia que vale a pena viver.\n5 QUARTOS CLIMATIZADOS\n3 WCS\n12 HÓSPEDES\nCOZINHA EQUIPADA\nSALA MOBILADA\nPISCINA PRIVADA\nÁREA DE LAZER\nÁREA DE CHURRASCO\nVISTA AO MAR\nACESSO FÁCIL À PRAIA\nLOUNGE\nSERVIÇOS DE LIMPEZA",
+       "lat":0,
+      "lng":0,
+         "reviews":[{
+      "id": 134,
+      "user_id":  36,
+      "user_name": " ",
+      "user_location": " ",
+      "Profile": "",
+      "stars": 4,
+        "categories":{
+       "Limpeza": 4.9,
+       "Conforto": 4.8,
+       "Localização": 4.7,
+       "Beleza": 4.9
+      },
+      "comment": "",
+      "date": "2025-01-26"        
+   }]  
    }
 
 ]

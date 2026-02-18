@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {useTranslation} from "react-i18next"
+import { useTranslation } from "react-i18next";
+import { useSeasonPricing } from "../context/seasonPricing.js"; // ✅ hook central
+
 export default function MinhasReservas() {
   const [activeBookings, setActiveBookings] = useState([]);
   const [canceledBookings, setCanceledBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {t} = useTranslation();
-  // Preço com base na temporada
-  const getSeasonPrice = (housePrice, checkInDate) => {
-    const month = new Date(checkInDate).getMonth() + 1;
-    const isLowSeason = month >= 2 && month <= 9;
-    return isLowSeason ? housePrice.low_season : housePrice.high_season;
-  };
+
+  const { t } = useTranslation();
+  const { getTotalPrice } = useSeasonPricing(); // ✅ usar total
 
   useEffect(() => {
     async function loadData() {
@@ -32,6 +30,7 @@ export default function MinhasReservas() {
             (b) => b.status === "confirmado" || b.status === "pendente"
           )
         );
+
         setCanceledBookings(
           joinedBookings.filter(
             (b) => b.status === "cancelado" || b.status === "canceled"
@@ -57,19 +56,26 @@ export default function MinhasReservas() {
 
   return (
     <div className="w-full max-w-4xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mt-8 mb-3">{t("bookings.myreserves")}</h1>
+      <h1 className="text-3xl font-bold mt-8 mb-3">
+        {t("bookings.myreserves")}
+      </h1>
 
       {/* RESERVAS ATIVAS */}
-      <h2 className="text-2xl font-semibold mb-4">{t("bookings.activereserves")}</h2>
+      <h2 className="text-2xl font-semibold mb-4">
+        {t("bookings.activereserves")}
+      </h2>
 
       {activeBookings.length === 0 ? (
-        <p className="text-gray-500 mb-10">{t("bookings.nonactive")}</p>
+        <p className="text-gray-500 mb-10">
+          {t("bookings.nonactive")}
+        </p>
       ) : (
         <div className="space-y-5">
           {activeBookings.map((booking) => {
-            const seasonPrice = getSeasonPrice(
+            const { formatted } = getTotalPrice(
               booking.house.price,
-              booking.startDate
+              booking.startDate,
+              booking.endDate
             );
 
             return (
@@ -84,25 +90,21 @@ export default function MinhasReservas() {
                 />
 
                 <div className="p-4 flex flex-col justify-between w-full">
-                  {/* TÍTULO */}
                   <h2 className="text-xl font-semibold">
                     {booking.house.location}
                   </h2>
 
-                  {/* DATAS */}
                   <p className="text-gray-600 text-sm mt-1">
                     {booking.startDate} → {booking.endDate}
                   </p>
 
-                  {/* PREÇO */}
                   <p className="text-gray-700 font-medium mt-3">
                     Total:{" "}
                     <span className="font-bold">
-                      {seasonPrice} {booking.house.price.currency}
+                      {formatted}
                     </span>
                   </p>
 
-                  {/* LINK VER DETALHES */}
                   <div className="mt-3 pt-3 border-t">
                     <Link
                       to={`/reservas/${booking.id}`}
@@ -118,13 +120,15 @@ export default function MinhasReservas() {
         </div>
       )}
 
-      {/* RESERVAS CANCELADAS */}
+      {/* CANCELADAS */}
       <h2 className="text-2xl font-semibold mt-12 mb-4">
-      {t("bookings.cancellation")}
+        {t("bookings.cancellation")}
       </h2>
 
       {canceledBookings.length === 0 ? (
-        <p className="text-gray-500">{t("bookings.noncancellation")}</p>
+        <p className="text-gray-500">
+          {t("bookings.noncancellation")}
+        </p>
       ) : (
         <div className="space-y-5">
           {canceledBookings.map((booking) => (
@@ -134,6 +138,7 @@ export default function MinhasReservas() {
             >
               <img
                 src={booking.house.image?.[0]}
+                alt="Casa"
                 className="w-full md:w-40 h-48 md:h-40 object-cover"
               />
 

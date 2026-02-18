@@ -4,21 +4,15 @@ import fullstar from "../assets/fullstar.png";
 import locationicon from "../assets/location.png";
 import FavoriteButton from "./FavoriteButton";
 import { useTranslation } from "react-i18next";
-import { useCurrency } from "../FormDropDown/CurrencyContext";
-import { convertPrice, formatCurrency } from "../context/utils/currencyHelpers";
+import { useSeasonPricing } from "../context/seasonPricing.js"; // ✅ novo hook
 
 const HouseCard = ({ house }) => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
-  // ✅ moeda e taxas globais
-  const { currency, rates } = useCurrency();
-
-  const getSeasonPrice = (price) => {
-    const month = new Date().getMonth() + 1;
-    const lowSeason = month >= 2 && month <= 9;
-    return lowSeason ? price.low_season : price.high_season;
-  };
+  // ✅ Hook central
+  const { getNightPrice } = useSeasonPricing();
+  const { formatted } = getNightPrice(house.price);
 
   const handleReserveClick = (e) => {
     e.preventDefault();
@@ -30,15 +24,6 @@ const HouseCard = ({ house }) => {
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 160);
   };
-
-  // ✅ cálculo do preço convertido
-  const basePrice = getSeasonPrice(house.price);
-  const convertedPrice = convertPrice(basePrice, currency, rates);
-  const formattedPrice = formatCurrency(
-    convertedPrice,
-    currency,
-    i18n.language
-  );
 
   return (
     <div className="relative bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition block">
@@ -60,7 +45,7 @@ const HouseCard = ({ house }) => {
 
         <div className="flex items-center justify-between mt-4">
           <span className="text-sm font-semibold text-gray-900">
-            {formattedPrice} / {t("favorites.night")}
+            {formatted} / {t("favorites.night")}
           </span>
 
           <div className="flex items-center text-sm text-gray-700 gap-1">

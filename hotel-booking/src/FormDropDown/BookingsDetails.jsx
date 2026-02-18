@@ -1,30 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import {useTranslation} from "react-i18next"
+import { useTranslation } from "react-i18next";
+import { useSeasonPricing } from "../context/seasonPricing"; // ✅ hook central
 
 export default function ReservaDetalhes() {
   const { id } = useParams();
   const [booking, setBooking] = useState(null);
   const [house, setHouse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const {t} = useTranslation();
 
-  const getSeasonPrice = (price) => {
-    const month = new Date().getMonth() + 1;
-    const lowSeason = month >= 2 && month <= 9;
-    return lowSeason ? price.low_season : price.high_season;
-  };
-
-  const calcDays = (start, end) => {
-    const s = new Date(start);
-    const e = new Date(end);
-    return Math.ceil((e - s) / (1000 * 60 * 60 * 24));
-  };
+  const { t } = useTranslation();
+  const { getNightPrice, getTotalPrice } = useSeasonPricing(); // ✅
 
   const formatDate = (dateString) => {
     const d = new Date(dateString);
     const day = String(d.getDate()).padStart(2, "0");
-    const month = d.toLocaleString("pt-PT", { month: "short" }).toUpperCase();
+    const month = d
+      .toLocaleString("pt-PT", { month: "short" })
+      .toUpperCase();
     return `${day} ${month}`;
   };
 
@@ -39,10 +32,14 @@ export default function ReservaDetalhes() {
       fetch("/data/bookings.json").then((res) => res.json()),
       fetch("/data/casas.json").then((res) => res.json()),
     ]).then(([bookingsData, casasData]) => {
-      const foundBooking = bookingsData.find((b) => b.id === Number(id));
+      const foundBooking = bookingsData.find(
+        (b) => b.id === Number(id)
+      );
       if (!foundBooking) return;
 
-      const foundHouse = casasData.find((c) => c.id === foundBooking.houseId);
+      const foundHouse = casasData.find(
+        (c) => c.id === foundBooking.houseId
+      );
 
       setBooking(foundBooking);
       setHouse(foundHouse);
@@ -50,26 +47,46 @@ export default function ReservaDetalhes() {
     });
   }, [id]);
 
-  if (loading) return <div className="p-10 text-center text-gray-500">{t("bookingdetails.loading")}</div>;
-  if (!booking || !house)
-    return <div className="p-10 text-center text-red-500">{t("bookingdetails.notfound")}</div>;
+  if (loading)
+    return (
+      <div className="p-10 text-center text-gray-500">
+        {t("bookingdetails.loading")}
+      </div>
+    );
 
-  const totalDays = calcDays(booking.startDate, booking.endDate);
-  const dailyPrice = getSeasonPrice(house.price);
-  const totalPrice = dailyPrice * totalDays;
+  if (!booking || !house)
+    return (
+      <div className="p-10 text-center text-red-500">
+        {t("bookingdetails.notfound")}
+      </div>
+    );
+
+  // ✅ preços centralizados
+  const { formatted: nightlyFormatted } = getNightPrice(
+    house.price,
+    booking.startDate
+  );
+
+  const { nights, formatted: totalFormatted } = getTotalPrice(
+    house.price,
+    booking.startDate,
+    booking.endDate
+  );
 
   return (
     <div className="w-full max-w-5xl mx-auto py-10 px-4">
-
-      <Link to="/minhasreservas" className="text-blue-600 underline">
+      <Link
+        to="/minhasreservas"
+        className="text-blue-600 underline"
+      >
         ← {t("bookingdetails.back")}
       </Link>
 
-      {/* Título + Status (desktop mantém, mobile separa) */}
       <div className="mt-8 flex flex-col md:flex-row md:items-center md:gap-4">
-        <h1 className="text-3xl font-bold mb-2 md:mb-0">{t("bookingdetails.details")}</h1>
+        <h1 className="text-3xl font-bold mb-2 md:mb-0">
+          {t("bookingdetails.details")}
+        </h1>
 
-        {/* STATUS abaixo do título no mobile, lado a lado no desktop */}
         <span
           className={`px-3 py-1 rounded-full text-sm font-semibold self-start md:self-center ${getStatusColor(
             booking.status
@@ -79,72 +96,83 @@ export default function ReservaDetalhes() {
         </span>
       </div>
 
-      {/* Slide de imagens */}
+      {/* Imagens */}
       <div className="w-full overflow-x-auto whitespace-nowrap rounded-xl shadow mb-10 mt-6">
         {house.image.map((img, index) => (
           <img
             key={index}
             src={img}
+            alt="Casa"
             className="inline-block w-80 h-60 object-cover mr-2 rounded-xl"
           />
         ))}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-        {/* Lado esquerdo */}
+        {/* ESQUERDA */}
         <div className="bg-white p-6 rounded-2xl shadow">
-          <h2 className="text-xl font-semibold mb-4">{t("bookingdetails.information")}</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {t("bookingdetails.information")}
+          </h2>
 
           <div className="flex items-center gap-3 mb-5">
-            <div className="text-lg font-bold">{formatDate(booking.startDate)}</div>
+            <div className="text-lg font-bold">
+              {formatDate(booking.startDate)}
+            </div>
             <div className="text-gray-500 text-xl">→</div>
-            <div className="text-lg font-bold">{formatDate(booking.endDate)}</div>
+            <div className="text-lg font-bold">
+              {formatDate(booking.endDate)}
+            </div>
           </div>
 
           <div className="space-y-3 text-gray-700">
-            <p><strong>{t("center.entrydate")}:</strong> {booking.startDate}</p>
-            <p><strong>{t("center.outdate")}:</strong> {booking.endDate}</p>
-            <p><strong>{t("center.guests")}:</strong> {booking.guests}</p>
-            <p><strong>{t("bookingdetails.nights")}:</strong> {totalDays}</p>
-          </div>
-
-          <div className="mt-6 p-4 bg-gray-100 rounded-xl">
-              <h3 className="font-semibold mb-2">{t("navbar.cancellation")}</h3>
-        <Link
-      to="/politicacancelamento"
-        onClick={() => window.scrollTo(0, 0)}
-      className="text-gray-600 underline text-sm font-semibold"
->
-{t("bookingdetails.fullpolicy")}
-</Link>
+            <p>
+              <strong>{t("center.entrydate")}:</strong>{" "}
+              {booking.startDate}
+            </p>
+            <p>
+              <strong>{t("center.outdate")}:</strong>{" "}
+              {booking.endDate}
+            </p>
+            <p>
+              <strong>{t("center.guests")}:</strong>{" "}
+              {booking.guests}
+            </p>
+            <p>
+              <strong>{t("bookingdetails.nights")}:</strong>{" "}
+              {nights}
+            </p>
           </div>
         </div>
 
-        {/* Lado direito */}
+        {/* DIREITA */}
         <div className="bg-white p-6 rounded-2xl shadow border">
-          <h2 className="text-xl font-semibold mb-4">{t("bookingdetails.summary")}</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            {t("bookingdetails.summary")}
+          </h2>
 
           <div className="flex justify-between mb-2 text-gray-700">
             <span>{t("bookingdetails.pernight")}:</span>
-            <strong>{dailyPrice} {house.price.currency}</strong>
+            <strong>{nightlyFormatted}</strong>
           </div>
 
           <div className="flex justify-between mb-2 text-gray-700">
             <span>{t("bookingdetails.nights")}:</span>
-            <strong>{totalDays}</strong>
+            <strong>{nights}</strong>
           </div>
 
           <hr className="my-3" />
 
           <div className="flex justify-between text-xl font-bold">
             <span>Total:</span>
-            <span>{totalPrice} {house.price.currency}</span>
+            <span>{totalFormatted}</span>
           </div>
 
           <button
             className="w-full mt-6 py-3 bg-gray-600 text-white rounded-xl font-semibold"
-            onClick={() => alert("O cancelamento será ligado ao backend futuramente.")}
+            onClick={() =>
+              alert("O cancelamento será ligado ao backend futuramente.")
+            }
           >
             {t("bookingdetails.cancellation")}
           </button>
