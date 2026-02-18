@@ -85,11 +85,23 @@ const PraiaBarra = () => {
 
       {/* DESKTOP */}
       <div className="hidden md:block relative w-full">
+         <button
+                  onClick={prev}
+                  className="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10"
+                >
+                  <img src={leftarrow} className="w-5 h-5" alt="Anterior" />
+                </button>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {visibleDestinos.map((house) => (
             <HouseCard key={house.id} house={house} />
           ))}
         </div>
+          <button
+                  onClick={next}
+                  className="absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10"
+                >
+                  <img src={rightarrow} className="w-5 h-5" alt="Próximo" />
+                </button>
       </div>
     </div>
   );

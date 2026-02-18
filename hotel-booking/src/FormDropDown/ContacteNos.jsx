@@ -59,7 +59,7 @@ export default function ContacteNos() {
 
         {/* INSTAGRAM */}
         <a
-          href="https://www.instagram.com/softsandsaccommodation/"
+          href="https://www.instagram.com/softsands.mz/"
           target="_blank"
           rel="noopener noreferrer"
           className="block bg-white border rounded-2xl p-5 hover:shadow transition"
