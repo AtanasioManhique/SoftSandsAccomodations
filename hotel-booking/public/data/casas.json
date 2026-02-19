@@ -61,7 +61,7 @@
 "capacity": 4,
 "description": "Localizada nas dunas e Cercada de vegetação indígena, onde o som das ondas bate à sua porta e a brisa entra pela janela , este apartamento minimalista dá boas vindas aos amantes de natureza sem sacrificar o conforto.\n\n1 Quartos Climatizados\n 4 Hóspedes\n1 1 WC\n Sala Mobilada\nCozinha Equipada\nAcesso Fácil a Praia\nServiços de Limpeza\nÁrea de Churrasco\nÁrea de Estacionamento",
 "amenities": [{ "name": "Ar-Condicionado", "icon": "/icons/air-conditioner.png"},{"name": "Cozinha Equipada", "icon": "/icons/kitchen.png"},
- {"name": "Serviço de Limpeza", "icon": "/icons/clean"}, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}, {"name": "Área de Estacionamento", "icon": "/icons/car.png"}, {"name": "Sala Mobilada", "icon": "/icons/sofa.png"}],
+ {"name": "Serviço de Limpeza", "icon": "/icons/clean.png"}, {"name": "Área de Churrasco", "icon": "/icons/barbecue.png"}, {"name": "Área de Estacionamento", "icon": "/icons/car.png"}, {"name": "Sala Mobilada", "icon": "/icons/sofa.png"}],
   "lat": -26.843905956357048,
    "lng": 32.88922589794097,
    "reviews":[{

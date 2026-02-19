@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import locationicon from "../assets/location.png";
 import fullstar from "../assets/fullstar.png";
@@ -6,20 +6,26 @@ import GaleriaCasa from "./GaleriaCasa";
 import HouseReviews from "./HouseReviews";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { useTranslation } from "react-i18next";
-import { useSeasonPricing } from "../context/seasonPricing"; // ✅ NOVO
+import { useSeasonPricing } from "../context/seasonPricing";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Calendar } from "lucide-react";
 
 const HouseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
- const { getTotalPrice, getNightPrice } = useSeasonPricing();
-
+  const { getTotalPrice, getNightPrice } = useSeasonPricing();
 
   const [house, setHouse] = useState(null);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
   const [maxGuests, setMaxGuests] = useState(1);
+
+  // ✅ NOVO (datepicker)
+  const [activeField, setActiveField] = useState(null);
+  const datepickerRef = useRef(null);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: "SUA_API_KEY_AQUI",
@@ -39,21 +45,16 @@ const HouseDetails = () => {
 
   if (!house) return null;
 
-  // ✅ preço calculado centralizado
-    // 🔹 preço por noite (mostrar inicialmente)
-const { formatted: nightFormatted } = getNightPrice(
-  house.price,
-  new Date()
-);
+  const { formatted: nightFormatted } = getNightPrice(
+    house.price,
+    new Date()
+  );
 
-// 🔹 verificar se tem datas selecionadas
-const hasDates = checkIn && checkOut;
+  const hasDates = checkIn && checkOut;
 
-// 🔹 calcular total apenas se tiver datas
-const totalData = hasDates
-  ? getTotalPrice(house.price, checkIn, checkOut)
-  : null;
-
+  const totalData = hasDates
+    ? getTotalPrice(house.price, checkIn, checkOut)
+    : null;
 
   const handleReserve = () => {
     if (!checkIn || !checkOut) {
@@ -79,7 +80,7 @@ const totalData = hasDates
       startDate: checkIn,
       endDate: checkOut,
       guests,
-      totalPrice: converted, // ✅ valor já convertido
+      totalPrice: totalData?.formatted,
       status: "pendente",
     };
 
@@ -108,6 +109,31 @@ const totalData = hasDates
 
       <GaleriaCasa casa={house} />
 
+      {/* Amenities */}
+      {house.amenities && house.amenities.length > 0 && (
+        <div className="border-b pb-8">
+          <h2 className="text-xl font-semibold mb-6">
+            O que esta casa oferece:
+          </h2>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            {house.amenities.map((amenity, index) => (
+              <div key={index} className="flex items-center gap-3">
+                <img
+                  src={amenity.icon}
+                  alt={amenity.name}
+                  className="w-6 h-6 object-contain"
+                />
+                <span className="text-gray-700 text-sm sm:text-base">
+                  {amenity.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Descrição */}
       <div>
         <h2 className="text-xl font-semibold mb-2">Descrição</h2>
         <p className="leading-relaxed whitespace-pre-line">
@@ -115,40 +141,59 @@ const totalData = hasDates
         </p>
       </div>
 
+      {/* Reserva */}
       <div id="reserveid" className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-4 rounded-lg shadow-md border">
 
-          {/* ✅ PREÇO CENTRALIZADO */}
-           <div className="font-bold text-xl mb-3">
-                {hasDates
-                  ? `${totalData.formatted} · ${totalData.nights} ${t("bookingdetails.nights")}`
-                  : `${nightFormatted} / ${t("favorites.night")}`}
-              </div>
+          <div className="font-bold text-xl mb-3">
+            {hasDates
+              ? `${totalData.formatted} · ${totalData.nights} ${t("bookingdetails.nights")}`
+              : `${nightFormatted} / ${t("favorites.night")}`}
+          </div>
 
           <div className="border rounded-lg overflow-hidden mb-4">
             <div className="grid grid-cols-2 divide-x">
+              
+              {/* Entrada */}
               <div className="p-2">
                 <label className="text-xs font-semibold uppercase text-gray-600">
                   {t("center.entrydate")}
                 </label>
-                <input
-                  type="date"
-                  className="w-full"
-                  value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
-                />
+                <div
+                  onClick={() => {
+                    setActiveField("start");
+                    datepickerRef.current.setOpen(true);
+                  }}
+                  className="flex items-center justify-between cursor-pointer"
+                >
+                  <span>
+                    {checkIn
+                      ? new Date(checkIn).toLocaleDateString()
+                      : "dd/mm/yyyy"}
+                  </span>
+                  <Calendar size={16} />
+                </div>
               </div>
 
+              {/* Saída */}
               <div className="p-2">
                 <label className="text-xs font-semibold uppercase text-gray-600">
                   {t("center.outdate")}
                 </label>
-                <input
-                  type="date"
-                  className="w-full"
-                  value={checkOut}
-                  onChange={(e) => setCheckOut(e.target.value)}
-                />
+                <div
+                  onClick={() => {
+                    setActiveField("end");
+                    datepickerRef.current.setOpen(true);
+                  }}
+                  className="flex items-center justify-between cursor-pointer"
+                >
+                  <span>
+                    {checkOut
+                      ? new Date(checkOut).toLocaleDateString()
+                      : "dd/mm/yyyy"}
+                  </span>
+                  <Calendar size={16} />
+                </div>
               </div>
             </div>
 
@@ -194,6 +239,44 @@ const totalData = hasDates
           )}
         </div>
       </div>
+
+      {/* DatePicker */}
+      <DatePicker
+        ref={datepickerRef}
+        selected={
+          activeField === "start"
+            ? checkIn
+              ? new Date(checkIn)
+              : null
+            : checkOut
+            ? new Date(checkOut)
+            : null
+        }
+        onChange={(date) => {
+          if (activeField === "start") {
+            const formatted = date.toISOString().split("T")[0];
+            setCheckIn(formatted);
+
+            if (checkOut && new Date(formatted) > new Date(checkOut)) {
+              setCheckOut("");
+            }
+          } else {
+            if (!checkIn || date >= new Date(checkIn)) {
+              const formatted = date.toLocaleDateString("en-CA");
+              setCheckOut(formatted);
+            }
+          }
+
+          datepickerRef.current.setOpen(false);
+        }}
+        minDate={
+          activeField === "end" && checkIn
+            ? new Date(checkIn)
+            : new Date()
+        }
+        withPortal
+        className="hidden"
+      />
 
       <HouseReviews house={house} />
     </div>
