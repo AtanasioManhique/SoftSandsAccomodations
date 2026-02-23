@@ -23,7 +23,6 @@ const HouseDetails = () => {
   const [guests, setGuests] = useState(1);
   const [maxGuests, setMaxGuests] = useState(1);
 
-  // ✅ NOVO (datepicker)
   const [activeField, setActiveField] = useState(null);
   const datepickerRef = useRef(null);
 
@@ -35,15 +34,36 @@ const HouseDetails = () => {
     fetch("/data/casas.json")
       .then((res) => res.json())
       .then((data) => {
-        const selectedHouse = data.find((h) => h.id === Number(id));
+        const casasArray = Array.isArray(data) ? data : data.casas;
+
+        if (!Array.isArray(casasArray)) {
+          console.error("Formato inválido no casas.json");
+          return;
+        }
+
+        const selectedHouse = casasArray.find(
+          (h) => h.id === Number(id)
+        );
+
         if (selectedHouse) {
           setHouse(selectedHouse);
           setMaxGuests(selectedHouse.capacity || 1);
         }
-      });
+      })
+      .catch((err) =>
+        console.error("Erro ao carregar casa:", err)
+      );
   }, [id]);
 
   if (!house) return null;
+
+  // 🔥 COORDENADAS CORRIGIDAS
+  const lat = Number(house.coordinates?.lat);
+  const lng = Number(house.coordinates?.lng);
+
+  const hasCoordinates =
+    Number.isFinite(lat) &&
+    Number.isFinite(lng);
 
   const { formatted: nightFormatted } = getNightPrice(
     house.price,
@@ -109,7 +129,6 @@ const HouseDetails = () => {
 
       <GaleriaCasa casa={house} />
 
-      {/* Amenities */}
       {house.amenities && house.amenities.length > 0 && (
         <div className="border-b pb-8">
           <h2 className="text-xl font-semibold mb-6">
@@ -133,7 +152,6 @@ const HouseDetails = () => {
         </div>
       )}
 
-      {/* Descrição */}
       <div>
         <h2 className="text-xl font-semibold mb-2">Descrição</h2>
         <p className="leading-relaxed whitespace-pre-line">
@@ -141,10 +159,8 @@ const HouseDetails = () => {
         </p>
       </div>
 
-      {/* Reserva */}
       <div id="reserveid" className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-4 rounded-lg shadow-md border">
-
           <div className="font-bold text-xl mb-3">
             {hasDates
               ? `${totalData.formatted} · ${totalData.nights} ${t("bookingdetails.nights")}`
@@ -153,8 +169,6 @@ const HouseDetails = () => {
 
           <div className="border rounded-lg overflow-hidden mb-4">
             <div className="grid grid-cols-2 divide-x">
-              
-              {/* Entrada */}
               <div className="p-2">
                 <label className="text-xs font-semibold uppercase text-gray-600">
                   {t("center.entrydate")}
@@ -175,7 +189,6 @@ const HouseDetails = () => {
                 </div>
               </div>
 
-              {/* Saída */}
               <div className="p-2">
                 <label className="text-xs font-semibold uppercase text-gray-600">
                   {t("center.outdate")}
@@ -208,7 +221,8 @@ const HouseDetails = () => {
               >
                 {[...Array(maxGuests)].map((_, i) => (
                   <option key={i + 1} value={i + 1}>
-                    {i + 1} {t("center.guests")}{i + 1 > 1 ? "s" : ""}
+                    {i + 1} {t("center.guests")}
+                    {i + 1 > 1 ? "s" : ""}
                   </option>
                 ))}
               </select>
@@ -223,24 +237,41 @@ const HouseDetails = () => {
           </button>
         </div>
 
-        <div className="h-64 rounded-lg overflow-hidden shadow-md">
-          {isLoaded ? (
-            <GoogleMap
-              zoom={15}
-              center={{ lat: house.lat, lng: house.lng }}
-              mapContainerStyle={{ width: "100%", height: "100%" }}
-            >
-              <Marker position={{ lat: house.lat, lng: house.lng }} />
-            </GoogleMap>
+        {/* MAPA CORRIGIDO */}
+        <div className="h-64 rounded-lg overflow-hidden shadow-md flex items-center justify-center bg-gray-50">
+          {hasCoordinates ? (
+            isLoaded ? (
+              <GoogleMap
+                zoom={15}
+                center={{ lat, lng }}
+                mapContainerStyle={{ width: "100%", height: "100%" }}
+              >
+                <Marker position={{ lat, lng }} />
+              </GoogleMap>
+            ) : (
+              <p className="text-gray-500">
+                {t("center.loading")}
+              </p>
+            )
           ) : (
-            <p className="text-center mt-10 text-gray-500">
-              {t("center.loading")}
-            </p>
+            <div className="text-center px-6">
+              <p className="text-gray-600 mb-2 font-medium">
+                {t("location.avalaibilty")}
+              </p>
+              <p className="text-sm text-gray-500">
+                {t("location.info")},{" "}
+                <span
+                  onClick={() => navigate("/contactenos")}
+                  className="text-blue-600 underline cursor-pointer"
+                >
+                  {t("location.contacte")}
+                </span>
+              </p>
+            </div>
           )}
         </div>
       </div>
 
-      {/* DatePicker */}
       <DatePicker
         ref={datepickerRef}
         selected={

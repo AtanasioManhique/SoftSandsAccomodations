@@ -137,7 +137,7 @@ export default function ReserveAgora() {
               <strong>{t("center.guests")}:</strong> {guests}
             </p>
             <p>
-              <strong>Total:</strong> {totalPrice} {house.price.currency}
+              <strong>Total:</strong> {totalPrice} 
             </p>
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function ReserveAgora() {
 
             <div className="mt-3 p-3 bg-gray-100 rounded-lg">
               <p className="font-semibold">{t("reservenow.totalprice")}</p>
-              <p className="text-xl font-bold">{totalPrice} {house.price.currency}</p>
+              <p className="text-xl font-bold">{totalPrice} </p>
             </div>
           </div>
         </div>

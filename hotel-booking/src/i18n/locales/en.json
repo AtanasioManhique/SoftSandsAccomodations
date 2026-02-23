@@ -364,6 +364,11 @@
        "Conforto": "Comfort",
        "Localização": "Location",
        "Beleza": "Beauty"
+      },
+      "location":{
+        "avalaibilty": "Location unavailable",
+        "info": "For more information",
+        "contacte":"contact us"
       }
     
      
