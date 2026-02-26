@@ -1,6 +1,5 @@
 import { useState } from "react";
 import PaymentMethods from "./PaymentMethods";
-import PaymentCardForm from "./PaymentCardForm";
 import {useTranslation} from "react-i18next"
 
 export default function Payments() {

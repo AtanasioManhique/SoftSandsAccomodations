@@ -141,7 +141,9 @@
             "choice": "Escolher método de pagamento",
             "selected": "Método selecionado",
             "details": "Detalhes da Reserva",
-            "totalprice": "Preço total"           
+            "totalprice": "Preço total",
+            "processing": "A processar...",
+            "processingMsg": "A confirmar o seu pagamento..."         
         },
         "testimonial":{
             "title":"O que nossos hóspedes dizem",
@@ -365,7 +367,8 @@
       "location":{
         "avalaibilty": "Localização indisponível",
         "info": "Para mais informações",
-        "contacte":"contacte-nos"
+        "contacte":"contacte-nos",
+        "method": "Escolha o método de pagamento"
       }
       
     }

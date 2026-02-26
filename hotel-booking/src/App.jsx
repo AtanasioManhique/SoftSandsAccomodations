@@ -21,7 +21,7 @@ import ReserveAgora from "./components/ReserveNow"
 import TermosECondicoes from "./FormDropDown/Termsandconditions"
 import PoliticaCancelamento from "./FormDropDown/PoliticaCancelamento"
 import ContacteNos from "./FormDropDown/ContacteNos"
-
+import PaymentConfirmation from "./Payments/paymentConfirmation"
 
 function App() {
 
@@ -36,10 +36,10 @@ function App() {
   
         <FavoriteProvider>
 
-          <div>
+          <div className="flex flex-col min-h-screen">
             <Navbar />
 
-            <div className='min-h-[70vh]'>
+            <div className='flex-1'>
               <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path="/login" element={<LoginPage />} />
@@ -56,6 +56,7 @@ function App() {
                 <Route path="/favoritos" element={<FavoritesPage />} />
                 <Route path='/casas/:id' element={<HouseDetails />} />
                 <Route path='/sobre' element={<About />} />
+                <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
               </Routes>
             </div>
 

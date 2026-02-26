@@ -14,12 +14,9 @@ import { AuthProvider } from "./context/AuthContext";
 
 
 // Import your Publishable Key
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
 const Client_ID = "825997502039-e18bllidgaoedpmr24o107qpkd7t26ag.apps.googleusercontent.com"
 
-if (!PUBLISHABLE_KEY) {
-  throw new Error('Add your Clerk Publishable Key to the .env file')
-}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
