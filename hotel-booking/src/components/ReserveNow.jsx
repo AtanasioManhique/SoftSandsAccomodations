@@ -6,6 +6,18 @@ import { usePayment } from "../Payments/usePayments";
 import PaymentMethods from "../FormDropDown/PaymentMethods";
 import fullstar from "../assets/fullstar.png";
 
+// Mensagens por fase do pagamento
+const statusMessages = {
+  verifying: {
+    label: "A verificar método de pagamento...",
+    sublabel: "Estamos a validar os seus dados.",
+  },
+  reserving: {
+    label: "A reservar o valor...",
+    sublabel: "O valor será reservado mas não debitado agora.",
+  },
+};
+
 export default function ReserveAgora() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,7 +25,6 @@ export default function ReserveAgora() {
   const { t } = useTranslation();
   const { processPayment, status, errorMessage } = usePayment();
 
-  // ── Dados da reserva ──────────────────────────────────────
   const stateData = location.state || {};
   const stored = JSON.parse(localStorage.getItem("preReserva")) || {};
 
@@ -23,18 +34,16 @@ export default function ReserveAgora() {
   const guests     = stateData.guests     || stored.guests;
   const totalPrice = stateData.totalPrice || stored.totalPrice;
 
-  const [house, setHouse]               = useState(null);
-  const [showMethods, setShowMethods]   = useState(false);
+  const [house, setHouse]             = useState(null);
+  const [showMethods, setShowMethods] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(null);
 
-  // Guardar pré-reserva
   useEffect(() => {
     if (houseId && startDate && endDate && totalPrice) {
       localStorage.setItem("preReserva", JSON.stringify({ houseId, startDate, endDate, guests, totalPrice }));
     }
   }, [houseId, startDate, endDate, guests, totalPrice]);
 
-  // Buscar dados da casa
   useEffect(() => {
     fetch("/data/casas.json")
       .then((res) => res.json())
@@ -44,7 +53,6 @@ export default function ReserveAgora() {
       });
   }, [houseId]);
 
-  // ── Handler de pagamento ──────────────────────────────────
   const handleSelectMethod = async (method) => {
     setSelectedMethod(method);
     setShowMethods(false);
@@ -52,13 +60,11 @@ export default function ReserveAgora() {
     const result = await processPayment({ houseId, startDate, endDate, guests, totalPrice, method });
 
     if (result.success) {
-      // Limpa a pré-reserva e navega para a página de confirmação
       localStorage.removeItem("preReserva");
       navigate("/payment-confirmation", { state: result.data });
     }
   };
 
-  // ── Guards ────────────────────────────────────────────────
   if (!houseId || !startDate || !endDate || !totalPrice) {
     return (
       <div className="min-h-screen flex justify-center items-center">
@@ -73,7 +79,8 @@ export default function ReserveAgora() {
     );
   }
 
-  const isLoading = status === "loading";
+  const isLoading = status === "verifying" || status === "reserving";
+  const currentMessage = statusMessages[status];
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 pt-30">
@@ -81,31 +88,49 @@ export default function ReserveAgora() {
 
       <div className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6">
 
-        {/* ── Coluna esquerda: pagamento ── */}
+        {/* ── Coluna esquerda ── */}
         <div className="bg-white p-5 rounded-xl shadow-sm space-y-5 border">
           <h2 className="text-lg font-semibold">{t("reservenow.method")}</h2>
+
+          {/* Aviso de pré-autorização */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 leading-relaxed">
+            <strong>Como funciona?</strong> O valor será apenas <strong>reservado</strong> no seu método de pagamento e não debitado imediatamente. O débito ocorre somente após a confirmação da reserva pelo administrador.
+          </div>
 
           <button
             onClick={() => !isLoading && setShowMethods(true)}
             disabled={isLoading}
             className="w-full py-3 rounded-lg font-semibold text-white bg-black hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? t("reservenow.processing") || "A processar..." : t("location.method")}
+            {isLoading ? "A processar..." : t("location.method")}
           </button>
 
-          {/* Loading spinner */}
-          {isLoading && (
-            <div className="flex flex-col items-center gap-2 py-2">
+          {/* Loading com fases */}
+          {isLoading && currentMessage && (
+            <div className="flex flex-col items-center gap-3 py-2">
               <div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-gray-500">
-                {t("reservenow.processingMsg") || "A confirmar o seu pagamento..."}
+              <div className="text-center">
+                <p className="text-sm font-semibold text-gray-800">{currentMessage.label}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{currentMessage.sublabel}</p>
+              </div>
+
+              {/* Barra de progresso visual */}
+              <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div
+                  className={`h-1.5 rounded-full bg-black transition-all duration-700 ${
+                    status === "verifying" ? "w-1/2" : "w-full"
+                  }`}
+                />
+              </div>
+              <p className="text-xs text-gray-400">
+                {status === "verifying" ? "Passo 1 de 2" : "Passo 2 de 2"}
               </p>
             </div>
           )}
 
           {/* Método selecionado */}
           {selectedMethod && !isLoading && (
-            <p className="text-gray-700">
+            <p className="text-gray-700 text-sm">
               {t("reservenow.selected")}:
               <span className="font-semibold ml-1">{selectedMethod}</span>
             </p>
@@ -143,7 +168,6 @@ export default function ReserveAgora() {
         </div>
       </div>
 
-      {/* ── Modal de métodos ── */}
       {showMethods && (
         <PaymentMethods
           onClose={() => setShowMethods(false)}

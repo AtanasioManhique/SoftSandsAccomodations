@@ -10,19 +10,22 @@ import { useSeasonPricing } from "../context/seasonPricing";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useLoginModal } from "../context/LoginModalContext";
 
 const HouseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { getTotalPrice, getNightPrice } = useSeasonPricing();
+  const { user } = useAuth();
+  const { openLogin } = useLoginModal();
 
   const [house, setHouse] = useState(null);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
   const [maxGuests, setMaxGuests] = useState(1);
-
   const [activeField, setActiveField] = useState(null);
   const datepickerRef = useRef(null);
 
@@ -41,42 +44,36 @@ const HouseDetails = () => {
           return;
         }
 
-        const selectedHouse = casasArray.find(
-          (h) => h.id === Number(id)
-        );
+        const selectedHouse = casasArray.find((h) => h.id === Number(id));
 
         if (selectedHouse) {
           setHouse(selectedHouse);
           setMaxGuests(selectedHouse.capacity || 1);
         }
       })
-      .catch((err) =>
-        console.error("Erro ao carregar casa:", err)
-      );
+      .catch((err) => console.error("Erro ao carregar casa:", err));
   }, [id]);
 
   if (!house) return null;
 
-  // 🔥 COORDENADAS CORRIGIDAS
   const lat = Number(house.coordinates?.lat);
   const lng = Number(house.coordinates?.lng);
+  const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
 
-  const hasCoordinates =
-    Number.isFinite(lat) &&
-    Number.isFinite(lng);
-
-  const { formatted: nightFormatted } = getNightPrice(
-    house.price,
-    new Date()
-  );
-
+  const { formatted: nightFormatted } = getNightPrice(house.price, new Date());
   const hasDates = checkIn && checkOut;
-
-  const totalData = hasDates
-    ? getTotalPrice(house.price, checkIn, checkOut)
-    : null;
+  const totalData = hasDates ? getTotalPrice(house.price, checkIn, checkOut) : null;
 
   const handleReserve = () => {
+    // ── Verificar autenticação ────────────────────────────
+    // Se o utilizador não estiver logado, abre o modal de login
+    // em vez de navegar para o pagamento.
+    if (!user) {
+      openLogin();
+      return;
+    }
+    // ─────────────────────────────────────────────────────
+
     if (!checkIn || !checkOut) {
       alert("Por favor selecione datas antes de reservar.");
       return;
@@ -104,10 +101,6 @@ const HouseDetails = () => {
       status: "pendente",
     };
 
-    const stored = JSON.parse(localStorage.getItem("reservas")) || [];
-    stored.push(reserva);
-    localStorage.setItem("reservas", JSON.stringify(stored));
-
     navigate(`/pagamento/${reserva.id}`, { state: reserva });
   };
 
@@ -118,9 +111,7 @@ const HouseDetails = () => {
           <span>{house.rating}</span>
           <img src={fullstar} className="w-5 h-5" alt="star" />
         </div>
-
         <span className="text-gray-400">•</span>
-
         <div className="flex items-center gap-1">
           <img src={locationicon} className="w-4 h-4" alt="location" />
           <span>{house.location}</span>
@@ -131,21 +122,12 @@ const HouseDetails = () => {
 
       {house.amenities && house.amenities.length > 0 && (
         <div className="border-b pb-8">
-          <h2 className="text-xl font-semibold mb-6">
-            O que esta casa oferece:
-          </h2>
-
+          <h2 className="text-xl font-semibold mb-6">O que esta casa oferece:</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {house.amenities.map((amenity, index) => (
               <div key={index} className="flex items-center gap-3">
-                <img
-                  src={amenity.icon}
-                  alt={amenity.name}
-                  className="w-6 h-6 object-contain"
-                />
-                <span className="text-gray-700 text-sm sm:text-base">
-                  {amenity.name}
-                </span>
+                <img src={amenity.icon} alt={amenity.name} className="w-6 h-6 object-contain" />
+                <span className="text-gray-700 text-sm sm:text-base">{amenity.name}</span>
               </div>
             ))}
           </div>
@@ -154,9 +136,7 @@ const HouseDetails = () => {
 
       <div>
         <h2 className="text-xl font-semibold mb-2">Descrição</h2>
-        <p className="leading-relaxed whitespace-pre-line">
-          {house.description}
-        </p>
+        <p className="leading-relaxed whitespace-pre-line">{house.description}</p>
       </div>
 
       <div id="reserveid" className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -174,17 +154,10 @@ const HouseDetails = () => {
                   {t("center.entrydate")}
                 </label>
                 <div
-                  onClick={() => {
-                    setActiveField("start");
-                    datepickerRef.current.setOpen(true);
-                  }}
+                  onClick={() => { setActiveField("start"); datepickerRef.current.setOpen(true); }}
                   className="flex items-center justify-between cursor-pointer"
                 >
-                  <span>
-                    {checkIn
-                      ? new Date(checkIn).toLocaleDateString()
-                      : "dd/mm/yyyy"}
-                  </span>
+                  <span>{checkIn ? new Date(checkIn).toLocaleDateString() : "dd/mm/yyyy"}</span>
                   <Calendar size={16} />
                 </div>
               </div>
@@ -194,17 +167,10 @@ const HouseDetails = () => {
                   {t("center.outdate")}
                 </label>
                 <div
-                  onClick={() => {
-                    setActiveField("end");
-                    datepickerRef.current.setOpen(true);
-                  }}
+                  onClick={() => { setActiveField("end"); datepickerRef.current.setOpen(true); }}
                   className="flex items-center justify-between cursor-pointer"
                 >
-                  <span>
-                    {checkOut
-                      ? new Date(checkOut).toLocaleDateString()
-                      : "dd/mm/yyyy"}
-                  </span>
+                  <span>{checkOut ? new Date(checkOut).toLocaleDateString() : "dd/mm/yyyy"}</span>
                   <Calendar size={16} />
                 </div>
               </div>
@@ -221,8 +187,7 @@ const HouseDetails = () => {
               >
                 {[...Array(maxGuests)].map((_, i) => (
                   <option key={i + 1} value={i + 1}>
-                    {i + 1} {t("center.guests")}
-                    {i + 1 > 1 ? "s" : ""}
+                    {i + 1} {t("center.guests")}{i + 1 > 1 ? "s" : ""}
                   </option>
                 ))}
               </select>
@@ -231,13 +196,14 @@ const HouseDetails = () => {
 
           <button
             onClick={handleReserve}
-            className="w-full bg-gray-800 text-white py-3 rounded-lg font-semibold"
+            className="w-full bg-gray-800 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition"
           >
-            {t("center.reserve")}
+            {/* Muda o texto consoante o estado de autenticação */}
+            {user ? t("center.reserve") : t("center.reserve")}
           </button>
         </div>
 
-        {/* MAPA CORRIGIDO */}
+        {/* MAPA */}
         <div className="h-64 rounded-lg overflow-hidden shadow-md flex items-center justify-center bg-gray-50">
           {hasCoordinates ? (
             isLoaded ? (
@@ -249,15 +215,11 @@ const HouseDetails = () => {
                 <Marker position={{ lat, lng }} />
               </GoogleMap>
             ) : (
-              <p className="text-gray-500">
-                {t("center.loading")}
-              </p>
+              <p className="text-gray-500">{t("center.loading")}</p>
             )
           ) : (
             <div className="text-center px-6">
-              <p className="text-gray-600 mb-2 font-medium">
-                {t("location.avalaibilty")}
-              </p>
+              <p className="text-gray-600 mb-2 font-medium">{t("location.avalaibilty")}</p>
               <p className="text-sm text-gray-500">
                 {t("location.info")},{" "}
                 <span
@@ -276,35 +238,22 @@ const HouseDetails = () => {
         ref={datepickerRef}
         selected={
           activeField === "start"
-            ? checkIn
-              ? new Date(checkIn)
-              : null
-            : checkOut
-            ? new Date(checkOut)
-            : null
+            ? checkIn ? new Date(checkIn) : null
+            : checkOut ? new Date(checkOut) : null
         }
         onChange={(date) => {
           if (activeField === "start") {
             const formatted = date.toISOString().split("T")[0];
             setCheckIn(formatted);
-
-            if (checkOut && new Date(formatted) > new Date(checkOut)) {
-              setCheckOut("");
-            }
+            if (checkOut && new Date(formatted) > new Date(checkOut)) setCheckOut("");
           } else {
             if (!checkIn || date >= new Date(checkIn)) {
-              const formatted = date.toLocaleDateString("en-CA");
-              setCheckOut(formatted);
+              setCheckOut(date.toLocaleDateString("en-CA"));
             }
           }
-
           datepickerRef.current.setOpen(false);
         }}
-        minDate={
-          activeField === "end" && checkIn
-            ? new Date(checkIn)
-            : new Date()
-        }
+        minDate={activeField === "end" && checkIn ? new Date(checkIn) : new Date()}
         withPortal
         className="hidden"
       />

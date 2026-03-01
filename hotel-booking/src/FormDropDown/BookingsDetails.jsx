@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useSeasonPricing } from "../context/seasonPricing";
+import { useAuth } from "../context/AuthContext";
 
 export default function ReservaDetalhes() {
   const { id } = useParams();
@@ -13,7 +13,11 @@ export default function ReservaDetalhes() {
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   const { t } = useTranslation();
-  const { getNightPrice, getTotalPrice } = useSeasonPricing();
+  const { user } = useAuth();
+
+  // Chave única por utilizador
+  // BACKEND: Remover quando as reservas vierem da API
+  const storageKey = user?.email ? `minhasReservas_${user.email}` : "minhasReservas_guest";
 
   const formatDate = (dateString) => {
     const d = new Date(dateString);
@@ -35,7 +39,9 @@ export default function ReservaDetalhes() {
 
         // ─────────────────────────────────────────────────────
         // BACKEND: Substituir toda esta lógica por:
-        // const res = await fetch(`/api/reservas/${id}`);
+        // const res = await fetch(`/api/reservas/${id}`, {
+        //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        // });
         // const foundBooking = await res.json();
         // ─────────────────────────────────────────────────────
 
@@ -48,8 +54,8 @@ export default function ReservaDetalhes() {
           return;
         }
 
-        // 2. Fallback: procurar no localStorage pelo id
-        const reservasLocais = JSON.parse(localStorage.getItem("minhasReservas")) || [];
+        // 2. Fallback: procurar no localStorage do utilizador atual
+        const reservasLocais = JSON.parse(localStorage.getItem(storageKey)) || [];
         const localBooking = reservasLocais.find((r) => r.id === id);
 
         if (localBooking) {
@@ -68,20 +74,22 @@ export default function ReservaDetalhes() {
     }
 
     loadData();
-  }, [id, location.state]);
+  }, [id, location.state, storageKey]);
 
   // ── Cancelar reserva ──────────────────────────────────────
   function handleCancelar() {
     // ─────────────────────────────────────────────────────
     // BACKEND: Substituir por:
-    // await fetch(`/api/reservas/${booking.id}/cancelar`, { method: "PATCH" });
-    // Após confirmação do servidor, atualizar o estado local.
+    // await fetch(`/api/reservas/${booking.id}/cancelar`, {
+    //   method: "PATCH",
+    //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    // });
     // ─────────────────────────────────────────────────────
-    const reservas = JSON.parse(localStorage.getItem("minhasReservas")) || [];
+    const reservas = JSON.parse(localStorage.getItem(storageKey)) || [];
     const atualizadas = reservas.map((r) =>
       r.id === booking.id ? { ...r, status: "cancelado" } : r
     );
-    localStorage.setItem("minhasReservas", JSON.stringify(atualizadas));
+    localStorage.setItem(storageKey, JSON.stringify(atualizadas));
 
     setBooking((prev) => ({ ...prev, status: "cancelado" }));
     setShowCancelModal(false);
@@ -103,9 +111,7 @@ export default function ReservaDetalhes() {
       </Link>
 
       <div className="mt-8 flex flex-col md:flex-row md:items-center md:gap-4">
-        <h1 className="text-3xl font-bold mb-2 md:mb-0">
-          {t("bookingdetails.details")}
-        </h1>
+        <h1 className="text-3xl font-bold mb-2 md:mb-0">{t("bookingdetails.details")}</h1>
         <span className={`px-3 py-1 rounded-full text-sm font-semibold self-start md:self-center ${getStatusColor(booking.status)}`}>
           {booking.status.toUpperCase()}
         </span>
@@ -126,12 +132,8 @@ export default function ReservaDetalhes() {
       {/* Imagens */}
       <div className="w-full overflow-x-auto whitespace-nowrap rounded-xl shadow mb-10 mt-6">
         {house.image.map((img, index) => (
-          <img
-            key={index}
-            src={img}
-            alt="Casa"
-            className="inline-block w-80 h-60 object-cover mr-2 rounded-xl"
-          />
+          <img key={index} src={img} alt="Casa"
+            className="inline-block w-80 h-60 object-cover mr-2 rounded-xl" />
         ))}
       </div>
 
@@ -172,21 +174,15 @@ export default function ReservaDetalhes() {
             <span>{booking.totalPrice}</span>
           </div>
 
-          {/* Botão cancelar — só aparece se não estiver já cancelada */}
           {!isCanceled && (
-            <button
-              onClick={() => setShowCancelModal(true)}
-              className="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition"
-            >
+            <button onClick={() => setShowCancelModal(true)}
+              className="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition">
               {t("bookingdetails.cancellation")}
             </button>
           )}
 
-          {/* Link para política de cancelamento — bem destacado */}
-          <Link
-            to="/politicacancelamento"
-            className="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-gray-300 hover:border-black rounded-xl text-sm font-semibold text-gray-700 hover:text-black transition"
-          >
+          <Link to="/politicacancelamento"
+            className="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-gray-300 hover:border-black rounded-xl text-sm font-semibold text-gray-700 hover:text-black transition">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
@@ -195,7 +191,7 @@ export default function ReservaDetalhes() {
         </div>
       </div>
 
-      {/* Modal de confirmação de cancelamento */}
+      {/* Modal cancelamento */}
       {showCancelModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 space-y-4 text-center">
@@ -206,31 +202,19 @@ export default function ReservaDetalhes() {
                 </svg>
               </div>
             </div>
-
             <h2 className="text-xl font-bold text-gray-900">Cancelar reserva?</h2>
-            <p className="text-gray-500 text-sm">
-              Tem a certeza que deseja cancelar esta reserva? Esta ação não pode ser desfeita.
-            </p>
-
-            <Link
-              to="/politicacancelamento"
-              className="block text-sm text-blue-600 underline"
-              onClick={() => setShowCancelModal(false)}
-            >
+            <p className="text-gray-500 text-sm">Tem a certeza que deseja cancelar? Esta ação não pode ser desfeita.</p>
+            <Link to="/politicacancelamento" className="block text-sm text-blue-600 underline"
+              onClick={() => setShowCancelModal(false)}>
               Consultar política de cancelamento antes de decidir
             </Link>
-
             <div className="flex gap-3 pt-2">
-              <button
-                onClick={() => setShowCancelModal(false)}
-                className="flex-1 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-gray-400 transition"
-              >
+              <button onClick={() => setShowCancelModal(false)}
+                className="flex-1 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-gray-400 transition">
                 Voltar
               </button>
-              <button
-                onClick={handleCancelar}
-                className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition"
-              >
+              <button onClick={handleCancelar}
+                className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition">
                 Confirmar cancelamento
               </button>
             </div>

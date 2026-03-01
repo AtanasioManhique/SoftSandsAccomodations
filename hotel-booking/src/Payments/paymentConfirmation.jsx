@@ -1,16 +1,13 @@
 // pages/PaymentConfirmation.jsx
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 
 export default function PaymentConfirmation() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   const data = location.state;
 
-  // Se chegar aqui sem dados (ex: acesso direto ao URL), redireciona
   if (!data) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
@@ -46,8 +43,30 @@ export default function PaymentConfirmation() {
         </div>
 
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Pagamento confirmado!</h1>
-          <p className="text-gray-500 text-xs mt-1">A sua reserva foi registada com sucesso.</p>
+          <h1 className="text-xl font-bold text-gray-900">Valor reservado!</h1>
+          <p className="text-gray-500 text-xs mt-1">
+            O pedido de reserva foi submetido com sucesso.
+          </p>
+        </div>
+
+        {/* Banner informativo de pré-autorização */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-left space-y-1">
+          <p className="text-xs font-semibold text-blue-800">💳 Pré-autorização realizada</p>
+          <p className="text-xs text-blue-700 leading-relaxed">
+            O valor de <strong>{data.totalPrice}</strong> foi <strong>reservado</strong> no seu método de pagamento mas <strong>não foi debitado</strong>. O débito ocorrerá apenas após a confirmação pelo administrador.
+          </p>
+        </div>
+
+        {/* Banner pendente */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-left space-y-1">
+          <p className="text-xs font-semibold text-yellow-800">⏳ Aguarda confirmação</p>
+          <p className="text-xs text-yellow-700 leading-relaxed">
+            A sua reserva está <strong>pendente</strong>. Será notificado assim que o administrador confirmar. Pode acompanhar o estado em <strong>Minhas Reservas</strong>.
+          </p>
+          {/*
+            BACKEND: Quando integrado, esta notificação será enviada
+            por email/push notification automática ao utilizador.
+          */}
         </div>
 
         {/* Detalhes */}
@@ -57,28 +76,35 @@ export default function PaymentConfirmation() {
           <Row label="Entrada"    value={data.startDate} />
           <Row label="Saída"      value={data.endDate} />
           <Row label="Hóspedes"   value={data.guests} />
-          <Row label="Total pago" value={data.totalPrice} bold />
+          <Row label="Total"      value={data.totalPrice} bold />
           <Row label="Data"       value={formattedDate} />
         </div>
 
-        {/* Nota simulação */}
         <p className="text-xs text-gray-400 leading-relaxed">
-          ID de transação gerado localmente (simulação).{" "}
-          Em produção será fornecido pelo PaySuite.
+          Simulação de pré-autorização. Em produção o valor será
+          gerido pelo PaySuite em tempo real.
         </p>
+
+        {/* Botões */}
+        <button
+          onClick={() => navigate("/minhasreservas")}
+          className="w-full py-2.5 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition text-sm"
+        >
+          Ver Minhas Reservas
+        </button>
 
         <button
           onClick={() => navigate("/")}
-          className="w-full py-2.5 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition text-sm"
+          className="w-full py-2.5 border-2 border-gray-200 hover:border-gray-400 rounded-xl font-semibold text-gray-700 transition text-sm"
         >
           Voltar ao início
         </button>
+
       </div>
     </div>
   );
 }
 
-// Componente auxiliar para cada linha de detalhe
 function Row({ label, value, bold = false, small = false }) {
   return (
     <div className="flex justify-between items-start gap-2">
