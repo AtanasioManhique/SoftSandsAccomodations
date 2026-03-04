@@ -37,7 +37,7 @@ const Testimonial = () => {
     className="!pb-10" // Padding no fundo para a sombra não ser cortada
     breakpoints={{
       320: { slidesPerView: 1.1 },
-      640: { slidesPerView: 1.5 },
+      640: { slidesPerView: 1.5},
       768: { slidesPerView: 2 },
       1024: { slidesPerView: 3 },
     }}

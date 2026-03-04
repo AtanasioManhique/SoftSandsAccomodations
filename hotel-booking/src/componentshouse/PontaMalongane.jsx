@@ -72,7 +72,7 @@ const PontaMalongane = () => {
           modules={[Autoplay, Pagination, Navigation]}
           autoplay={{ delay: 2500 }}
           pagination={{ clickable: true }}
-          spaceBetween={20}
+          spaceBetween={16}
           slidesPerView={1.1}
           className="!pb-7 !px-2"
           loop={true}

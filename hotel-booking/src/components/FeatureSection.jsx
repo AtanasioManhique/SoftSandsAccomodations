@@ -21,8 +21,8 @@ const FeatureSection = () => {
           modules={[Autoplay]}
           autoplay={{ delay: 2500, disableOnInteraction: false }}
           spaceBetween={16}
-          slidesPerView={1}
-          className="!pb-12 !px-2"
+          slidesPerView={1.1}
+          className="!pb-10 !px-2"
         >
           {cards.map((card, index) => (
             <SwiperSlide key={index}>
