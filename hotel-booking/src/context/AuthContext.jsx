@@ -1,14 +1,39 @@
-// context/AuthContext.jsx
-// ─────────────────────────────────────────────────────────────
-// Contexto de autenticação global.
-// Gere o estado do utilizador, login, logout e Google Auth.
-// Funciona agora com mock local.
-// Quando o backend estiver pronto, substituir os blocos MOCK.
-// ─────────────────────────────────────────────────────────────
+// src/context/AuthContext.jsx
+import { createContext, useContext, useMemo, useState } from "react";
+import api from "../services/api.js";
 
-import { createContext, useState, useContext } from "react";
+const AuthContext = createContext(null);
 
-const AuthContext = createContext();
+// Backend: { success:true, data:{ user, tokens:{accessToken, refreshToken} }, message }
+const unpack = (res) => res?.data?.data ?? res?.data ?? null;
+
+// Converte erro backend {success:false, error:{code,message,details}} em string
+const errorToString = (err) => {
+  const data = err?.response?.data;
+
+  if (data && typeof data === "object") {
+    const root = data.error && typeof data.error === "object" ? data.error : data;
+
+    const code = root.code ? `[${root.code}] ` : "";
+    const message = typeof root.message === "string" ? root.message : "Ocorreu um erro.";
+
+    let details = "";
+    if (root.details != null) {
+      details =
+        typeof root.details === "string"
+          ? root.details
+          : Array.isArray(root.details)
+          ? root.details.map((d) => d?.message || JSON.stringify(d)).join(" | ")
+          : typeof root.details === "object"
+          ? JSON.stringify(root.details)
+          : String(root.details);
+    }
+
+    return `${code}${message}${details ? ` — ${details}` : ""}`;
+  }
+
+  return err?.message || "Ocorreu um erro.";
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -22,122 +47,131 @@ export const AuthProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(false);
 
-  // ── LOGIN ─────────────────────────────────────────────────
-  const login = (userData, token) => {
-    // ─────────────────────────────────────────────────────
-    // BACKEND: Substituir por validação do token no servidor.
-    // O token JWT virá do backend após autenticação.
-    // Exemplo:
-    // const res = await api.post("/auth/login", { email, password });
-    // const { token, user } = res.data;
-    // ─────────────────────────────────────────────────────
-    localStorage.setItem("user", JSON.stringify(userData));
-    if (token) localStorage.setItem("token", token);
-    setUser(userData);
+  const saveAuth = (userData, accessToken, refreshToken) => {
+    if (accessToken) localStorage.setItem("token", accessToken);
+    if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+    if (userData) localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData || null);
     window.dispatchEvent(new Event("user_logged_in"));
   };
 
-  // ── LOGIN GOOGLE ──────────────────────────────────────────
-  const loginWithGoogle = async (googleToken, decodedUser) => {
-    setLoading(true);
-    try {
-      // ─────────────────────────────────────────────────────
-      // MOCK: Usa os dados decodificados do JWT do Google
-      // diretamente, sem validar no backend.
-      // ─────────────────────────────────────────────────────
-      const userData = {
-        name: decodedUser.name,
-        email: decodedUser.email,
-        picture: decodedUser.picture,
-        role: "user",
-        provider: "google",
-      };
-
-      login(userData, googleToken);
-      return { success: true };
-
-      // ─────────────────────────────────────────────────────
-      // BACKEND: Comentar o MOCK acima e descomentar isto.
-      // O backend valida o token Google e devolve um JWT próprio.
-      // const res = await api.post("/auth/google", { token: googleToken });
-      // const { user, token } = res.data;
-      // login(user, token);
-      // return { success: true };
-      // ─────────────────────────────────────────────────────
-    } catch (err) {
-      console.error("Erro Google login:", err);
-      return { success: false, error: err.message };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ── REGISTER ──────────────────────────────────────────────
-  const register = async (formData) => {
-    setLoading(true);
-    try {
-      // ─────────────────────────────────────────────────────
-      // MOCK: Cria utilizador local sem chamar o backend.
-      // ─────────────────────────────────────────────────────
-      const mockUser = {
-        name: formData.name,
-        email: formData.email,
-        city: formData.city || "",
-        role: "user",
-        provider: "email",
-      };
-
-      login(mockUser, `mock_token_${Date.now()}`);
-      return { success: true };
-
-      // ─────────────────────────────────────────────────────
-      // BACKEND: Comentar o MOCK acima e descomentar isto.
-      // const res = await api.post("/auth/register", {
-      //   name: formData.name,
-      //   email: formData.email,
-      //   password: formData.password,
-      //   city: formData.city,
-      // });
-      // const { token, user } = res.data;
-      // login(user, token);
-      // return { success: true };
-      // ─────────────────────────────────────────────────────
-    } catch (err) {
-      console.error("Erro register:", err);
-      return { success: false, error: err.message || "Erro ao criar conta." };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ── LOGOUT ────────────────────────────────────────────────
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
     setUser(null);
     window.dispatchEvent(new Event("user_logged_in"));
-    // ─────────────────────────────────────────────────────
-    // BACKEND: Adicionar invalidação de sessão no servidor.
-    // await api.post("/auth/logout");
-    // ─────────────────────────────────────────────────────
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        loginWithGoogle,
-        register,
-        logout,
-        loading,
-        isAuthenticated: !!user,
-        isAdmin: user?.role === "admin",
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  // ───────────────────────────────────────────────────────────
+  // LOGIN (EMAIL)
+  // POST /api/auth/login
+  // response.data.data = { user, tokens:{accessToken, refreshToken} }
+  // ───────────────────────────────────────────────────────────
+  const loginWithEmail = async (email, password) => {
+    setLoading(true);
+    try {
+      const res = await api.post("/auth/login", { email, password });
+      const payload = unpack(res);
+
+      const userData = payload?.user;
+      const accessToken = payload?.tokens?.accessToken;
+      const refreshToken = payload?.tokens?.refreshToken;
+
+      if (!userData || !accessToken) {
+        throw new Error("Resposta inválida do servidor (token/user).");
+      }
+
+      saveAuth(userData, accessToken, refreshToken);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: errorToString(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ───────────────────────────────────────────────────────────
+  // REGISTER
+  // POST /api/auth/register
+  // backend exige: confirmPassword, country
+  // response.data.data = { user, tokens:{accessToken, refreshToken} }
+  // ───────────────────────────────────────────────────────────
+  const register = async (formData) => {
+    setLoading(true);
+    try {
+      const res = await api.post("/auth/register", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+
+        // ✅ exigidos pelo teu backend
+        confirmPassword: formData.confirmPassword,
+        country: formData.country,
+      });
+
+      const payload = unpack(res);
+
+      const userData = payload?.user;
+      const accessToken = payload?.tokens?.accessToken;
+      const refreshToken = payload?.tokens?.refreshToken;
+
+      if (!userData || !accessToken) {
+        throw new Error("Resposta inválida do servidor (token/user).");
+      }
+
+      saveAuth(userData, accessToken, refreshToken);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: errorToString(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ───────────────────────────────────────────────────────────
+  // GOOGLE AUTH
+  // POST /api/auth/google  { idToken }
+  // backend espera req.body.idToken
+  // ───────────────────────────────────────────────────────────
+  const loginWithGoogle = async (idToken) => {
+    setLoading(true);
+    try {
+      const res = await api.post("/auth/google", { idToken });
+      const payload = unpack(res);
+
+      const userData = payload?.user;
+      const accessToken = payload?.tokens?.accessToken;
+      const refreshToken = payload?.tokens?.refreshToken;
+
+      if (!userData || !accessToken) {
+        throw new Error("Resposta inválida do servidor (token/user).");
+      }
+
+      saveAuth(userData, accessToken, refreshToken);
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: errorToString(err) };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      isAuthenticated: !!user,
+      isAdmin: user?.role === "admin",
+      loginWithEmail,
+      loginWithGoogle,
+      register,
+      logout,
+    }),
+    [user, loading]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);
