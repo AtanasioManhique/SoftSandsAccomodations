@@ -2,17 +2,78 @@ import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar } from "lucide-react";
-import {useTranslation} from "react-i18next"
+import { useTranslation } from "react-i18next";
+
+// ── Skeleton ──────────────────────────────────────────────────
+// O Center tem dados estáticos (destinos hardcoded),
+// mas mostra skeleton para consistência visual durante
+// o primeiro render da página.
+// ─────────────────────────────────────────────────────────────
+const shimmerStyle = {
+  background: "linear-gradient(90deg, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 75%)",
+  backgroundSize: "200% 100%",
+  animation: "shimmerWhite 1.4s infinite",
+};
+
+const CenterSkeleton = () => (
+  <div className="flex flex-col items-start justify-center
+    px-4 md:px-14 lg:px-22 xl:px-30 min-h-[90vh]
+    bg-[url('/src/assets/backgroundimage.png')]
+    bg-no-repeat bg-cover bg-center text-white pt-10 md:pt-0 -mb-9"
+  >
+    <style>{`@keyframes shimmerWhite { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+
+    {/* Título */}
+    <div style={{ ...shimmerStyle, width: "340px", height: "48px", borderRadius: "8px", marginBottom: "12px" }} />
+    <div style={{ ...shimmerStyle, width: "240px", height: "48px", borderRadius: "8px", marginBottom: "16px" }} />
+
+    {/* Subtítulo */}
+    <div style={{ ...shimmerStyle, width: "420px", height: "18px", borderRadius: "6px", marginBottom: "6px" }} />
+    <div style={{ ...shimmerStyle, width: "300px", height: "18px", borderRadius: "6px", marginBottom: "24px" }} />
+
+    {/* Formulário skeleton — desktop */}
+    <div className="hidden md:flex bg-white/20 backdrop-blur rounded-lg px-3 py-3 gap-3 w-full max-w-[900px]">
+      {[180, 160, 160, 100].map((w, i) => (
+        <div key={i} style={{ width: `${w}px` }}>
+          <div style={{ ...shimmerStyle, width: "80px", height: "14px", borderRadius: "4px", marginBottom: "6px" }} />
+          <div style={{ ...shimmerStyle, width: "100%", height: "34px", borderRadius: "6px" }} />
+        </div>
+      ))}
+      <div style={{ ...shimmerStyle, width: "80px", height: "42px", borderRadius: "6px", alignSelf: "flex-end" }} />
+    </div>
+
+    {/* Formulário skeleton — mobile */}
+    <div className="md:hidden bg-white/20 backdrop-blur rounded-lg px-4 py-4 w-full max-w-[360px]">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+        <div style={{ gridColumn: "1 / -1" }}>
+          <div style={{ ...shimmerStyle, width: "60px", height: "14px", borderRadius: "4px", marginBottom: "6px" }} />
+          <div style={{ ...shimmerStyle, width: "100%", height: "36px", borderRadius: "6px" }} />
+        </div>
+        {[1, 2].map((i) => (
+          <div key={i}>
+            <div style={{ ...shimmerStyle, width: "80px", height: "14px", borderRadius: "4px", marginBottom: "6px" }} />
+            <div style={{ ...shimmerStyle, width: "100%", height: "36px", borderRadius: "6px" }} />
+          </div>
+        ))}
+        <div style={{ gridColumn: "1 / -1" }}>
+          <div style={{ ...shimmerStyle, width: "70px", height: "14px", borderRadius: "4px", marginBottom: "6px" }} />
+          <div style={{ ...shimmerStyle, width: "100%", height: "36px", borderRadius: "6px" }} />
+        </div>
+      </div>
+      <div style={{ ...shimmerStyle, width: "100%", height: "40px", borderRadius: "6px", marginTop: "16px" }} />
+    </div>
+  </div>
+);
+// ─────────────────────────────────────────────────────────────
 
 const Center = () => {
   const [destinos, setDestinos] = useState([]);
   const [selectedDestino, setSelectedDestino] = useState("");
-  const [activeField, setActiveField] = useState(null); // "start" | "end"
-
+  const [activeField, setActiveField] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const {t} = useTranslation();
-
+  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
   const datepickerRef = useRef(null);
 
   useEffect(() => {
@@ -24,15 +85,14 @@ const Center = () => {
       { id: 5, nome: "Ponta Malongane" },
       { id: 6, nome: "Ilha de Inhaca" },
     ]);
+    setLoading(false);
   }, []);
+
+  if (loading) return <CenterSkeleton />;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({
-      destino: selectedDestino,
-      entrada: startDate,
-      saida: endDate,
-    });
+    console.log({ destino: selectedDestino, entrada: startDate, saida: endDate });
   };
 
   const openCalendar = (field) => {
@@ -41,24 +101,24 @@ const Center = () => {
   };
 
   return (
-    <div className='flex flex-col items-start justify-center
+    <div className="flex flex-col items-start justify-center
       px-4 md:px-14 lg:px-22 xl:px-30 min-h-[90vh]
-      bg-[url("/src/assets/backgroundimage.png")]
-      bg-no-repeat bg-cover bg-center text-white pt-10 md:pt-0 -mb-9'
+      bg-[url('/src/assets/backgroundimage.png')]
+      bg-no-repeat bg-cover bg-center text-white pt-10 md:pt-0 -mb-9"
     >
-      <h1 className='font-playfair text-3xl md:text-5xl font-bold max-w-xl mt-4'>
+      <h1 className="font-playfair text-3xl md:text-5xl font-bold max-w-xl mt-4">
         {t("center.title")}
       </h1>
 
-      <p className='max-w-130 mt-2 text-sm md:text-base'>
-       {t("center.subtitle")}
+      <p className="max-w-130 mt-2 text-sm md:text-base">
+        {t("center.subtitle")}
       </p>
 
       {/* ==================== DESKTOP ==================== */}
       <form
         onSubmit={handleSubmit}
-        className='hidden md:flex bg-white text-gray-700 rounded-lg px-3 py-3
-        flex-row items-center gap-3 mt-6 w-full max-w-[900px]'
+        className="hidden md:flex bg-white text-gray-700 rounded-lg px-3 py-3
+        flex-row items-center gap-3 mt-6 w-full max-w-[900px]"
       >
         <div className="flex flex-col w-[180px]">
           <label className="text-sm font-medium mb-1">{t("center.destiny")}</label>
@@ -116,8 +176,8 @@ const Center = () => {
       {/* ==================== MOBILE ==================== */}
       <form
         onSubmit={handleSubmit}
-        className='md:hidden bg-white text-gray-700 rounded-lg px-4 py-4
-        mt-6 w-full max-w-[360px]'
+        className="md:hidden bg-white text-gray-700 rounded-lg px-4 py-4
+        mt-6 w-full max-w-[360px]"
       >
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col col-span-2">
@@ -179,25 +239,18 @@ const Center = () => {
         ref={datepickerRef}
         selected={activeField === "start" ? startDate : endDate}
         onChange={(date) => {
-  if (activeField === "start") {
-    setStartDate(date);
-
-    // 👇 se a nova entrada for depois da saída, limpa a saída
-    if (endDate && date > endDate) {
-      setEndDate(null);
-    }
-  } else {
-    // 👇 só permite saída depois da entrada
-    if (!startDate || date >= startDate) {
-      setEndDate(date);
-      datepickerRef.current.setOpen(false);
-    }
-    return;
-  }
-
-  datepickerRef.current.setOpen(false);
-}}
-
+          if (activeField === "start") {
+            setStartDate(date);
+            if (endDate && date > endDate) setEndDate(null);
+          } else {
+            if (!startDate || date >= startDate) {
+              setEndDate(date);
+              datepickerRef.current.setOpen(false);
+            }
+            return;
+          }
+          datepickerRef.current.setOpen(false);
+        }}
         minDate={activeField === "end" && startDate ? startDate : new Date()}
         withPortal
         className="hidden"

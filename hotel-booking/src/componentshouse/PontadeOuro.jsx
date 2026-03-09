@@ -4,20 +4,50 @@ import { api } from "../services/api";
 import rightarrow from "../assets/right-arrow.png";
 import leftarrow from "../assets/leftarrow.png";
 import { ChevronRight } from "lucide-react";
-import HouseCard from "./HouseCard";
+import HouseCard, { HouseCardSkeleton } from "./HouseCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import {useTranslation} from "react-i18next"
+import { useTranslation } from "react-i18next";
+
+// ── Skeleton da Pontahouses ───────────────────────────────────
+const shimmerStyle = {
+  background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
+  backgroundSize: "200% 100%",
+  animation: "shimmer 1.4s infinite",
+};
+
+const PontahousesSkeleton = () => (
+  <div className="flex flex-col items-start px-4 md:px-20 pt-8 mt-20 relative">
+    <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+
+    {/* Título skeleton */}
+    <div style={{ ...shimmerStyle, width: "260px", height: "32px", borderRadius: "8px", marginBottom: "12px" }} />
+    <div style={{ ...shimmerStyle, width: "180px", height: "22px", borderRadius: "6px", marginBottom: "24px" }} />
+
+    {/* Grid skeleton — desktop */}
+    <div className="hidden md:grid grid-cols-5 gap-6 w-full">
+      {[...Array(5)].map((_, i) => (
+        <HouseCardSkeleton key={i} />
+      ))}
+    </div>
+
+    {/* Card skeleton — mobile */}
+    <div className="md:hidden w-full">
+      <HouseCardSkeleton />
+    </div>
+  </div>
+);
+// ─────────────────────────────────────────────────────────────
 
 const Pontahouses = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const swiperRef = useRef(null);
-  const {t}= useTranslation();
+  const { t } = useTranslation();
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -32,45 +62,39 @@ const Pontahouses = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const totalPages = Math.ceil(houses.length / itemsPerPage);
+  if (loading) return <PontahousesSkeleton />;
 
+  const totalPages = Math.ceil(houses.length / itemsPerPage);
   const next = () => setCurrentIndex((prev) => (prev + 1) % totalPages);
   const prev = () => setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
-
   const startIndex = currentIndex * itemsPerPage;
   const visibleDestinos = houses.slice(startIndex, startIndex + itemsPerPage);
-
-  if (loading) {
-    return <div className="py-20 text-center text-gray-500">A carregar casas...</div>;
-  }
 
   return (
     <div className="flex flex-col items-start px-4 md:px-20 pt-8 mt-20 relative">
 
-      {/* Título + link */}
       <h2 className="text-3xl md:text-3xl font-bold text-gray-900 mb-4">
-       {t("pontaouro.title")}
+        {t("pontaouro.title")}
       </h2>
 
       <div className="flex items-center justify-between mb-4 w-full">
-         <Link
-                 to={`/praias/${encodeURIComponent("Ponta de Ouro")}`}
-                 className="flex items-center gap-2 text-lg md:text-xl font-semibold text-gray-800 hover:underline"
-               >
-                {t("pontaouro.subtitle")}
-                 <ChevronRight className="w-5 h-5" />
-               </Link>
+        <Link
+          to={`/praias/${encodeURIComponent("Ponta de Ouro")}`}
+          className="flex items-center gap-2 text-lg md:text-xl font-semibold text-gray-800 hover:underline"
+        >
+          {t("pontaouro.subtitle")}
+          <ChevronRight className="w-5 h-5" />
+        </Link>
       </div>
 
       {/* MOBILE (Swiper) */}
       <div className="w-full md:hidden relative">
-        
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
           autoplay={{ delay: 2500, disableOnInteraction: false }}
           pagination={{ clickable: true }}
           spaceBetween={16}
-          slidesPerView={1.1}
+          slidesPerView={1}
           className="!pb-7 !px-2"
           loop={true}
           onSwiper={(swiper) => (swiperRef.current = swiper)}

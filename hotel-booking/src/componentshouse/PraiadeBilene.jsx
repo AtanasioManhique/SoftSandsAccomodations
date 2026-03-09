@@ -9,94 +9,72 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import {useTranslation} from "react-i18next"
-
-// Component
+import { useTranslation } from "react-i18next";
 import HouseCard from "./HouseCard";
+import PraiaSectionSkeleton from "./Praiasectionskeleton";
 
 const PraiaDeBilene = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const swiperRef = useRef(null);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const itemsPerPage = 5;
 
-  // 🔹 Buscar dados com AXIOS
   useEffect(() => {
     api
       .get("/data/casas.json", { baseURL: window.location.origin })
       .then((res) => {
-        const data = res.data;
-        const bilene = data.filter((house) => house.location === "Bilene");
+        const bilene = res.data.filter((house) => house.location === "Bilene");
         setHouses(bilene);
       })
       .catch((err) => console.error("Erro ao carregar casas:", err))
       .finally(() => setLoading(false));
   }, []);
 
-  // 🔹 Navegação manual desktop
+  if (loading) return <PraiaSectionSkeleton />;
+
   const totalPages = Math.ceil(houses.length / itemsPerPage);
   const next = () => setCurrentIndex((prev) => (prev + 1) % totalPages);
-  const prev = () =>
-    setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
-
-  const startIndex = currentIndex * itemsPerPage;
-  const visibleHouses = houses.slice(startIndex, startIndex + itemsPerPage);
-
-  if (loading) {
-    return (
-      <div className="py-20 text-center text-gray-500">
-        {t("pontaouro.loading")}
-      </div>
-    );
-  }
+  const prev = () => setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
+  const visibleHouses = houses.slice(currentIndex * itemsPerPage, currentIndex * itemsPerPage + itemsPerPage);
 
   return (
     <div className="flex flex-col items-start px-4 md:px-20 pt-8 mt-1 relative">
-      {/* 🔸 Título */}
+
       <div className="flex items-center justify-between mb-4 w-full">
-          <Link
-                          to={`/praias/${encodeURIComponent("Bilene")}`}
-                          className="flex items-center gap-2 text-lg md:text-xl font-semibold text-gray-800 hover:underline"
-                        >
-                          {t("bilene")}
-                          <ChevronRight className="w-5 h-5" />
-                        </Link>
+        <Link
+          to={`/praias/${encodeURIComponent("Bilene")}`}
+          className="flex items-center gap-2 text-lg md:text-xl font-semibold text-gray-800 hover:underline"
+        >
+          {t("bilene")}
+          <ChevronRight className="w-5 h-5" />
+        </Link>
       </div>
 
-      {/* ====================== */}
-      {/* 📱 MOBILE - Swiper */}
-      {/* ====================== */}
+      {/* MOBILE */}
       <div className="w-full md:hidden relative">
-       
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
           autoplay={{ delay: 2500, disableOnInteraction: false }}
           pagination={{ clickable: true }}
           spaceBetween={16}
-          slidesPerView={1.1}
+          slidesPerView={1}
           className="!pb-7 !px-2"
           loop={true}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
           {houses.map((house) => (
             <SwiperSlide key={house.id}>
-              <HouseCard house={house}  />
+              <HouseCard house={house} />
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
 
-      {/* ====================== */}
-      {/* 🖥️ DESKTOP - GRID */}
-      {/* ====================== */}
+      {/* DESKTOP */}
       <div className="hidden md:block relative w-full">
-        {/* Setas */}
-        <button
-          onClick={prev}
-          className="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10"
-        >
+        <button onClick={prev} className="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10">
           <img src={leftarrow} className="w-5 h-5" alt="Anterior" />
         </button>
 
@@ -106,10 +84,7 @@ const PraiaDeBilene = () => {
           ))}
         </div>
 
-        <button
-          onClick={next}
-          className="absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10"
-        >
+        <button onClick={next} className="absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10">
           <img src={rightarrow} className="w-5 h-5" alt="Próximo" />
         </button>
       </div>

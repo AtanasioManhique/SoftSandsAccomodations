@@ -13,6 +13,78 @@ import { useAuth } from "../context/AuthContext";
 import { useLoginModal } from "../context/LoginModalContext";
 import { api } from "../services/api";
 
+// ── Skeleton Loading ──────────────────────────────────────────
+// Mostrado enquanto os dados da casa carregam do backend.
+// 100% frontend, não depende de nenhum endpoint.
+// ─────────────────────────────────────────────────────────────
+const SkeletonBox = ({ width = "100%", height = "16px", borderRadius = "6px", className = "" }) => (
+  <div
+    className={className}
+    style={{
+      width,
+      height,
+      borderRadius,
+      background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
+      backgroundSize: "200% 100%",
+      animation: "shimmer 1.4s infinite",
+    }}
+  />
+);
+
+const HouseDetailsSkeleton = () => (
+  <div className="py-28 px-4 md:px-16 lg:px-24 xl:px-32 space-y-10">
+    <style>{`
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    `}</style>
+
+    {/* Avaliação */}
+    <div className="flex items-center gap-3">
+      <SkeletonBox width="60px" height="20px" />
+      <SkeletonBox width="120px" height="20px" />
+    </div>
+
+    {/* Galeria */}
+    <SkeletonBox width="100%" height="360px" borderRadius="16px" />
+
+    {/* Comodidades */}
+    <div className="border-b pb-8">
+      <SkeletonBox width="200px" height="24px" className="mb-6" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <SkeletonBox width="24px" height="24px" borderRadius="50%" />
+            <SkeletonBox width="80px" height="16px" />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Descrição */}
+    <div className="space-y-2">
+      <SkeletonBox width="120px" height="24px" className="mb-3" />
+      <SkeletonBox width="100%" height="16px" />
+      <SkeletonBox width="90%" height="16px" />
+      <SkeletonBox width="75%" height="16px" />
+    </div>
+
+    {/* Grid reserva + mapa */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <SkeletonBox width="100%" height="280px" borderRadius="16px" />
+      <SkeletonBox width="100%" height="280px" borderRadius="16px" />
+    </div>
+  </div>
+);
+// ─────────────────────────────────────────────────────────────
+
+// ── Google Maps Embed ─────────────────────────────────────────
+// Gratuito, sem API key. Mostra mapa real via iframe.
+// MIGRAÇÃO FUTURA → Google Maps API completa:
+//   1. npm install @react-google-maps/api
+//   2. Substituir o iframe por <GoogleMap>
+//   3. Criar .env: VITE_GOOGLE_MAPS_KEY=AIzaSy...
 // ─────────────────────────────────────────────────────────────
 
 const MapEmbed = ({ lat, lng, locationName }) => {
@@ -20,17 +92,17 @@ const MapEmbed = ({ lat, lng, locationName }) => {
   const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
   return (
-    <div
-      style={{
-        height: "300px",
-        borderRadius: "16px",
-        overflow: "hidden",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
-        border: "1px solid #e5e7eb",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div style={{
+      height: "100%",
+      minHeight: "300px",
+      borderRadius: "16px",
+      overflow: "hidden",
+      boxShadow: "0 4px 24px rgba(0,0,0,0.10)",
+      border: "1px solid #e5e7eb",
+      display: "flex",
+      flexDirection: "column",
+    }}>
+      {/* Mapa real via iframe */}
       <div style={{ flex: 1, position: "relative" }}>
         <iframe
           title={`Mapa - ${locationName}`}
@@ -44,15 +116,14 @@ const MapEmbed = ({ lat, lng, locationName }) => {
         />
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          padding: "12px 16px",
-          background: "#fff",
-          borderTop: "1px solid #f0f0f0",
-        }}
-      >
+      {/* Rodapé com dois botões */}
+      <div style={{
+        display: "flex",
+        gap: "10px",
+        padding: "12px 16px",
+        background: "#fff",
+        borderTop: "1px solid #f0f0f0",
+      }}>
         <a
           href={googleMapsUrl}
           target="_blank"
@@ -112,22 +183,12 @@ const MapEmbed = ({ lat, lng, locationName }) => {
 // ─────────────────────────────────────────────────────────────
 
 const normalizeAccommodation = (raw) => {
-  // tenta suportar Mongo (_id) ou SQL (id)
   const id = raw?.id ?? raw?._id;
-
-  // tenta suportar nomes alternativos
   const capacity = raw?.capacity ?? raw?.maxGuests ?? 1;
-
-  // rating / location / images / etc - mantém se existir
-  return {
-    ...raw,
-    id,
-    capacity,
-  };
+  return { ...raw, id, capacity };
 };
 
 const extractData = (resData) => {
-  // suporta padrões: {data: ...} ou {success, data} ou direto
   if (!resData) return null;
   return resData.data ?? resData;
 };
@@ -142,14 +203,10 @@ const HouseDetails = () => {
 
   const [house, setHouse] = useState(null);
   const [loadingHouse, setLoadingHouse] = useState(false);
-
-  // mantendo como string YYYY-MM-DD (compatível com teu pricing atual)
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-
   const [guests, setGuests] = useState(1);
   const [maxGuests, setMaxGuests] = useState(1);
-
   const [activeField, setActiveField] = useState(null);
   const datepickerRef = useRef(null);
 
@@ -163,24 +220,19 @@ const HouseDetails = () => {
         const res = await api.get(`/accommodations/${id}`);
         const payload = extractData(res.data);
         const normalized = normalizeAccommodation(payload);
-
         if (!mounted) return;
         setHouse(normalized);
         setMaxGuests(normalized.capacity || 1);
       } catch (err) {
         console.error("Erro ao carregar accommodation no backend:", err);
-
-        // fallback
         try {
           const r = await fetch("/data/casas.json");
           const data = await r.json();
           const casasArray = Array.isArray(data) ? data : data.casas;
-
           if (!Array.isArray(casasArray)) {
             console.error("Formato inválido no casas.json");
             return;
           }
-
           const selectedHouse = casasArray.find((h) => h.id === Number(id));
           if (selectedHouse && mounted) {
             setHouse(normalizeAccommodation(selectedHouse));
@@ -195,15 +247,12 @@ const HouseDetails = () => {
     };
 
     loadFromBackend();
-
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [id]);
 
   const houseId = useMemo(() => house?.id ?? house?._id, [house]);
 
-  if (loadingHouse && !house) return null; // ou loader
+  if (loadingHouse && !house) return <HouseDetailsSkeleton />;
   if (!house) return null;
 
   const lat = Number(house.coordinates?.lat);
@@ -214,49 +263,26 @@ const HouseDetails = () => {
   const hasDates = Boolean(checkIn && checkOut);
   const totalData = hasDates ? getTotalPrice(house.price, checkIn, checkOut) : null;
 
-  // ── CREATE BOOKING (backend) ───────────────────────────────
+  // ── CREATE BOOKING ─────────────────────────────────────────
   const handleReserve = async () => {
-    if (!user) {
-      openLogin();
-      return;
-    }
-
-    if (!checkIn || !checkOut) {
-      alert("Por favor selecione datas antes de reservar.");
-      return;
-    }
-
-    if (new Date(checkOut) <= new Date(checkIn)) {
-      alert("A data de saída deve ser depois da data de entrada.");
-      return;
-    }
-
-    if (guests > maxGuests) {
-      alert(`Esta casa suporta no máximo ${maxGuests} hóspedes.`);
-      return;
-    }
-
-    if (!houseId) {
-      alert("Erro: accommodationId inválido.");
-      return;
-    }
+    if (!user) { openLogin(); return; }
+    if (!checkIn || !checkOut) { alert("Por favor selecione datas antes de reservar."); return; }
+    if (new Date(checkOut) <= new Date(checkIn)) { alert("A data de saída deve ser depois da data de entrada."); return; }
+    if (guests > maxGuests) { alert(`Esta casa suporta no máximo ${maxGuests} hóspedes.`); return; }
+    if (!houseId) { alert("Erro: accommodationId inválido."); return; }
 
     try {
-      // backend: /api/bookings
-      // payload típico
       const payload = {
-        accommodationId: houseId, // <- conforme tua API/tabela
-        startDate: checkIn,       // "YYYY-MM-DD"
-        endDate: checkOut,        // "YYYY-MM-DD"
+        accommodationId: houseId,
+        startDate: checkIn,
+        endDate: checkOut,
         guests,
       };
 
       const res = await api.post("/bookings", payload);
       const booking = extractData(res.data);
-
       const bookingId = booking?.id ?? booking?._id ?? booking?.bookingId;
 
-      // Envia tudo que o pagamento pode precisar no state
       const state = {
         ...booking,
         id: bookingId,
@@ -266,32 +292,29 @@ const HouseDetails = () => {
         startDate: checkIn,
         endDate: checkOut,
         guests,
-        // se backend não mandar total, usa o teu cálculo
         totalPrice: booking?.totalPrice ?? totalData?.formatted,
         status: booking?.status ?? "pendente",
       };
 
       if (!bookingId) {
-        // não bloqueia, mas avisa
         console.warn("Booking criado mas sem id explícito no response:", booking);
       }
 
       navigate(`/pagamento/${bookingId || "pendente"}`, { state });
     } catch (err) {
       console.error("Erro ao criar booking:", err);
-
       const msg =
         err?.response?.data?.message ||
         err?.response?.data?.error ||
         err.message ||
         "Falha ao criar reserva.";
-
       alert(msg);
     }
   };
 
   return (
     <div className="py-28 px-4 md:px-16 lg:px-24 xl:px-32 space-y-10">
+
       {/* Avaliação e localização */}
       <div className="flex flex-wrap items-center gap-2 text-gray-700 text-lg">
         <div className="flex items-center gap-1">
@@ -315,11 +338,7 @@ const HouseDetails = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
             {house.amenities.map((amenity, index) => (
               <div key={index} className="flex items-center gap-3">
-                <img
-                  src={amenity.icon}
-                  alt={amenity.name}
-                  className="w-6 h-6 object-contain"
-                />
+                <img src={amenity.icon} alt={amenity.name} className="w-6 h-6 object-contain" />
                 <span className="text-gray-700 text-sm sm:text-base">{amenity.name}</span>
               </div>
             ))}
@@ -333,8 +352,9 @@ const HouseDetails = () => {
         <p className="leading-relaxed whitespace-pre-line">{house.description}</p>
       </div>
 
-      {/* Grid: Reserva + Mapa */}
-      <div id="reserveid" className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      {/* Grid: Reserva (esq) + Mapa (dir) — items-stretch para alturas iguais */}
+      <div id="reserveid" className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+
         {/* Formulário de reserva */}
         <div className="bg-white p-4 rounded-xl shadow-md border">
           <div className="font-bold text-xl mb-3">
@@ -350,10 +370,7 @@ const HouseDetails = () => {
                   {t("center.entrydate")}
                 </label>
                 <div
-                  onClick={() => {
-                    setActiveField("start");
-                    datepickerRef.current?.setOpen(true);
-                  }}
+                  onClick={() => { setActiveField("start"); datepickerRef.current?.setOpen(true); }}
                   className="flex items-center justify-between cursor-pointer mt-1"
                 >
                   <span className="text-sm">
@@ -368,10 +385,7 @@ const HouseDetails = () => {
                   {t("center.outdate")}
                 </label>
                 <div
-                  onClick={() => {
-                    setActiveField("end");
-                    datepickerRef.current?.setOpen(true);
-                  }}
+                  onClick={() => { setActiveField("end"); datepickerRef.current?.setOpen(true); }}
                   className="flex items-center justify-between cursor-pointer mt-1"
                 >
                   <span className="text-sm">
@@ -393,8 +407,7 @@ const HouseDetails = () => {
               >
                 {[...Array(maxGuests)].map((_, i) => (
                   <option key={i + 1} value={i + 1}>
-                    {i + 1} {t("center.guests")}
-                    {i + 1 > 1 ? "s" : ""}
+                    {i + 1} {t("center.guests")}{i + 1 > 1 ? "s" : ""}
                   </option>
                 ))}
               </select>
@@ -415,7 +428,7 @@ const HouseDetails = () => {
         ) : (
           <div
             className="flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200"
-            style={{ height: "300px" }}
+            style={{ minHeight: "300px" }}
           >
             <div className="text-center px-6">
               <p className="text-gray-600 mb-2 font-medium">{t("location.avalaibilty")}</p>
@@ -438,29 +451,20 @@ const HouseDetails = () => {
         ref={datepickerRef}
         selected={
           activeField === "start"
-            ? checkIn
-              ? new Date(checkIn)
-              : null
-            : checkOut
-            ? new Date(checkOut)
-            : null
+            ? checkIn ? new Date(checkIn) : null
+            : checkOut ? new Date(checkOut) : null
         }
         onChange={(date) => {
           if (!date) return;
-
           if (activeField === "start") {
-            const formatted = date.toISOString().split("T")[0]; // YYYY-MM-DD
+            const formatted = date.toISOString().split("T")[0];
             setCheckIn(formatted);
-
-            if (checkOut && new Date(formatted) > new Date(checkOut)) {
-              setCheckOut("");
-            }
+            if (checkOut && new Date(formatted) > new Date(checkOut)) setCheckOut("");
           } else {
             if (!checkIn || date >= new Date(checkIn)) {
-              setCheckOut(date.toLocaleDateString("en-CA")); // YYYY-MM-DD
+              setCheckOut(date.toLocaleDateString("en-CA"));
             }
           }
-
           datepickerRef.current?.setOpen(false);
         }}
         minDate={activeField === "end" && checkIn ? new Date(checkIn) : new Date()}

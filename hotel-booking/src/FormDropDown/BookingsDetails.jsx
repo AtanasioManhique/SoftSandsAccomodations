@@ -3,6 +3,68 @@ import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 
+// ── Skeleton ──────────────────────────────────────────────────
+const shimmerStyle = {
+  background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
+  backgroundSize: "200% 100%",
+  animation: "shimmer 1.4s infinite",
+};
+
+const ReservaDetalhesSkeleton = () => (
+  <div className="w-full max-w-5xl mx-auto py-10 px-4">
+    <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+
+    {/* Voltar */}
+    <div style={{ ...shimmerStyle, width: "120px", height: "16px", borderRadius: "4px", marginBottom: "32px" }} />
+
+    {/* Título + badge */}
+    <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "24px" }}>
+      <div style={{ ...shimmerStyle, width: "220px", height: "36px", borderRadius: "8px" }} />
+      <div style={{ ...shimmerStyle, width: "90px", height: "28px", borderRadius: "20px" }} />
+    </div>
+
+    {/* Galeria de imagens */}
+    <div style={{ display: "flex", gap: "8px", overflowX: "hidden", marginBottom: "40px" }}>
+      {[...Array(3)].map((_, i) => (
+        <div key={i} style={{ ...shimmerStyle, minWidth: "320px", height: "240px", borderRadius: "12px" }} />
+      ))}
+    </div>
+
+    {/* Grid dois cards */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Card esquerdo */}
+      <div style={{ background: "#fff", padding: "24px", borderRadius: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", flexDirection: "column", gap: "14px" }}>
+        <div style={{ ...shimmerStyle, width: "180px", height: "22px", borderRadius: "6px" }} />
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <div style={{ ...shimmerStyle, width: "60px", height: "22px", borderRadius: "4px" }} />
+          <div style={{ ...shimmerStyle, width: "20px", height: "16px", borderRadius: "4px" }} />
+          <div style={{ ...shimmerStyle, width: "60px", height: "22px", borderRadius: "4px" }} />
+        </div>
+        {[...Array(6)].map((_, i) => (
+          <div key={i} style={{ ...shimmerStyle, width: i % 2 === 0 ? "80%" : "65%", height: "14px", borderRadius: "4px" }} />
+        ))}
+      </div>
+
+      {/* Card direito */}
+      <div style={{ background: "#fff", padding: "24px", borderRadius: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", border: "1px solid #eee", display: "flex", flexDirection: "column", gap: "14px" }}>
+        <div style={{ ...shimmerStyle, width: "140px", height: "22px", borderRadius: "6px" }} />
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div style={{ ...shimmerStyle, width: "80px", height: "16px", borderRadius: "4px" }} />
+          <div style={{ ...shimmerStyle, width: "40px", height: "16px", borderRadius: "4px" }} />
+        </div>
+        <div style={{ ...shimmerStyle, width: "100%", height: "1px", borderRadius: "1px" }} />
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div style={{ ...shimmerStyle, width: "60px", height: "22px", borderRadius: "4px" }} />
+          <div style={{ ...shimmerStyle, width: "100px", height: "22px", borderRadius: "4px" }} />
+        </div>
+        <div style={{ ...shimmerStyle, width: "100%", height: "48px", borderRadius: "12px" }} />
+        <div style={{ ...shimmerStyle, width: "100%", height: "44px", borderRadius: "12px" }} />
+      </div>
+    </div>
+  </div>
+);
+// ─────────────────────────────────────────────────────────────
+
 export default function ReservaDetalhes() {
   const { id } = useParams();
   const location = useLocation();
@@ -15,7 +77,6 @@ export default function ReservaDetalhes() {
   const { t } = useTranslation();
   const { user } = useAuth();
 
-  // Chave única por utilizador
   // BACKEND: Remover quando as reservas vierem da API
   const storageKey = user?.email ? `minhasReservas_${user.email}` : "minhasReservas_guest";
 
@@ -28,7 +89,7 @@ export default function ReservaDetalhes() {
 
   const getStatusColor = (status) => {
     if (status === "confirmado") return "bg-green-100 text-green-700";
-    if (status === "pendente")   return "bg-yellow-100 text-yellow-700";
+    if (status === "pendente") return "bg-yellow-100 text-yellow-700";
     return "bg-red-100 text-red-700";
   };
 
@@ -38,14 +99,14 @@ export default function ReservaDetalhes() {
         const housesData = await fetch("/data/casas.json").then((r) => r.json());
 
         // ─────────────────────────────────────────────────────
-        // BACKEND: Substituir toda esta lógica por:
+        // BACKEND: Substituir por:
         // const res = await fetch(`/api/reservas/${id}`, {
         //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         // });
         // const foundBooking = await res.json();
         // ─────────────────────────────────────────────────────
 
-        // 1. Via navigation state (mais rápido, vem do MinhasReservas)
+        // 1. Via navigation state
         if (location.state?.booking) {
           const b = location.state.booking;
           setBooking(b);
@@ -54,7 +115,7 @@ export default function ReservaDetalhes() {
           return;
         }
 
-        // 2. Fallback: procurar no localStorage do utilizador atual
+        // 2. Fallback localStorage
         const reservasLocais = JSON.parse(localStorage.getItem(storageKey)) || [];
         const localBooking = reservasLocais.find((r) => r.id === id);
 
@@ -64,7 +125,6 @@ export default function ReservaDetalhes() {
           setLoading(false);
           return;
         }
-        // ─────────────────────────────────────────────────────
 
         setLoading(false);
       } catch (err) {
@@ -76,7 +136,6 @@ export default function ReservaDetalhes() {
     loadData();
   }, [id, location.state, storageKey]);
 
-  // ── Cancelar reserva ──────────────────────────────────────
   function handleCancelar() {
     // ─────────────────────────────────────────────────────
     // BACKEND: Substituir por:
@@ -90,13 +149,11 @@ export default function ReservaDetalhes() {
       r.id === booking.id ? { ...r, status: "cancelado" } : r
     );
     localStorage.setItem(storageKey, JSON.stringify(atualizadas));
-
     setBooking((prev) => ({ ...prev, status: "cancelado" }));
     setShowCancelModal(false);
   }
 
-  if (loading)
-    return <div className="p-10 text-center text-gray-500">{t("bookingdetails.loading")}</div>;
+  if (loading) return <ReservaDetalhesSkeleton />;
 
   if (!booking || !house)
     return <div className="p-10 text-center text-red-500">{t("bookingdetails.notfound")}</div>;
@@ -121,15 +178,10 @@ export default function ReservaDetalhes() {
       {booking.status === "pendente" && (
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
           ⏳ A sua reserva está pendente de confirmação pelo administrador.
-          {/*
-            BACKEND: O administrador confirma via painel admin e o status
-            é atualizado na base de dados. O frontend usará polling ou
-            websockets para refletir a mudança automaticamente.
-          */}
         </div>
       )}
 
-      {/* Imagens */}
+      {/* Galeria */}
       <div className="w-full overflow-x-auto whitespace-nowrap rounded-xl shadow mb-10 mt-6">
         {house.image.map((img, index) => (
           <img key={index} src={img} alt="Casa"

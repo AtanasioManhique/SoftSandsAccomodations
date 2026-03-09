@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../services/api";
-import {useTranslation} from "react-i18next"
+import { useTranslation } from "react-i18next";
 import rightarrow from "../assets/right-arrow.png";
 import leftarrow from "../assets/leftarrow.png";
 import { ChevronRight } from "lucide-react";
@@ -10,74 +10,87 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import HouseCard from "./HouseCard";
+import HouseCard, { HouseCardSkeleton } from "./HouseCard";
+
+// ── Skeleton da PraiaTofo ─────────────────────────────────────
+const shimmerStyle = {
+  background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
+  backgroundSize: "200% 100%",
+  animation: "shimmer 1.4s infinite",
+};
+
+const PraiaTofoSkeleton = () => (
+  <div className="flex flex-col items-start px-4 md:px-20 pt-8 mt-1 relative">
+    <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+
+    {/* Título skeleton */}
+    <div style={{ ...shimmerStyle, width: "200px", height: "26px", borderRadius: "6px", marginBottom: "24px" }} />
+
+    {/* Grid skeleton — desktop */}
+    <div className="hidden md:grid grid-cols-5 gap-6 w-full">
+      {[...Array(5)].map((_, i) => (
+        <HouseCardSkeleton key={i} />
+      ))}
+    </div>
+
+    {/* Card skeleton — mobile */}
+    <div className="md:hidden w-full">
+      <HouseCardSkeleton />
+    </div>
+  </div>
+);
+// ─────────────────────────────────────────────────────────────
 
 const PraiaTofo = () => {
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const swiperRef = useRef(null);
-  const {t} = useTranslation();
-
+  const { t } = useTranslation();
   const itemsPerPage = 5;
 
-  // 🔹 Buscar casas do Tofo
   useEffect(() => {
     api
       .get("/data/casas.json", { baseURL: window.location.origin })
       .then((res) => {
         const data = res.data;
-        const tofo = data.filter(
-          (house) => house.location === "Praia do Tofo"
-        );
+        const tofo = data.filter((house) => house.location === "Praia do Tofo");
         setHouses(tofo);
       })
       .catch((err) => console.error("Erro ao carregar casas:", err))
       .finally(() => setLoading(false));
   }, []);
 
-  // 🔹 Paginação Desktop
-  const totalPages = Math.ceil(houses.length / itemsPerPage);
+  if (loading) return <PraiaTofoSkeleton />;
 
+  const totalPages = Math.ceil(houses.length / itemsPerPage);
   const next = () => setCurrentIndex((prev) => (prev + 1) % totalPages);
   const prev = () => setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
-
   const startIndex = currentIndex * itemsPerPage;
   const visibleHouses = houses.slice(startIndex, startIndex + itemsPerPage);
-
-  if (loading) {
-    return (
-      <div className="py-20 text-center text-gray-500">
-      {t("pontaouro.loading")}
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col items-start px-4 md:px-20 pt-8 mt-1 relative">
 
-      {/* 🔸 Título */}
+      {/* Título */}
       <div className="flex items-center justify-between mb-4 w-full">
-          <Link
-                                   to={`/praias/${encodeURIComponent("Praia do Tofo")}`}
-                                   className="flex items-center gap-2 text-lg md:text-xl font-semibold text-gray-800 hover:underline"
-                                 >
-                                   {t("tofo")}
-                                   <ChevronRight className="w-5 h-5" />
-                                 </Link>
+        <Link
+          to={`/praias/${encodeURIComponent("Praia do Tofo")}`}
+          className="flex items-center gap-2 text-lg md:text-xl font-semibold text-gray-800 hover:underline"
+        >
+          {t("tofo")}
+          <ChevronRight className="w-5 h-5" />
+        </Link>
       </div>
 
-      {/* ====================== */}
-      {/* 📱 MOBILE - Swiper */}
-      {/* ====================== */}
+      {/* MOBILE (Swiper) */}
       <div className="w-full md:hidden relative">
-
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
           autoplay={{ delay: 2500, disableOnInteraction: false }}
           pagination={{ clickable: true }}
           spaceBetween={16}
-          slidesPerView={1.1}
+          slidesPerView={1}
           className="!pb-7 !px-2"
           loop={true}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
@@ -90,11 +103,8 @@ const PraiaTofo = () => {
         </Swiper>
       </div>
 
-      {/* ====================== */}
-      {/* 🖥️ DESKTOP - GRID */}
-      {/* ====================== */}
+      {/* DESKTOP */}
       <div className="hidden md:block relative w-full">
-        {/* Setas */}
         <button
           onClick={prev}
           className="absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10"

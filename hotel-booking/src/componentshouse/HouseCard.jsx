@@ -4,13 +4,55 @@ import fullstar from "../assets/fullstar.png";
 import locationicon from "../assets/location.png";
 import FavoriteButton from "./FavoriteButton";
 import { useTranslation } from "react-i18next";
-import { useSeasonPricing } from "../context/seasonPricing.js"; // ✅ novo hook
+import { useSeasonPricing } from "../context/seasonPricing.js";
+
+// ── Skeleton do HouseCard ─────────────────────────────────────
+// Exportado para ser reutilizado em PraiaPage, Pontahouses,
+// PraiaTofo e qualquer outro componente que use HouseCard.
+// ─────────────────────────────────────────────────────────────
+const shimmerStyle = {
+  background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
+  backgroundSize: "200% 100%",
+  animation: "shimmer 1.4s infinite",
+};
+
+export const HouseCardSkeleton = () => (
+  <>
+    <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+    <div style={{
+      borderRadius: "12px",
+      overflow: "hidden",
+      background: "#fff",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    }}>
+      {/* Imagem */}
+      <div style={{ ...shimmerStyle, width: "100%", height: "192px" }} />
+
+      <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+        {/* Localização */}
+        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+          <div style={{ ...shimmerStyle, width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0 }} />
+          <div style={{ ...shimmerStyle, width: "110px", height: "14px", borderRadius: "4px" }} />
+        </div>
+
+        {/* Preço e rating */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ ...shimmerStyle, width: "100px", height: "14px", borderRadius: "4px" }} />
+          <div style={{ ...shimmerStyle, width: "36px", height: "14px", borderRadius: "4px" }} />
+        </div>
+
+        {/* Botão */}
+        <div style={{ ...shimmerStyle, width: "100%", height: "36px", borderRadius: "8px" }} />
+      </div>
+    </div>
+  </>
+);
+
+// ─────────────────────────────────────────────────────────────
 
 const HouseCard = ({ house }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  // ✅ Hook central
   const { getNightPrice } = useSeasonPricing();
   const { formatted } = getNightPrice(house.price);
 
@@ -18,7 +60,6 @@ const HouseCard = ({ house }) => {
     e.preventDefault();
     const target = `/casas/${house.id}#reserveid`;
     navigate(target);
-
     setTimeout(() => {
       const el = document.getElementById("reserveid");
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -47,7 +88,6 @@ const HouseCard = ({ house }) => {
           <span className="text-sm font-semibold text-gray-900">
             {formatted} / {t("favorites.night")}
           </span>
-
           <div className="flex items-center text-sm text-gray-700 gap-1">
             <img src={fullstar} alt="rating" className="w-4 h-4" />
             <span>{house.rating}</span>
