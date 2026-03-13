@@ -131,7 +131,9 @@
             "cancellation": "Política de Cancelamento",
             "exit": "Sair",
             "session": "Iniciar Sessão",
-            "sign": "Registar-Se"
+            "sign": "Registar-Se",
+            "search": "Pesquisar...",
+            "cancel": "Cancelar"
         },
         "reservenow":{
             "error": "Erro: Dados da reserva não encontrados.",

@@ -131,7 +131,9 @@
             "cancellation": "Cancellation Policy",
             "exit": "Exit",
             "session": "Log in",
-            "sign": "Sign Up"
+            "sign": "Sign Up",
+            "search": "Search...",
+            "cancel": "Cancel"
         },
         "reservenow":{
             "error": "Error: Reservation data not found.",

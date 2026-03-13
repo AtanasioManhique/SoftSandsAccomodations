@@ -16,26 +16,13 @@ const shimmerStyle = {
 const FeatureSectionSkeleton = () => (
   <section className="bg-white py-10 px-2 text-center">
     <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
-
-    {/* Título skeleton */}
     <div style={{ display: "flex", justifyContent: "center", gap: "12px", marginBottom: "40px" }}>
       <div style={{ ...shimmerStyle, width: "180px", height: "36px", borderRadius: "6px" }} />
       <div style={{ ...shimmerStyle, width: "140px", height: "36px", borderRadius: "6px" }} />
     </div>
-
-    {/* Cards skeleton — desktop */}
     <div className="hidden md:grid grid-cols-3 gap-8 max-w-7xl mx-auto">
       {[...Array(3)].map((_, i) => (
-        <div key={i} style={{
-          background: "#fff",
-          padding: "24px",
-          borderRadius: "12px",
-          border: "1px solid #f0f0f0",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "12px",
-        }}>
+        <div key={i} style={{ background: "#fff", padding: "24px", borderRadius: "12px", border: "1px solid #f0f0f0", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
           <div style={{ ...shimmerStyle, width: "48px", height: "48px", borderRadius: "50%" }} />
           <div style={{ ...shimmerStyle, width: "140px", height: "22px", borderRadius: "6px" }} />
           <div style={{ ...shimmerStyle, width: "100%", height: "14px", borderRadius: "4px" }} />
@@ -44,19 +31,8 @@ const FeatureSectionSkeleton = () => (
         </div>
       ))}
     </div>
-
-    {/* Cards skeleton — mobile */}
     <div className="block md:hidden max-w-md mx-auto">
-      <div style={{
-        background: "#fff",
-        padding: "24px",
-        borderRadius: "12px",
-        border: "1px solid #f0f0f0",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "12px",
-      }}>
+      <div style={{ background: "#fff", padding: "24px", borderRadius: "12px", border: "1px solid #f0f0f0", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
         <div style={{ ...shimmerStyle, width: "48px", height: "48px", borderRadius: "50%" }} />
         <div style={{ ...shimmerStyle, width: "140px", height: "22px", borderRadius: "6px" }} />
         <div style={{ ...shimmerStyle, width: "100%", height: "14px", borderRadius: "4px" }} />
@@ -68,12 +44,9 @@ const FeatureSectionSkeleton = () => (
 // ─────────────────────────────────────────────────────────────
 
 const FeatureSection = () => {
-  const { t } = useTranslation();
+  const { t }              = useTranslation();
   const [loading, setLoading] = useState(true);
 
-  // FeatureSection carrega dados estáticos (assets.js),
-  // mas simula o estado de loading para consistência visual
-  // com os outros componentes da página.
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timer);
@@ -82,13 +55,14 @@ const FeatureSection = () => {
   if (loading) return <FeatureSectionSkeleton />;
 
   return (
-    <section className="bg-white py-10 px-2 text-center -pt-5">
+    // Corrigido: "-pt-5" classe inválida removida
+    <section className="bg-white py-10 px-2 text-center">
       <h2 className="text-4xl font-bold text-gray-800 mb-10">
         {t("featuresection.title")}{" "}
         <span className="text-emerald-600">{t("featuresection.name")}</span>?
       </h2>
 
-      {/* 📱 Mobile - Swiper */}
+      {/* Mobile - Swiper */}
       <div className="block md:hidden w-full max-w-md mx-auto">
         <Swiper
           modules={[Autoplay]}
@@ -98,10 +72,11 @@ const FeatureSection = () => {
           className="!pb-10 !px-2"
         >
           {cards.map((card, index) => (
-            <SwiperSlide key={index}>
+            // cards é array estático — key={index} aceitável
+            <SwiperSlide key={`card-mobile-${index}`}>
               <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 flex flex-col justify-between h-full">
                 <div className="flex flex-col items-center flex-grow">
-                  <img src={card.image} alt={card.title} className="h-12 mx-auto mb-4" />
+                  <img src={card.image} alt="" className="h-12 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-emerald-600 mb-2">
                     {t(`cards.${index}.title`)}
                   </h3>
@@ -115,15 +90,15 @@ const FeatureSection = () => {
         </Swiper>
       </div>
 
-      {/* 💻 Desktop - Grid fixo */}
+      {/* Desktop - Grid */}
       <div className="hidden md:grid grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
         {cards.map((card, index) => (
           <div
-            key={index}
+            key={`card-desktop-${index}`}
             className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition flex flex-col justify-between"
           >
             <div className="flex flex-col items-center flex-grow">
-              <img src={card.image} alt={card.title} className="h-12 mx-auto mb-4" />
+              <img src={card.image} alt="" className="h-12 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-emerald-600 mb-2">
                 {t(`cards.${index}.title`)}
               </h3>

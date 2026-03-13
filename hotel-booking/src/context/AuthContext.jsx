@@ -96,18 +96,22 @@ export const AuthProvider = ({ children }) => {
   // POST /api/auth/register
   // backend exige: confirmPassword, country
   // response.data.data = { user, tokens:{accessToken, refreshToken} }
+  //
+  // 🚧 DEV: return { success: true } simula registo bem-sucedido
+  //         para testar o modal de verificação de email sem backend.
+  //         Remove esta linha quando o backend estiver pronto.
   // ───────────────────────────────────────────────────────────
   const register = async (formData) => {
     setLoading(true);
     try {
-      const res = await api.post("/auth/register", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
+      return { success: true }; // 🚧 DEV — remove quando o backend estiver pronto
 
-        // ✅ exigidos pelo teu backend
+      const res = await api.post("/auth/register", {
+        name:            formData.name,
+        email:           formData.email,
+        password:        formData.password,
         confirmPassword: formData.confirmPassword,
-        country: formData.country,
+        country:         formData.country,
       });
 
       const payload = unpack(res);

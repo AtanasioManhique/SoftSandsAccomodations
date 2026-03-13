@@ -17,6 +17,7 @@
     "react-leaflet": "^5.0.0",
     "react-select": "^5.10.2",
     "recharts": "^3.2.1",
-    "swiper": "^12.1.2"
+    "swiper": "^12.1.2",
+    "world-countries": "^5.1.0"
   }
 }

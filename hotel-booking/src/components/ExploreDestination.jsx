@@ -19,13 +19,11 @@ const shimmerStyle = {
 };
 
 const ExploreDestinationSkeleton = () => (
-  <div className="flex flex-col items-center pt-3 py-8 pb-15">
+  // Corrigido: pb-15 → pb-[3.75rem] (classe não-standard)
+  <div className="flex flex-col items-center pt-3 py-8 pb-[3.75rem]">
     <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
     <div className="w-full max-w-7xl">
-      {/* Título skeleton */}
       <div style={{ ...shimmerStyle, width: "200px", height: "28px", borderRadius: "6px", marginBottom: "24px" }} />
-
-      {/* Cards skeleton */}
       <div className="flex gap-5 overflow-hidden">
         {[...Array(4)].map((_, i) => (
           <div key={i} style={{ minWidth: "220px", borderRadius: "12px", overflow: "hidden", flex: "0 0 220px" }}>
@@ -41,51 +39,67 @@ const ExploreDestinationSkeleton = () => (
 
 const ExploreDestination = () => {
   const [destinos, setDestinos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const swiperRef = useRef(null);
-  const { t } = useTranslation();
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(false);
+  const swiperRef               = useRef(null);
+  const { t }                   = useTranslation();
 
   useEffect(() => {
+    // ── BACKEND: GET /api/destinos ─────────────────────────
+    // Descomentar quando o backend estiver pronto e apagar o bloco abaixo:
+    // api.get("/api/destinos", { withCredentials: true })
+    //   .then((res) => setDestinos(res.data))
+    //   .catch(() => setError(true))
+    //   .finally(() => setLoading(false));
+    // ───────────────────────────────────────────────────────
+
+    // Temporário — lê do ficheiro JSON estático:
     api
       .get("/data/casas.json", { baseURL: window.location.origin })
       .then((res) => {
-        const data = res.data;
-        const grouped = data.reduce((acc, house) => {
+        const grouped = res.data.reduce((acc, house) => {
           if (!acc[house.location]) acc[house.location] = [];
           acc[house.location].push(house);
           return acc;
         }, {});
 
-        const uniqueDestinos = Object.keys(grouped).map((location) => ({
-          name: location,
-          image: grouped[location][0].image[0],
-          totalCasas: grouped[location].length,
-        }));
-
-        setDestinos(uniqueDestinos);
+        // Corrigido: key usada no map era index — agora usa location (estável)
+        setDestinos(
+          Object.keys(grouped).map((location) => ({
+            name:       location,
+            image:      grouped[location][0].image[0],
+            totalCasas: grouped[location].length,
+          }))
+        );
       })
-      .catch((err) => console.error("Erro ao carregar destinos:", err))
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <ExploreDestinationSkeleton />;
 
-  const handleNext = () => { if (swiperRef.current) swiperRef.current.slideNext(); };
-  const handlePrev = () => { if (swiperRef.current) swiperRef.current.slidePrev(); };
+  if (error) return (
+    <div className="flex flex-col items-center pt-3 py-8 pb-[3.75rem]">
+      <p className="text-gray-400 text-sm">{t("explore.error") || "Erro ao carregar destinos."}</p>
+    </div>
+  );
+
+  const handleNext = () => swiperRef.current?.slideNext();
+  const handlePrev = () => swiperRef.current?.slidePrev();
 
   return (
-    <div className="flex flex-col items-center pt-3 py-8 pb-15">
+    // Corrigido: pb-15 → pb-[3.75rem]
+    <div className="flex flex-col items-center pt-3 py-8 pb-[3.75rem]">
       <div className="w-full max-w-7xl">
-        <div className="">
-          <Title align="left" title={t("explore.destination")} />
-        </div>
+        <Title align="left" title={t("explore.destination")} />
 
         <div className="relative mt-6">
           <button
             onClick={handlePrev}
             className="hidden md:flex absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
+            aria-label={t("common.prev") || "Anterior"}
           >
-            <img src={leftarrow} className="w-5 h-5" alt="Anterior" />
+            <img src={leftarrow} className="w-5 h-5" alt="" />
           </button>
 
           <Swiper
@@ -95,16 +109,17 @@ const ExploreDestination = () => {
             spaceBetween={20}
             loop={true}
             breakpoints={{
-              320: { slidesPerView: 1.2, slidesOffsetBefore: 16, slidesOffsetAfter: 16 },
-              480: { slidesPerView: 1.5, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
-              640: { slidesPerView: 2, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
-              768: { slidesPerView: 3, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
-              1024: { slidesPerView: 3.5, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
-              1280: { slidesPerView: 4, slidesOffsetBefore: 0, slidesOffsetAfter: 0 },
+              320:  { slidesPerView: 1.2, slidesOffsetBefore: 16, slidesOffsetAfter: 16 },
+              480:  { slidesPerView: 1.5, slidesOffsetBefore: 0,  slidesOffsetAfter: 0  },
+              640:  { slidesPerView: 2,   slidesOffsetBefore: 0,  slidesOffsetAfter: 0  },
+              768:  { slidesPerView: 3,   slidesOffsetBefore: 0,  slidesOffsetAfter: 0  },
+              1024: { slidesPerView: 3.5, slidesOffsetBefore: 0,  slidesOffsetAfter: 0  },
+              1280: { slidesPerView: 4,   slidesOffsetBefore: 0,  slidesOffsetAfter: 0  },
             }}
           >
-            {destinos.map((destino, index) => (
-              <SwiperSlide key={index}>
+            {destinos.map((destino) => (
+              // Corrigido: key={index} → key={destino.name} (estável, não muda com reorder)
+              <SwiperSlide key={destino.name}>
                 <Link
                   to={`/praias/${encodeURIComponent(destino.name)}`}
                   className="relative rounded-xl overflow-hidden shadow-sm hover:shadow-md group block"
@@ -113,6 +128,7 @@ const ExploreDestination = () => {
                     src={destino.image}
                     alt={destino.name}
                     className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-center py-3 text-lg font-semibold">
                     {destino.name} ({destino.totalCasas})
@@ -125,8 +141,9 @@ const ExploreDestination = () => {
           <button
             onClick={handleNext}
             className="hidden md:flex absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
+            aria-label={t("common.next") || "Próximo"}
           >
-            <img src={rightarrow} className="w-5 h-5" alt="Próximo" />
+            <img src={rightarrow} className="w-5 h-5" alt="" />
           </button>
         </div>
       </div>

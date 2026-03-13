@@ -1,10 +1,127 @@
 // FormDropDown/RegisterForm.jsx
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/palmtree.png";
 import { useTranslation } from "react-i18next";
+import EmailVerificationModal from "./EmailVerificationModal";
+import Select from "react-select";
+import countries from "world-countries";
+
+// ── Lista de países com bandeira emoji ───────────────────────
+const countryOptions = countries
+  .map((c) => ({
+    value: c.name.common,
+    label: c.name.common,
+    flag: c.flag,
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label));
+
+const selectStyles = {
+  control: (base, state) => ({
+    ...base,
+    borderRadius: "0.5rem",
+    borderColor: state.selectProps.hasError
+      ? "#f87171"
+      : state.isFocused
+      ? "#60a5fa"
+      : "#d1d5db",
+    backgroundColor: state.selectProps.hasError ? "#fef2f2" : "white",
+    boxShadow: state.isFocused
+      ? state.selectProps.hasError
+        ? "0 0 0 2px #fca5a5"
+        : "0 0 0 2px #93c5fd"
+      : "none",
+    "&:hover": { borderColor: state.selectProps.hasError ? "#f87171" : "#60a5fa" },
+    padding: "1px 4px",
+    fontSize: "0.875rem",
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected ? "#2563eb" : state.isFocused ? "#eff6ff" : "white",
+    color: state.isSelected ? "white" : "#374151",
+    fontSize: "0.875rem",
+  }),
+  placeholder: (base) => ({ ...base, color: "#9ca3af", fontSize: "0.875rem" }),
+  singleValue: (base) => ({ ...base, color: "#374151", fontSize: "0.875rem" }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+};
+
+const formatOptionLabel = ({ flag, label }) => (
+  <div className="flex items-center gap-2">
+    <span className="text-lg leading-none">{flag}</span>
+    <span>{label}</span>
+  </div>
+);
+
+// ─────────────────────────────────────────────────────────────
+
+const parseBackendError = (errorString) => {
+  if (!errorString || typeof errorString !== "string") {
+    return { field: null, message: "Erro ao criar conta. Tente novamente." };
+  }
+  const codeMatch = errorString.match(/^\[([A-Z0-9_]+)\]\s*(.*)/);
+  const code = codeMatch?.[1] ?? null;
+  const humanMessage = codeMatch?.[2] ?? errorString;
+  const codeMap = {
+    EMAIL_EXISTS: "email",
+    NAME_EXISTS:  "name",
+  };
+  const field = code ? (codeMap[code] ?? null) : null;
+  const translations = {
+    "An account with this email already exists": "Este email já está registado.",
+    "An account with this name already exists":  "Este nome de utilizador já está em uso.",
+  };
+  const message = translations[humanMessage] ?? humanMessage;
+  return { field, message };
+};
+
+const validateClient = (formData, t) => {
+  const errors = {};
+  if (!formData.name.trim())
+    errors.name = "O nome completo é obrigatório.";
+  if (!formData.email.trim())
+    errors.email = "O email é obrigatório.";
+  else if (!formData.email.includes("@"))
+    errors.email = "Por favor introduza um email válido.";
+  if (!formData.password)
+    errors.password = "A palavra-passe é obrigatória.";
+  else if (formData.password.length < 8)
+    errors.password = "A palavra-passe deve ter no mínimo 8 caracteres.";
+  if (!formData.confirmPassword)
+    errors.confirmPassword = "Por favor confirme a sua palavra-passe.";
+  else if (formData.password !== formData.confirmPassword)
+    errors.confirmPassword = "As palavras-passe não coincidem.";
+  if (!formData.city)
+    errors.city = "O país é obrigatório.";
+  if (!formData.acceptTerms)
+    errors.acceptTerms = t("register.termsRequired") || "Deve aceitar os termos.";
+  return errors;
+};
+
+// ── Fora do RegisterPage para evitar perda de foco ───────────
+// Sem "required" — a nossa validação trata tudo
+const InputField = ({ type = "text", name, placeholder, value, onChange, onBlur, error }) => (
+  <div className="flex flex-col gap-1 text-left">
+    <input
+      type={type}
+      name={name}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      className={`border rounded-lg px-4 py-2 focus:ring-2 outline-none transition-colors ${
+        error
+          ? "border-red-400 focus:ring-red-300 bg-red-50"
+          : "border-gray-300 focus:ring-blue-400"
+      }`}
+    />
+    {error && <p className="text-red-500 text-xs px-1">{error}</p>}
+  </div>
+);
+
+// ─────────────────────────────────────────────────────────────
 
 const RegisterPage = () => {
   const { t } = useTranslation();
@@ -20,170 +137,222 @@ const RegisterPage = () => {
     acceptTerms: false,
   });
 
-  const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [generalError, setGeneralError] = useState(null);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => { const n = { ...prev }; delete n[name]; return n; });
+    }
+    if (generalError) setGeneralError(null);
+  };
+
+  const handleCountryChange = (selected) => {
+    setFormData((prev) => ({ ...prev, city: selected ? selected.value : "" }));
+    if (fieldErrors.city) {
+      setFieldErrors((prev) => { const n = { ...prev }; delete n.city; return n; });
+    }
+  };
+
+  const handleEmailBlur = () => {
+    if (formData.email && !formData.email.includes("@")) {
+      setFieldErrors((prev) => ({ ...prev, email: "Por favor introduza um email válido." }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    setGeneralError(null);
 
-    // ── Validações client-side ────────────────────────────
-
-    // 1. Email deve conter @
-    if (!formData.email.includes("@")) {
-      setError("Por favor introduza um email válido.");
+    const clientErrors = validateClient(formData, t);
+    if (Object.keys(clientErrors).length > 0) {
+      setFieldErrors(clientErrors);
       return;
     }
-
-    // 2. Password mínimo 8 caracteres
-    if (formData.password.length < 8) {
-      setError("A palavra-passe deve ter no mínimo 8 caracteres.");
-      return;
-    }
-
-    // 3. Passwords devem coincidir
-    if (formData.password !== formData.confirmPassword) {
-      setError("As palavras-passe não coincidem.");
-      return;
-    }
-
-    // 4. Termos aceites
-    if (!formData.acceptTerms) {
-      setError(t("register.termsRequired") || "Você precisa aceitar os termos.");
-      return;
-    }
-
-    // ─────────────────────────────────────────────────────
+    setFieldErrors({});
 
     const result = await register({
       name:            formData.name.trim(),
       email:           formData.email.trim(),
       password:        formData.password,
       confirmPassword: formData.confirmPassword,
-      country:         (formData.city || "").trim(),
+      country:         formData.city,
     });
 
-    if (result?.success) navigate("/");
-    else setError(String(result?.error || "Erro ao criar conta. Tente novamente."));
+    if (result?.success) {
+      setShowVerificationModal(true);
+    } else {
+      const { field, message } = parseBackendError(result?.error);
+      if (field) setFieldErrors({ [field]: message });
+      else setGeneralError(message);
+    }
   };
 
-  // ── Google via popup ──────────────────────────────────────
   const handleGoogleLogin = useGoogleLogin({
     flow: "implicit",
-
     onSuccess: async (tokenResponse) => {
       setGoogleLoading(true);
-      setError(null);
+      setGeneralError(null);
       try {
         const googleAccessToken = tokenResponse?.access_token;
         if (!googleAccessToken) throw new Error("Google não retornou access_token.");
-
         const result = await loginWithGoogle(googleAccessToken);
-
         if (result?.success) navigate("/");
-        else setError(String(result?.error || "Erro ao entrar com Google."));
+        else {
+          const { message } = parseBackendError(result?.error);
+          setGeneralError(message);
+        }
       } catch (err) {
         console.error("Erro Google:", err);
-        setError(err?.message || "Erro ao processar Google.");
+        setGeneralError(err?.message || "Erro ao processar Google.");
       } finally {
         setGoogleLoading(false);
       }
     },
-
-    onError: () => setError("Erro ao conectar com Google."),
+    onError: () => setGeneralError("Erro ao conectar com Google."),
   });
 
   const isLoading = loading || googleLoading;
 
+  const selectedCountry = useMemo(
+    () => countryOptions.find((o) => o.value === formData.city) ?? null,
+    [formData.city]
+  );
+
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-blue-50 to-blue-100 p-4 mt-15">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center">
-        <img src={logo} alt="SoftSands Logo" className="h-16 mx-auto mb-3" />
+    <>
+      {showVerificationModal && (
+        <EmailVerificationModal
+          email={formData.email}
+          onClose={() => setShowVerificationModal(false)}
+        />
+      )}
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-1">{t("register.title")}</h2>
-        <p className="text-gray-500 mb-6 text-sm">{t("register.subtitle")}</p>
+      <div className="min-h-screen flex justify-center items-center bg-gradient-to-b from-blue-50 to-blue-100 p-4 mt-15">
+        <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center">
+          <img src={logo} alt="SoftSands Logo" className="h-16 mx-auto mb-3" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-1">{t("register.title")}</h2>
+          <p className="text-gray-500 mb-6 text-sm">{t("register.subtitle")}</p>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <input type="text" name="name" placeholder={t("register.fullname")}
-            value={formData.name} onChange={handleChange} required
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+          <form className="flex flex-col gap-3" onSubmit={handleSubmit} noValidate>
+            <InputField
+              name="name"
+              placeholder={t("register.fullname")}
+              value={formData.name}
+              onChange={handleChange}
+              error={fieldErrors.name}
+            />
+            <InputField
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              onBlur={handleEmailBlur}
+              error={fieldErrors.email}
+            />
+            <InputField
+              type="password"
+              name="password"
+              placeholder={t("register.password")}
+              value={formData.password}
+              onChange={handleChange}
+              error={fieldErrors.password}
+            />
+            <InputField
+              type="password"
+              name="confirmPassword"
+              placeholder={t("register.confirm")}
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={fieldErrors.confirmPassword}
+            />
 
-          <input type="email" name="email" placeholder="Email"
-            value={formData.email} onChange={handleChange} required
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+            {/* Selector de país */}
+            <div className="flex flex-col gap-1 text-left">
+              <Select
+                options={countryOptions}
+                value={selectedCountry}
+                onChange={handleCountryChange}
+                formatOptionLabel={formatOptionLabel}
+                placeholder={t("register.country") || "Seleccione o seu país"}
+                styles={selectStyles}
+                hasError={!!fieldErrors.city}
+                menuPortalTarget={document.body}
+                menuPosition="fixed"
+                noOptionsMessage={() => "Nenhum país encontrado"}
+                isClearable
+              />
+              {fieldErrors.city && (
+                <p className="text-red-500 text-xs px-1">{fieldErrors.city}</p>
+              )}
+            </div>
 
-          <input type="password" name="password" placeholder={t("register.password")}
-            value={formData.password} onChange={handleChange} required
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+            {/* Checkbox termos */}
+            <div className="flex flex-col gap-1 text-left">
+              <label className="flex items-center gap-2 text-sm text-gray-600">
+                <input
+                  type="checkbox"
+                  name="acceptTerms"
+                  checked={formData.acceptTerms}
+                  onChange={handleChange}
+                />
+                <span>
+                  {t("register.terms")}{" "}
+                  <a href="/termosecondições" target="_blank" rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline font-medium">
+                    {t("navbar.terms")}
+                  </a>
+                </span>
+              </label>
+              {fieldErrors.acceptTerms && (
+                <p className="text-red-500 text-xs px-1">{fieldErrors.acceptTerms}</p>
+              )}
+            </div>
 
-          <input type="password" name="confirmPassword" placeholder={t("register.confirm")}
-            value={formData.confirmPassword} onChange={handleChange} required
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+            {generalError && (
+              <p className="text-red-500 text-sm text-center">{generalError}</p>
+            )}
 
-          <input type="text" name="city" placeholder={t("register.country")}
-            value={formData.city} onChange={handleChange} required
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+            <button type="submit" disabled={isLoading}
+              className="bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all disabled:opacity-50 mt-1">
+              {isLoading ? t("register.creating") : t("register.create")}
+            </button>
+          </form>
 
-          <label className="flex items-center gap-2 text-sm text-gray-600 text-left">
-            <input type="checkbox" name="acceptTerms"
-              checked={formData.acceptTerms} onChange={handleChange} required />
-            <span>
-              {t("register.terms")}{" "}
-              <a href="/termosecondições" target="_blank" rel="noopener noreferrer"
-                className="text-blue-600 hover:underline font-medium">
-                {t("navbar.terms")}
-              </a>
+          <div className="flex items-center justify-center my-4">
+            <div className="h-px bg-gray-300 w-1/3" />
+            <span className="text-gray-400 text-sm mx-2">{t("register.or")}</span>
+            <div className="h-px bg-gray-300 w-1/3" />
+          </div>
+
+          <button onClick={() => handleGoogleLogin()} disabled={isLoading}
+            className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg py-2.5 px-4 hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            {googleLoading
+              ? <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+              : <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+            }
+            <span className="text-sm font-medium text-gray-700">
+              {googleLoading ? "A entrar..." : "Continuar com Google"}
             </span>
-          </label>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          <button type="submit" disabled={isLoading}
-            className="bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all disabled:opacity-50">
-            {isLoading ? t("register.creating") : t("register.create")}
           </button>
-        </form>
 
-        <div className="flex items-center justify-center my-4">
-          <div className="h-px bg-gray-300 w-1/3" />
-          <span className="text-gray-400 text-sm mx-2">{t("register.or")}</span>
-          <div className="h-px bg-gray-300 w-1/3" />
+          <p className="mt-6 text-sm text-gray-600">
+            {t("register.acc")}{" "}
+            <a href="/login" className="text-blue-600 hover:underline">{t("login.log")}</a>
+          </p>
         </div>
-
-        <button
-          onClick={() => handleGoogleLogin()}
-          disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg py-2.5 px-4 hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {googleLoading ? (
-            <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-          )}
-          <span className="text-sm font-medium text-gray-700">
-            {googleLoading ? "A entrar..." : "Continuar com Google"}
-          </span>
-        </button>
-
-        <p className="mt-6 text-sm text-gray-600">
-          {t("register.acc")}{" "}
-          <a href="/login" className="text-blue-600 hover:underline">{t("login.log")}</a>
-        </p>
       </div>
-    </div>
+    </>
   );
 };
 
