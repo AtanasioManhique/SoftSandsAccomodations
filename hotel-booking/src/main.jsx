@@ -22,7 +22,7 @@ import { AuthProvider } from "./context/AuthContext";
 // Substituir por: const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 // E criar ficheiro .env com: VITE_GOOGLE_CLIENT_ID=825997502039-...
 // ─────────────────────────────────────────────────────────────
-const CLIENT_ID = "825997502039-e18bllidgaoedpmr24o107qpkd7t26ag.apps.googleusercontent.com";
+const CLIENT_ID = "286971361685-736jpesejtbpn3bbvc4dkfvljha6hoqe.apps.googleusercontent.com";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
