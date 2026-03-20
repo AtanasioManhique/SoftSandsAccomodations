@@ -4,19 +4,33 @@ import api from "../services/api.js";
 
 const AuthContext = createContext(null);
 
-// Backend: { success:true, data:{ user, tokens:{accessToken, refreshToken} }, message }
+// ─────────────────────────────────────────────────────────────
+// 🚧 DEV ONLY — Credenciais temporárias para simular admin
+// Remove este bloco quando o backend estiver pronto.
+//
+// Para entrar como admin usa:
+//   Email:    admin@softsands.com
+//   Password: admin123
+// ─────────────────────────────────────────────────────────────
+const DEV_ADMIN = {
+  id:      "dev-admin-001",
+  name:    "Admin SoftSands",
+  email:   "admin@softsands.com",
+  role:    "admin",
+  picture: null,
+};
+const DEV_ADMIN_EMAIL    = "admin@softsands.com";
+const DEV_ADMIN_PASSWORD = "admin123";
+// ─────────────────────────────────────────────────────────────
+
 const unpack = (res) => res?.data?.data ?? res?.data ?? null;
 
-// Converte erro backend {success:false, error:{code,message,details}} em string
 const errorToString = (err) => {
   const data = err?.response?.data;
-
   if (data && typeof data === "object") {
     const root = data.error && typeof data.error === "object" ? data.error : data;
-
     const code = root.code ? `[${root.code}] ` : "";
     const message = typeof root.message === "string" ? root.message : "Ocorreu um erro.";
-
     let details = "";
     if (root.details != null) {
       details =
@@ -28,10 +42,8 @@ const errorToString = (err) => {
           ? JSON.stringify(root.details)
           : String(root.details);
     }
-
     return `${code}${message}${details ? ` — ${details}` : ""}`;
   }
-
   return err?.message || "Ocorreu um erro.";
 };
 
@@ -48,9 +60,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   const saveAuth = (userData, accessToken, refreshToken) => {
-    if (accessToken) localStorage.setItem("token", accessToken);
+    if (accessToken)  localStorage.setItem("token",        accessToken);
     if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-    if (userData) localStorage.setItem("user", JSON.stringify(userData));
+    if (userData)     localStorage.setItem("user",         JSON.stringify(userData));
     setUser(userData || null);
     window.dispatchEvent(new Event("user_logged_in"));
   };
@@ -65,17 +77,28 @@ export const AuthProvider = ({ children }) => {
 
   // ───────────────────────────────────────────────────────────
   // LOGIN (EMAIL)
-  // POST /api/auth/login
-  // response.data.data = { user, tokens:{accessToken, refreshToken} }
   // ───────────────────────────────────────────────────────────
   const loginWithEmail = async (email, password) => {
     setLoading(true);
     try {
+
+      // 🚧 DEV — Simula login de admin sem backend
+      // Remove este bloco quando o backend estiver pronto.
+      if (
+        email.trim().toLowerCase()    === DEV_ADMIN_EMAIL &&
+        password                       === DEV_ADMIN_PASSWORD
+      ) {
+        saveAuth(DEV_ADMIN, "dev-token-admin", "dev-refresh-admin");
+        return { success: true };
+      }
+      // 🚧 fim do bloco DEV ──────────────────────────────────
+
+      // BACKEND: POST /api/auth/login
       const res = await api.post("/auth/login", { email, password });
       const payload = unpack(res);
 
-      const userData = payload?.user;
-      const accessToken = payload?.tokens?.accessToken;
+      const userData     = payload?.user;
+      const accessToken  = payload?.tokens?.accessToken;
       const refreshToken = payload?.tokens?.refreshToken;
 
       if (!userData || !accessToken) {
@@ -93,13 +116,6 @@ export const AuthProvider = ({ children }) => {
 
   // ───────────────────────────────────────────────────────────
   // REGISTER
-  // POST /api/auth/register
-  // backend exige: confirmPassword, country
-  // response.data.data = { user, tokens:{accessToken, refreshToken} }
-  //
-  // 🚧 DEV: return { success: true } simula registo bem-sucedido
-  //         para testar o modal de verificação de email sem backend.
-  //         Remove esta linha quando o backend estiver pronto.
   // ───────────────────────────────────────────────────────────
   const register = async (formData) => {
     setLoading(true);
@@ -114,10 +130,9 @@ export const AuthProvider = ({ children }) => {
         country:         formData.country,
       });
 
-      const payload = unpack(res);
-
-      const userData = payload?.user;
-      const accessToken = payload?.tokens?.accessToken;
+      const payload      = unpack(res);
+      const userData     = payload?.user;
+      const accessToken  = payload?.tokens?.accessToken;
       const refreshToken = payload?.tokens?.refreshToken;
 
       if (!userData || !accessToken) {
@@ -135,8 +150,6 @@ export const AuthProvider = ({ children }) => {
 
   // ───────────────────────────────────────────────────────────
   // GOOGLE AUTH
-  // POST /api/auth/google  { idToken }
-  // backend espera req.body.idToken
   // ───────────────────────────────────────────────────────────
   const loginWithGoogle = async (idToken) => {
     setLoading(true);
@@ -144,8 +157,8 @@ export const AuthProvider = ({ children }) => {
       const res = await api.post("/auth/google", { idToken });
       const payload = unpack(res);
 
-      const userData = payload?.user;
-      const accessToken = payload?.tokens?.accessToken;
+      const userData     = payload?.user;
+      const accessToken  = payload?.tokens?.accessToken;
       const refreshToken = payload?.tokens?.refreshToken;
 
       if (!userData || !accessToken) {

@@ -1,12 +1,4 @@
 // components/Navbar.jsx
-// ─────────────────────────────────────────────────────────────
-// Corrigido: usa useAuth() em vez de ler localStorage diretamente.
-// Search com overlay escuro no mobile via Portal.
-// Dropdown hamburger e user funcionando corretamente.
-// Scroll do body bloqueado quando menu lateral está aberto.
-// Animação de entrada na barra de pesquisa mobile.
-// ─────────────────────────────────────────────────────────────
-
 import React, { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -17,10 +9,9 @@ import ssearch from "../assets/white-search.png";
 import close from "../assets/close.png";
 import loginuser from "../assets/loginuser.png";
 import { useTranslation } from "react-i18next";
-import { Heart, UserPlus, Settings, LogOut, Calendar, X } from "lucide-react";
+import { Heart, UserPlus, Settings, LogOut, Calendar, X, Shield } from "lucide-react";
 import { useLoginModal } from "../context/LoginModalContext";
 
-// ── DropdownBtn fora dos sub-componentes para evitar re-renders ──
 const DropdownBtn = ({ icon, label, to, onClose }) => {
   const navigate = useNavigate();
   const handleClick = () => {
@@ -39,27 +30,25 @@ const DropdownBtn = ({ icon, label, to, onClose }) => {
 
 const Navbar = () => {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  // isAdmin vem direto do AuthContext — já calculado a partir de user.role
+  const { user, logout, isAdmin } = useAuth();
   const { openLogin } = useLoginModal();
   const navigate = useNavigate();
   const location = useLocation();
 
   const navLinks = [
-    { key: "home", path: "/" },
+    { key: "home",    path: "/"       },
     { key: "explore", path: "/praias" },
-    { key: "about", path: "/sobre" },
+    { key: "about",   path: "/sobre"  },
   ];
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // ── Search state ──────────────────────────────────────────
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef(null);
   const mobileSearchInputRef = useRef(null);
-
   const dropdownDesktopRef = useRef(null);
   const dropdownMobileRef = useRef(null);
   const isHome = location.pathname === "/";
@@ -71,31 +60,22 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHome]);
 
-  // Fecha dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e) => {
-      const desktopOutside =
-        dropdownDesktopRef.current && !dropdownDesktopRef.current.contains(e.target);
-      const mobileOutside =
-        dropdownMobileRef.current && !dropdownMobileRef.current.contains(e.target);
+      const desktopOutside = dropdownDesktopRef.current && !dropdownDesktopRef.current.contains(e.target);
+      const mobileOutside = dropdownMobileRef.current && !dropdownMobileRef.current.contains(e.target);
       if (desktopOutside && mobileOutside) setIsDropdownOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Foca o input desktop quando a barra de pesquisa abre
   useEffect(() => {
-    if (isSearchOpen) {
-      setTimeout(() => searchInputRef.current?.focus(), 50);
-    }
+    if (isSearchOpen) setTimeout(() => searchInputRef.current?.focus(), 50);
   }, [isSearchOpen]);
 
-  // Fecha pesquisa com Escape
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") handleSearchClose();
-    };
+    const handleKeyDown = (e) => { if (e.key === "Escape") handleSearchClose(); };
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
@@ -107,45 +87,24 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-
-    // ── BACKEND: POST /api/auth/logout ─────────────────────
-    // Descomentar quando o backend estiver pronto:
-    // await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-    // ───────────────────────────────────────────────────────
-
     setIsDropdownOpen(false);
     navigate("/");
   };
 
-  // ── Lógica de pesquisa ────────────────────────────────────
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-
-    // ── BACKEND: GET /api/search?q=searchQuery ─────────────
-    // Descomentar quando o backend estiver pronto:
-    // navigate(`/pesquisa?q=${encodeURIComponent(searchQuery.trim())}`);
-    // ───────────────────────────────────────────────────────
-
-    // Temporário — substituir pela linha acima com backend:
     navigate(`/praias?search=${encodeURIComponent(searchQuery.trim())}`);
     setSearchQuery("");
     setIsSearchOpen(false);
   };
 
-  const handleSearchClose = () => {
-    setIsSearchOpen(false);
-    setSearchQuery("");
-  };
+  const handleSearchClose = () => { setIsSearchOpen(false); setSearchQuery(""); };
 
   const renderUserIcon = () => {
     if (!user) return null;
     return user.picture ? (
-      <img
-        src={user.picture}
-        alt="profile"
-        className="w-8 h-8 rounded-full object-cover border transition-all duration-500 ease-in-out"
-      />
+      <img src={user.picture} alt="profile" className="w-8 h-8 rounded-full object-cover border transition-all duration-500 ease-in-out" />
     ) : (
       <div className="w-8 h-8 rounded-full bg-gray-800 text-white flex items-center justify-center font-bold text-sm">
         {user.name?.[0]?.toUpperCase()}
@@ -156,12 +115,11 @@ const Navbar = () => {
   const closeDropdown = () => setIsDropdownOpen(false);
   const scrolled = isScrolled || !isHome;
 
-  // ── Itens do dropdown ─────────────────────────────────────
   const DropdownLogged = () => (
     <div className="py-1">
-      <DropdownBtn icon={<Heart size={16} />} label={t("navbar.fav")} to="/favoritos" onClose={closeDropdown} />
+      <DropdownBtn icon={<Heart size={16} />}    label={t("navbar.fav")}      to="/favoritos"      onClose={closeDropdown} />
       <DropdownBtn icon={<Calendar size={16} />} label={t("navbar.reserves")} to="/minhasreservas" onClose={closeDropdown} />
-      <DropdownBtn icon={<Settings size={16} />} label={t("navbar.settings")} to="/settings" onClose={closeDropdown} />
+      <DropdownBtn icon={<Settings size={16} />} label={t("navbar.settings")} to="/settings"       onClose={closeDropdown} />
       <hr className="my-1 border-gray-100" />
       <DropdownBtn
         icon={<img src="/icons/terms-and-conditions.png" className="w-4 h-4" alt="" />}
@@ -203,9 +161,6 @@ const Navbar = () => {
     </div>
   );
 
-  // No mobile, "Iniciar Sessão" abre o LoginModal em vez de navegar
-  // para /login. Isto garante que o Google Login funciona corretamente
-  // sem ser bloqueado por overflow-hidden ou posicionamento absoluto.
   const DropdownGuestMobile = () => (
     <div className="py-1">
       <button
@@ -225,33 +180,21 @@ const Navbar = () => {
     </div>
   );
 
-  // ── Portal de pesquisa mobile ─────────────────────────────
-  // IMPORTANTE: chamado como função {mobileSearchPortal()} e NÃO como
-  // componente <MobileSearchPortal /> — assim o React não destrói e
-  // recria o input a cada render, permitindo escrever normalmente.
   const mobileSearchPortal = () =>
     createPortal(
       <>
-        {/* Overlay escuro animado */}
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden animate-[fadeIn_0.2s_ease]"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={handleSearchClose}
           style={{ animation: "fadeIn 0.2s ease" }}
         />
-        {/* Barra de pesquisa com animação de entrada (slide down) */}
         <div
           className="fixed top-0 left-0 w-full z-50 md:hidden bg-white shadow-lg px-4 py-3 flex items-center gap-3"
           style={{ animation: "slideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1)" }}
         >
           <style>{`
-            @keyframes fadeIn {
-              from { opacity: 0; }
-              to   { opacity: 1; }
-            }
-            @keyframes slideDown {
-              from { transform: translateY(-100%); opacity: 0; }
-              to   { transform: translateY(0);     opacity: 1; }
-            }
+            @keyframes fadeIn  { from{opacity:0}             to{opacity:1}            }
+            @keyframes slideDown { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
           `}</style>
           <form
             onSubmit={handleSearchSubmit}
@@ -300,7 +243,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop Links */}
+        {/* ── Desktop: links + botão Admin ── */}
         <div className="hidden md:flex items-center gap-4 lg:gap-8">
           {navLinks.map((link) => (
             <Link
@@ -314,9 +257,20 @@ const Navbar = () => {
               <div className={`${scrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all duration-300 ease-in-out`} />
             </Link>
           ))}
+
+          {/* Botão Admin — só aparece se isAdmin === true */}
+          {isAdmin && (
+            <Link
+              to="/admin/dashboard"
+              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              <Shield size={14} />
+              Admin
+            </Link>
+          )}
         </div>
 
-        {/* Right Section Desktop */}
+        {/* ── Desktop: search + user dropdown ── */}
         <div className="hidden md:flex items-center gap-4 relative" ref={dropdownDesktopRef}>
           {isSearchOpen ? (
             <form
@@ -369,9 +323,8 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* ── Mobile Header ── */}
+        {/* ── Mobile: ícone user + search + hamburger ── */}
         <div className="flex md:hidden items-center gap-3 relative" ref={dropdownMobileRef}>
-          {/* Botão user / dropdown */}
           <button
             onClick={() => setIsDropdownOpen((prev) => !prev)}
             className="flex items-center justify-center w-9 h-9 rounded-full border border-gray-300 overflow-hidden"
@@ -390,14 +343,12 @@ const Navbar = () => {
             )}
           </button>
 
-          {/* Dropdown mobile */}
           {isDropdownOpen && (
             <div className="absolute top-12 right-0 w-52 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-[60]">
               {user ? <DropdownLogged /> : <DropdownGuestMobile />}
             </div>
           )}
 
-          {/* Botão de pesquisa mobile */}
           <button onClick={() => setIsSearchOpen(true)} aria-label="Pesquisar">
             <img
               src={ssearch}
@@ -406,7 +357,6 @@ const Navbar = () => {
             />
           </button>
 
-          {/* Botão hamburger */}
           <button onClick={() => setIsMenuOpen(true)} aria-label="Abrir menu">
             <img
               src={menuIcon}
@@ -416,7 +366,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Menu Lateral Mobile */}
+        {/* ── Menu lateral mobile ── */}
         <div
           className={`fixed top-0 left-0 w-full h-screen bg-white flex flex-col md:hidden items-center justify-center gap-6 text-gray-800 transition-all duration-500 ease-in-out z-[70] ${
             isMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -425,6 +375,7 @@ const Navbar = () => {
           <button className="absolute top-4 right-4" onClick={() => setIsMenuOpen(false)} aria-label="Fechar menu">
             <img src={close} alt="Fechar" className="h-6 w-6" />
           </button>
+
           {navLinks.map((link) => (
             <Link
               key={link.key}
@@ -435,10 +386,21 @@ const Navbar = () => {
               {t(`navbar.${link.key}`)}
             </Link>
           ))}
+
+          {/* Botão Admin mobile — abaixo do "Sobre", só aparece se isAdmin */}
+          {isAdmin && (
+            <Link
+              to="/admin/dashboard"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-base font-semibold transition-all duration-200 shadow-sm"
+            >
+              <Shield size={16} />
+              Painel Admin
+            </Link>
+          )}
         </div>
       </nav>
 
-      {/* Portal da pesquisa mobile — chamado como função para preservar o input */}
       {isSearchOpen && mobileSearchPortal()}
     </>
   );

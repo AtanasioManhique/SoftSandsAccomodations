@@ -1,8 +1,3 @@
-// App.jsx
-// ─────────────────────────────────────────────────────────────
-// AuthProvider removido daqui — já está no main.jsx.
-// Ter dois AuthProviders causava conflito de contexto.
-// ─────────────────────────────────────────────────────────────
 
 import Navbar from "./components/Navbar";
 import React from "react";
@@ -27,6 +22,14 @@ import TermosECondicoes from "./FormDropDown/Termsandconditions";
 import PoliticaCancelamento from "./FormDropDown/PoliticaCancelamento";
 import ContacteNos from "./FormDropDown/ContacteNos";
 import PaymentConfirmation from "./Payments/paymentConfirmation";
+import ProtectedAdminRoute from "./admin/protectedadminroute";
+import AdminDashboard  from "./admin/admindashboard";
+import AdminReservas   from "./admin/adminreservas";
+import AdminCasas      from "./admin/admincasas";
+import AdminPraias     from "./admin/adminpraias";
+import AdminReviews    from "./admin/adminreviews";
+import AdminCalendario from "./admin/admincalendario";
+import AdminRelatorios from "./admin/adminrelatorios";
 
 function App() {
   const location = useLocation();
@@ -56,6 +59,13 @@ function App() {
               <Route path="/casas/:id" element={<HouseDetails />} />
               <Route path="/sobre" element={<About />} />
               <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+              <Route path="/admin/dashboard"  element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
+              <Route path="/admin/reservas"   element={<ProtectedAdminRoute><AdminReservas /></ProtectedAdminRoute>} />
+              <Route path="/admin/casas"      element={<ProtectedAdminRoute><AdminCasas /></ProtectedAdminRoute>} />
+              <Route path="/admin/praias"     element={<ProtectedAdminRoute><AdminPraias /></ProtectedAdminRoute>} />
+              <Route path="/admin/reviews"    element={<ProtectedAdminRoute><AdminReviews /></ProtectedAdminRoute>} />
+              <Route path="/admin/calendario" element={<ProtectedAdminRoute><AdminCalendario /></ProtectedAdminRoute>} />
+              <Route path="/admin/relatorios" element={<ProtectedAdminRoute><AdminRelatorios /></ProtectedAdminRoute>} />
             </Routes>
           </div>
 

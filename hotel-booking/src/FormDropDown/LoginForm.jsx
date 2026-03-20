@@ -6,54 +6,37 @@ import { useAuth } from "../context/AuthContext";
 import logo from "../assets/palmtree.png";
 import { useTranslation } from "react-i18next";
 
-// ─────────────────────────────────────────────────────────────
-// Códigos de erro reais do backend (auth.service.js / auth.controller.js):
-//   INVALID_CREDENTIALS  → 401 — email ou password errados
-//   ACCOUNT_DEACTIVATED  → 401 — conta desactivada
-//   GOOGLE_ACCOUNT       → 401 — conta criada via Google, sem password
-//
-// O AuthContext converte esses erros no formato:
-//   "[INVALID_CREDENTIALS] Invalid email or password"
-// Esta função extrai o código e mapeia para o campo correcto.
-// ─────────────────────────────────────────────────────────────
 const parseBackendError = (errorString) => {
   if (!errorString || typeof errorString !== "string") {
     return { field: null, message: "Credenciais inválidas." };
   }
-
-  // Extrai código: "[INVALID_CREDENTIALS] mensagem" → code + humanMessage
   const codeMatch = errorString.match(/^\[([A-Z0-9_]+)\]\s*(.*)/);
   const code = codeMatch?.[1] ?? null;
   const humanMessage = codeMatch?.[2] ?? errorString;
-
-  // Mapa código → campo do formulário (null = erro geral)
   const codeMap = {
-    INVALID_CREDENTIALS: null, // genérico — não especifica email nem password (segurança)
-    ACCOUNT_DEACTIVATED: null, // erro geral
-    GOOGLE_ACCOUNT: null, // erro geral — sugere usar Google
+    INVALID_CREDENTIALS: null,
+    ACCOUNT_DEACTIVATED: null,
+    GOOGLE_ACCOUNT: null,
   };
-
   const field = code && code in codeMap ? codeMap[code] : null;
-
-  // Traduz as mensagens do backend (em inglês) para português
   const translations = {
     "Invalid email or password": "Email ou palavra-passe incorrectos.",
     "Account is deactivated": "Esta conta foi desactivada. Contacte o suporte.",
     "This account uses Google sign-in. Please log in with Google.":
       "Esta conta foi criada com Google. Por favor, utilize o botão 'Continuar com Google'.",
   };
-
   const message = translations[humanMessage] ?? humanMessage;
-
   return { field, message };
 };
-
-// ─────────────────────────────────────────────────────────────
 
 const LoginPage = ({ isModal = false, onSuccess }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { loginWithEmail, loginWithGoogle, loading } = useAuth();
+
+  // ── isAdmin vem do AuthContext — já calculado a partir de user.role ──
+  // Após loginWithEmail/loginWithGoogle o AuthContext chama setUser()
+  // e isAdmin atualiza automaticamente. NÃO precisamos de result.user.
+  const { loginWithEmail, loginWithGoogle, loading, isAdmin } = useAuth();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [fieldErrors, setFieldErrors] = useState({});
@@ -63,41 +46,45 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Limpa o erro do campo assim que o utilizador começa a corrigir
     if (fieldErrors[name]) {
-      setFieldErrors((prev) => {
-        const n = { ...prev };
-        delete n[name];
-        return n;
-      });
+      setFieldErrors((prev) => { const n = { ...prev }; delete n[name]; return n; });
     }
     if (generalError) setGeneralError(null);
   };
 
-  // ── Login por formulário ──────────────────────────────────
+  // ── Redireciona consoante o role ──────────────────────────
+  // isAdmin é lido do AuthContext DEPOIS de saveAuth() ter feito setUser().
+  // Neste ponto o estado já foi atualizado, então isAdmin reflete
+  // o role real que veio do backend.
+  const redirectAfterLogin = () => {
+    if (isAdmin) {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/");
+    }
+  };
+  // ─────────────────────────────────────────────────────────
+
   const handleFormLogin = async (e) => {
     e.preventDefault();
     setGeneralError(null);
 
-    // Validação client-side mínima (UX)
     const clientErrors = {};
-    if (!formData.email) clientErrors.email = "Introduza o seu email.";
+    if (!formData.email)    clientErrors.email    = "Introduza o seu email.";
     if (!formData.password) clientErrors.password = "Introduza a sua palavra-passe.";
-
-    if (Object.keys(clientErrors).length > 0) {
-      setFieldErrors(clientErrors);
-      return;
-    }
-
+    if (Object.keys(clientErrors).length > 0) { setFieldErrors(clientErrors); return; }
     setFieldErrors({});
 
-    // Chamada ao backend — POST /api/auth/login { email, password }
+    // BACKEND: POST /api/auth/login
+    // AuthContext.loginWithEmail faz saveAuth() → setUser() → isAdmin atualiza
     const result = await loginWithEmail(formData.email, formData.password);
 
     if (result?.success) {
-      if (onSuccess) onSuccess();
-      else navigate("/");
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        redirectAfterLogin();
+      }
     } else {
       const { field, message } = parseBackendError(result?.error);
       if (field) setFieldErrors({ [field]: message });
@@ -105,23 +92,18 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
     }
   };
 
-  // ── Login Google via GoogleLogin ──────────────────────────
   const handleGoogleSuccess = async (credentialResponse) => {
     setGoogleLoading(true);
     setGeneralError(null);
-
     try {
       const idToken = credentialResponse?.credential;
-
-      if (!idToken) {
-        throw new Error("Google não retornou credential.");
-      }
+      if (!idToken) throw new Error("Google não retornou credential.");
 
       const result = await loginWithGoogle(idToken);
 
       if (result?.success) {
         if (onSuccess) onSuccess();
-        else navigate("/");
+        else redirectAfterLogin();
       } else {
         const { message } = parseBackendError(result?.error);
         setGeneralError(message);
@@ -213,9 +195,7 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
           {googleLoading ? (
             <div className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg py-2.5 px-4 bg-gray-50">
               <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm font-medium text-gray-700">
-                A entrar...
-              </span>
+              <span className="text-sm font-medium text-gray-700">A entrar...</span>
             </div>
           ) : (
             <GoogleLogin
