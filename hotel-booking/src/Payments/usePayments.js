@@ -30,7 +30,26 @@ export function usePayment() {
   // ── initiatePayment ───────────────────────────────────────
   // Inicia o pagamento via PaySuite.
   // Retorna { success, paymentUrl } para o componente redirecionar.
-  const initiatePayment = async ({ bookingId, totalPrice, houseName, startDate, endDate, guests }) => {
+  //
+  // PARÂMETROS:
+  //   bookingId      — ID da reserva criada no backend
+  //   accommodationId — ID da casa (para persistir e recuperar imagem/localização)
+  //   totalPrice     — preço total formatado ex: "2.200 MZN"
+  //   houseName      — nome/localização da casa ex: "Ponta de Ouro"
+  //   images         — array de URLs das imagens da casa
+  //   startDate      — data de entrada "YYYY-MM-DD"
+  //   endDate        — data de saída  "YYYY-MM-DD"
+  //   guests         — número de hóspedes
+  const initiatePayment = async ({
+    bookingId,
+    accommodationId,
+    totalPrice,
+    houseName,
+    images,
+    startDate,
+    endDate,
+    guests,
+  }) => {
     setErrorMessage(null);
     setStatus("loading");
 
@@ -70,19 +89,22 @@ export function usePayment() {
       const devBookingId = bookingId || `DEV-${Date.now()}`;
 
       // Guarda reserva no localStorage para aparecer em MinhasReservas
+      // accommodationId e images permitem recuperar a casa no modo DEV
       const storageKey = DEV_STORAGE_KEY(user?.email);
       const reservaParaGuardar = {
-        id:            devBookingId,
-        houseId:       null, // não temos aqui — vem do state da página
+        id:             devBookingId,
+        accommodationId, // ← ID da casa para o normalizeBooking encontrar a imagem
+        images,          // ← imagens da casa (fallback se casas.json não tiver)
+        houseName,       // ← localização ex: "Ponta de Ouro"
         startDate,
         endDate,
         guests,
         totalPrice,
-        method:        "PaySuite (DEV)",
-        status:        "pendente",
-        paymentStatus: "pre_authorized",
-        paidAt:        new Date().toISOString(),
-        source:        "dev",
+        method:          "PaySuite (DEV)",
+        status:          "pendente",
+        paymentStatus:   "pre_authorized",
+        paidAt:          new Date().toISOString(),
+        source:          "dev",
       };
 
       const existentes = JSON.parse(localStorage.getItem(storageKey) || "[]");

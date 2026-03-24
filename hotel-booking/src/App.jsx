@@ -30,6 +30,8 @@ import AdminPraias     from "./admin/adminpraias";
 import AdminReviews    from "./admin/adminreviews";
 import AdminCalendario from "./admin/admincalendario";
 import AdminRelatorios from "./admin/adminrelatorios";
+import ForgotPassword from "./FormDropDown/ForgotPassword";
+import ResetPassword  from "./FormDropDown/ResetPassword";
 
 function App() {
   const location = useLocation();
@@ -59,6 +61,8 @@ function App() {
               <Route path="/casas/:id" element={<HouseDetails />} />
               <Route path="/sobre" element={<About />} />
               <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+              <Route path="/recuperar-senha"  element={<ForgotPassword />} />
+              <Route path="/redefinir-senha"  element={<ResetPassword />} />
               <Route path="/admin/dashboard"  element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
               <Route path="/admin/reservas"   element={<ProtectedAdminRoute><AdminReservas /></ProtectedAdminRoute>} />
               <Route path="/admin/casas"      element={<ProtectedAdminRoute><AdminCasas /></ProtectedAdminRoute>} />

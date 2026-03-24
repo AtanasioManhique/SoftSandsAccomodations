@@ -5,7 +5,8 @@ import { api } from "../services/api";
 import { TrendingUp } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis,
-  CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell
+  CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  PieChart, Pie, Cell,
 } from "recharts";
 
 const COLORS = ["#2563eb","#60a5fa","#93c5fd","#bfdbfe","#dbeafe","#1d4ed8"];
@@ -20,6 +21,8 @@ const AdminRelatorios = () => {
   const loadRelatorios = async () => {
     setLoading(true);
     try {
+      // BACKEND: GET /api/admin/reports?periodo=6m
+      // Deve incluir porPais: [{ pais, total, percentagem }]
       const res = await api.get("/admin/reports", { params: { periodo } });
       setData(res.data?.data ?? res.data);
     } catch {
@@ -39,6 +42,16 @@ const AdminRelatorios = () => {
           { name: "Malongane",     value: 9  },
           { name: "Mamoli",        value: 6  },
         ],
+        // BACKEND: porPais vem do campo country do utilizador registado
+        // endpoint deve agrupar reservas por user.country e contar
+        porPais: [
+          { pais: "Moçambique", flag: "🇲🇿", total: 89,  percentagem: 44 },
+          { pais: "África do Sul", flag: "🇿🇦", total: 61, percentagem: 30 },
+          { pais: "Portugal",   flag: "🇵🇹", total: 28,  percentagem: 14 },
+          { pais: "Brasil",     flag: "🇧🇷", total: 14,  percentagem: 7  },
+          { pais: "Reino Unido",flag: "🇬🇧", total: 8,   percentagem: 4  },
+          { pais: "Outros",     flag: "🌍", total: 4,   percentagem: 2  },
+        ],
         topCasas: [
           { name: "Casa do Mar",      receita: 18000, reservas: 22 },
           { name: "Villa Sunset",     receita: 14500, reservas: 17 },
@@ -46,9 +59,16 @@ const AdminRelatorios = () => {
           { name: "Casa Bilene",      receita: 8900,  reservas: 11 },
           { name: "Cabana Malongane", receita: 6200,  reservas: 8  },
         ],
-        resumo: { receitaTotal: "128.700 MZN", reservasTotais: 204, taxaOcupacao: "68%", ticketMedio: "631 MZN" },
+        resumo: {
+          receitaTotal:    "128.700 MZN",
+          reservasTotais:  204,
+          taxaOcupacao:    "68%",
+          ticketMedio:     "631 MZN",
+        },
       });
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const SummaryCard = ({ label, value }) => (
@@ -73,7 +93,6 @@ const AdminRelatorios = () => {
             <h2 className="text-lg font-bold text-gray-900">Relatórios de Receita</h2>
             <p className="text-sm text-gray-500 mt-0.5">Análise financeira da plataforma.</p>
           </div>
-          {/* Período scroll horizontal mobile */}
           <div className="flex gap-2 overflow-x-auto pb-1">
             {["3m","6m","12m"].map((p) => (
               <button key={p} onClick={() => setPeriodo(p)}
@@ -93,15 +112,15 @@ const AdminRelatorios = () => {
           </div>
         ) : (
           <>
-            {/* Resumo — 2 colunas mobile */}
+            {/* Resumo */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <SummaryCard label="Receita total"   value={data.resumo.receitaTotal}    />
-              <SummaryCard label="Reservas"         value={data.resumo.reservasTotais}  />
-              <SummaryCard label="Taxa ocupação"    value={data.resumo.taxaOcupacao}    />
-              <SummaryCard label="Ticket médio"     value={data.resumo.ticketMedio}     />
+              <SummaryCard label="Receita total"  value={data.resumo.receitaTotal}   />
+              <SummaryCard label="Reservas"        value={data.resumo.reservasTotais} />
+              <SummaryCard label="Taxa ocupação"   value={data.resumo.taxaOcupacao}   />
+              <SummaryCard label="Ticket médio"    value={data.resumo.ticketMedio}    />
             </div>
 
-            {/* Gráfico linha */}
+            {/* Gráfico linha — receita */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
               <h3 className="text-sm font-semibold text-gray-800 mb-4">Evolução da Receita (MZN)</h3>
               <ResponsiveContainer width="100%" height={180}>
@@ -109,7 +128,8 @@ const AdminRelatorios = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="mes" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={35} />
-                  <Tooltip contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "11px" }}
+                  <Tooltip
+                    contentStyle={{ borderRadius: "10px", border: "1px solid #e5e7eb", fontSize: "11px" }}
                     formatter={(v) => [`${v.toLocaleString()} MZN`, "Receita"]}
                   />
                   <Line type="monotone" dataKey="receita" stroke="#2563eb" strokeWidth={2.5} dot={{ r: 3, fill: "#2563eb" }} />
@@ -117,7 +137,7 @@ const AdminRelatorios = () => {
               </ResponsiveContainer>
             </div>
 
-            {/* Barras + Pie — stack mobile */}
+            {/* Barras + Pie por praia */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
                 <h3 className="text-sm font-semibold text-gray-800 mb-4">Reservas por mês</h3>
@@ -140,13 +160,58 @@ const AdminRelatorios = () => {
                       {data.porPraia.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                     </Pie>
                     <Tooltip formatter={(v) => [`${v}%`, "Reservas"]} contentStyle={{ fontSize: "11px", borderRadius: "8px" }} />
-                    <Legend formatter={(v) => v} wrapperStyle={{ fontSize: "11px" }} />
+                    <Legend wrapperStyle={{ fontSize: "11px" }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Top casas — cards mobile */}
+            {/* ── Países dos hóspedes ── */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-800">Países dos hóspedes</h3>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Com base no país registado na conta de cada utilizador
+                  </p>
+                </div>
+                <span className="text-xs text-gray-400 bg-gray-50 border border-gray-100 px-2 py-1 rounded-lg">
+                  {data.porPais.reduce((acc, p) => acc + p.total, 0)} reservas
+                </span>
+              </div>
+
+              <div className="p-4 space-y-3">
+                {data.porPais.map((item, i) => (
+                  <div key={item.pais} className="flex items-center gap-3">
+                    {/* Posição + bandeira */}
+                    <div className="flex items-center gap-2 w-36 sm:w-44 shrink-0">
+                      <span className="text-xs text-gray-400 w-4 text-right">{i + 1}</span>
+                      <span className="text-lg leading-none">{item.flag}</span>
+                      <span className="text-sm font-medium text-gray-700 truncate">{item.pais}</span>
+                    </div>
+
+                    {/* Barra de progresso */}
+                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-2 rounded-full transition-all duration-500"
+                        style={{
+                          width: `${item.percentagem}%`,
+                          background: COLORS[i % COLORS.length],
+                        }}
+                      />
+                    </div>
+
+                    {/* Percentagem + total */}
+                    <div className="flex items-center gap-2 shrink-0 text-right">
+                      <span className="text-sm font-bold text-gray-800">{item.percentagem}%</span>
+                      <span className="text-xs text-gray-400 hidden sm:block">({item.total})</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Top casas */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
               <div className="px-4 py-3 border-b border-gray-100">
                 <h3 className="text-sm font-semibold text-gray-800">Top 5 Casas por Receita</h3>
@@ -157,7 +222,9 @@ const AdminRelatorios = () => {
                 {data.topCasas.map((c, i) => (
                   <div key={c.name} className="flex items-center gap-3 px-4 py-3">
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                      i === 0 ? "bg-yellow-100 text-yellow-700" : i === 1 ? "bg-gray-100 text-gray-600" : i === 2 ? "bg-orange-100 text-orange-600" : "bg-blue-50 text-blue-500"
+                      i === 0 ? "bg-yellow-100 text-yellow-700" :
+                      i === 1 ? "bg-gray-100 text-gray-600" :
+                      i === 2 ? "bg-orange-100 text-orange-600" : "bg-blue-50 text-blue-500"
                     }`}>{i+1}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{c.name}</p>
@@ -184,7 +251,9 @@ const AdminRelatorios = () => {
                       <tr key={c.name} className="hover:bg-gray-50/60 transition">
                         <td className="px-5 py-3">
                           <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                            i === 0 ? "bg-yellow-100 text-yellow-700" : i === 1 ? "bg-gray-100 text-gray-600" : i === 2 ? "bg-orange-100 text-orange-600" : "bg-blue-50 text-blue-500"
+                            i === 0 ? "bg-yellow-100 text-yellow-700" :
+                            i === 1 ? "bg-gray-100 text-gray-600" :
+                            i === 2 ? "bg-orange-100 text-orange-600" : "bg-blue-50 text-blue-500"
                           }`}>{i+1}</span>
                         </td>
                         <td className="px-5 py-3 font-medium text-gray-900">{c.name}</td>

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "./adminlayout";
 import { api } from "../services/api";
-import { Plus, Pencil, Trash2, X, MapPin, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, X, MapPin, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────
 // 🚧 DEV — Simulação frontend via localStorage
@@ -14,7 +14,6 @@ const devGetCasas = () => {
 };
 const devSaveCasas = (casas) => {
   localStorage.setItem(DEV_KEY, JSON.stringify(casas));
-  // Notifica o AllHouses para recarregar as casas
   window.dispatchEvent(new Event("dev_casas_updated"));
 };
 // 🚧 fim bloco DEV ────────────────────────────────────────────
@@ -31,6 +30,8 @@ const AMENITY_ICONS = [
   { name: "Sala Mobilada",       icon: "/icons/sofa.png"            },
   { name: "Serviços de Limpeza", icon: "/icons/clean.png"           },
 ];
+
+const ITEMS_PER_PAGE = 10;
 
 const emptyForm = {
   location:    "",
@@ -56,7 +57,14 @@ const AdminCasas = () => {
   const [search, setSearch]               = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
+  // ── Paginação ─────────────────────────────────────────────
+  const [currentPage, setCurrentPage]     = useState(1);
+  // ─────────────────────────────────────────────────────────
+
   useEffect(() => { loadData(); }, []);
+
+  // Volta à página 1 sempre que a pesquisa muda
+  useEffect(() => { setCurrentPage(1); }, [search]);
 
   const loadData = async () => {
     try {
@@ -117,7 +125,6 @@ const AdminCasas = () => {
     const locationFinal = novaPraia.trim() || form.location;
     if (!locationFinal) { alert("Seleciona uma praia ou escreve o nome de uma nova."); return; }
     if (!form.price.low_season || !form.price.high_season) { alert("Os preços de época baixa e alta são obrigatórios."); return; }
-
     setSaving(true);
 
     const payload = {
@@ -151,7 +158,7 @@ const AdminCasas = () => {
         if (!praias.includes(locationFinal)) setPraias((prev) => [...prev, locationFinal]);
       }
     } catch {
-      // 🚧 DEV — guarda no localStorage e notifica o AllHouses
+      // 🚧 DEV
       const devCasas = devGetCasas();
       if (editingId) {
         const atualizadas = devCasas.map((c) => c.id === editingId ? { ...c, ...payload } : c);
@@ -198,19 +205,41 @@ const AdminCasas = () => {
     });
   };
 
+  // ── Lógica de paginação ───────────────────────────────────
   const filtered = casas.filter(
     (c) => !search || c.location?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalPages  = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const startIndex  = (currentPage - 1) * ITEMS_PER_PAGE;
+  const casasPagina = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const goToPage = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Gera array de páginas a mostrar (máx 5 botões)
+  const getPageNumbers = () => {
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (currentPage <= 3) return [1, 2, 3, 4, 5];
+    if (currentPage >= totalPages - 2) return [totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    return [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
+  };
+  // ─────────────────────────────────────────────────────────
+
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-5">
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Gestão de Casas</h2>
-            <p className="text-sm text-gray-500 mt-0.5">Casas criadas aqui aparecem automaticamente no explorar.</p>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Casas criadas aqui aparecem automaticamente no explorar.
+            </p>
           </div>
           <div className="flex gap-3">
             <div className="relative">
@@ -219,10 +248,10 @@ const AdminCasas = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Pesquisar por praia..."
-                className="pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-400 w-52 bg-white"
+                className="pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-400 w-full sm:w-52 bg-white"
               />
             </div>
-            <button onClick={openNew} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm">
+            <button onClick={openNew} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm shrink-0">
               <Plus size={16} /> Nova Casa
             </button>
           </div>
@@ -231,65 +260,145 @@ const AdminCasas = () => {
         {/* Banner DEV */}
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-xs text-yellow-800 flex items-start gap-2">
           <span className="font-bold shrink-0">🚧 Modo DEV:</span>
-          <span>
-            Casas adicionadas ficam no <strong>localStorage</strong> e aparecem no site automaticamente.
-            Remove este banner quando o backend estiver pronto.
-          </span>
+          <span>Casas adicionadas ficam no <strong>localStorage</strong> e aparecem no site automaticamente. Remove este banner quando o backend estiver pronto.</span>
         </div>
 
-        {/* Grid de casas */}
         {loading ? (
           <div className="flex items-center justify-center h-40">
             <div className="w-7 h-7 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((casa) => (
-              <div key={casa.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${casa._devAdded ? "border-yellow-300" : "border-gray-100"}`}>
-                <div className="h-36 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative">
-                  {casa.image?.[0] ? (
-                    <img src={casa.image[0]} alt={casa.location} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="text-5xl">🏠</div>
-                  )}
-                  {casa._devAdded && (
-                    <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">DEV</div>
-                  )}
-                  <div className="absolute top-2 right-2 flex gap-1.5">
-                    <button onClick={() => openEdit(casa)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
-                      <Pencil size={13} className="text-blue-600" />
+          <>
+            {/* Info + Paginação (acima das casas) */}
+            {filtered.length > 0 && (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                {/* Contagem */}
+                <p className="text-sm text-gray-500">
+                  A mostrar{" "}
+                  <span className="font-semibold text-gray-700">
+                    {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)}
+                  </span>{" "}
+                  de{" "}
+                  <span className="font-semibold text-gray-700">{filtered.length}</span>{" "}
+                  casas
+                </p>
+
+                {/* Botões de página */}
+                {totalPages > 1 && (
+                  <div className="flex items-center gap-1.5">
+                    {/* Anterior */}
+                    <button
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white"
+                    >
+                      <ChevronLeft size={15} />
                     </button>
-                    {casa._devAdded && (
-                      <button onClick={() => setDeleteConfirm(casa.id)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
-                        <Trash2 size={13} className="text-red-500" />
+
+                    {/* Números */}
+                    {getPageNumbers().map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => goToPage(page)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold transition border ${
+                          page === currentPage
+                            ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                            : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
+                        }`}
+                      >
+                        {page}
                       </button>
-                    )}
+                    ))}
+
+                    {/* Próxima */}
+                    <button
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white"
+                    >
+                      <ChevronRight size={15} />
+                    </button>
                   </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-1 text-xs text-gray-500 mb-2">
-                    <MapPin size={11} /> {casa.location}
-                  </div>
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-blue-600 font-bold text-sm">
-                      {casa.price?.low_season?.toLocaleString()} {casa.price?.currency ?? "ZAR"} / época baixa
-                    </span>
-                    <span className="text-gray-400 text-xs">
-                      {casa.price?.high_season?.toLocaleString()} {casa.price?.currency ?? "ZAR"} / época alta
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                    <span>{casa.capacity} hósp.</span>
-                    <span>·</span>
-                    <span>{casa.bedroom} quarto{casa.bedroom !== 1 ? "s" : ""}</span>
-                  </div>
-                </div>
+                )}
               </div>
-            ))}
-            {filtered.length === 0 && (
-              <div className="col-span-full text-center py-16 text-gray-400 text-sm">Nenhuma casa encontrada.</div>
             )}
-          </div>
+
+            {/* Grid de casas — só a página atual */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {casasPagina.map((casa) => (
+                <div key={casa.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${casa._devAdded ? "border-yellow-300" : "border-gray-100"}`}>
+                  <div className="h-36 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative">
+                    {casa.image?.[0] ? (
+                      <img src={casa.image[0]} alt={casa.location} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="text-5xl">🏠</div>
+                    )}
+                    {casa._devAdded && (
+                      <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">DEV</div>
+                    )}
+                    <div className="absolute top-2 right-2 flex gap-1.5">
+                      <button onClick={() => openEdit(casa)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
+                        <Pencil size={13} className="text-blue-600" />
+                      </button>
+                      {casa._devAdded && (
+                        <button onClick={() => setDeleteConfirm(casa.id)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
+                          <Trash2 size={13} className="text-red-500" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center gap-1 text-xs text-gray-500 mb-2">
+                      <MapPin size={11} /> {casa.location}
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-blue-600 font-bold text-sm">
+                        {casa.price?.low_season?.toLocaleString()} {casa.price?.currency ?? "ZAR"} / época baixa
+                      </span>
+                      <span className="text-gray-400 text-xs">
+                        {casa.price?.high_season?.toLocaleString()} {casa.price?.currency ?? "ZAR"} / época alta
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                      <span>{casa.capacity} hósp.</span>
+                      <span>·</span>
+                      <span>{casa.bedroom} quarto{casa.bedroom !== 1 ? "s" : ""}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {filtered.length === 0 && (
+                <div className="col-span-full text-center py-16 text-gray-400 text-sm">
+                  Nenhuma casa encontrada.
+                </div>
+              )}
+            </div>
+
+            {/* Paginação também em baixo (conveniência) */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-1.5 pt-2">
+                <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white">
+                  <ChevronLeft size={15} />
+                </button>
+                {getPageNumbers().map((page) => (
+                  <button key={page} onClick={() => goToPage(page)}
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold transition border ${
+                      page === currentPage
+                        ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
+                    }`}>
+                    {page}
+                  </button>
+                ))}
+                <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white">
+                  <ChevronRight size={15} />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -327,11 +436,8 @@ const AdminCasas = () => {
               {/* Descrição */}
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Descrição</label>
-                <textarea
-                  value={form.description}
-                  onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                  placeholder="Descreve a casa, ambiente, proximidade ao mar..."
-                  rows={4}
+                <textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                  placeholder="Descreve a casa, ambiente, proximidade ao mar..." rows={4}
                   className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white resize-none"
                 />
               </div>
@@ -343,17 +449,17 @@ const AdminCasas = () => {
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Época baixa *</p>
-                    <input type="number" min={0} value={form.price.low_season}
+                    <input type="number" min={0} value={form.price.low_season} required
                       onChange={(e) => setForm((p) => ({ ...p, price: { ...p.price, low_season: e.target.value } }))}
-                      placeholder="ex: 3000" required
+                      placeholder="ex: 3000"
                       className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
                     />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Época alta *</p>
-                    <input type="number" min={0} value={form.price.high_season}
+                    <input type="number" min={0} value={form.price.high_season} required
                       onChange={(e) => setForm((p) => ({ ...p, price: { ...p.price, high_season: e.target.value } }))}
-                      placeholder="ex: 5000" required
+                      placeholder="ex: 5000"
                       className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
                     />
                   </div>
@@ -425,8 +531,9 @@ const AdminCasas = () => {
                     const selected = form.amenities.find((x) => x.name === a.name);
                     return (
                       <button key={a.name} type="button" onClick={() => toggleAmenity(a)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs border transition-all ${selected ? "bg-blue-600 border-blue-600 text-white" : "bg-gray-50 border-gray-200 text-gray-600 hover:border-blue-300"}`}
-                      >
+                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs border transition-all ${
+                          selected ? "bg-blue-600 border-blue-600 text-white" : "bg-gray-50 border-gray-200 text-gray-600 hover:border-blue-300"
+                        }`}>
                         <img src={a.icon} alt={a.name} className={`w-4 h-4 ${selected ? "brightness-200" : ""}`} onError={(e) => (e.target.style.display = "none")} />
                         {a.name}
                       </button>

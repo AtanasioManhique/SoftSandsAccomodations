@@ -1,3 +1,4 @@
+// src/components/ExploreDestination.jsx
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../services/api";
@@ -11,6 +12,16 @@ import "swiper/css/navigation";
 import "swiper/css/autoplay";
 import { useTranslation } from "react-i18next";
 
+// ─────────────────────────────────────────────────────────────
+// 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
+// Remove quando o backend estiver pronto.
+const DEV_KEY = "dev_casas_admin";
+const devGetCasas = () => {
+  try { return JSON.parse(localStorage.getItem(DEV_KEY)) || []; }
+  catch { return []; }
+};
+// 🚧 fim bloco DEV ────────────────────────────────────────────
+
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
   background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
@@ -19,7 +30,6 @@ const shimmerStyle = {
 };
 
 const ExploreDestinationSkeleton = () => (
-  // Corrigido: pb-15 → pb-[3.75rem] (classe não-standard)
   <div className="flex flex-col items-center pt-3 py-8 pb-[3.75rem]">
     <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
     <div className="w-full max-w-7xl">
@@ -44,36 +54,52 @@ const ExploreDestination = () => {
   const swiperRef               = useRef(null);
   const { t }                   = useTranslation();
 
-  useEffect(() => {
-    // ── BACKEND: GET /api/destinos ─────────────────────────
-    // Descomentar quando o backend estiver pronto e apagar o bloco abaixo:
-    // api.get("/api/destinos", { withCredentials: true })
-    //   .then((res) => setDestinos(res.data))
-    //   .catch(() => setError(true))
-    //   .finally(() => setLoading(false));
-    // ───────────────────────────────────────────────────────
+  const loadDestinos = async () => {
+    try {
+      // BACKEND: GET /api/destinations
+      // Retorna: [{ name, image, totalCasas }]
+      const res = await api.get("/destinations");
+      const data = res.data?.data ?? res.data;
+      setDestinos(Array.isArray(data) ? data : []);
+    } catch {
+      // 🚧 DEV — JSON local + casas adicionadas pelo admin
+      try {
+        const res = await api.get("/data/casas.json", { baseURL: window.location.origin });
+        const devCasas = devGetCasas();
+        const todas = [...res.data, ...devCasas];
 
-    // Temporário — lê do ficheiro JSON estático:
-    api
-      .get("/data/casas.json", { baseURL: window.location.origin })
-      .then((res) => {
-        const grouped = res.data.reduce((acc, house) => {
+        // Agrupa por location — cada praia é um destino
+        const grouped = todas.reduce((acc, house) => {
+          if (!house.location) return acc;
           if (!acc[house.location]) acc[house.location] = [];
           acc[house.location].push(house);
           return acc;
         }, {});
 
-        // Corrigido: key usada no map era index — agora usa location (estável)
         setDestinos(
           Object.keys(grouped).map((location) => ({
             name:       location,
-            image:      grouped[location][0].image[0],
+            image:      grouped[location][0].image?.[0],
             totalCasas: grouped[location].length,
           }))
         );
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      } catch {
+        setError(true);
+      }
+      // 🚧 fim DEV
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDestinos();
+
+    // 🚧 DEV — recarrega quando o admin adiciona uma casa/praia nova
+    const handleDevUpdate = () => loadDestinos();
+    window.addEventListener("dev_casas_updated", handleDevUpdate);
+    return () => window.removeEventListener("dev_casas_updated", handleDevUpdate);
+    // 🚧 fim DEV
   }, []);
 
   if (loading) return <ExploreDestinationSkeleton />;
@@ -88,17 +114,14 @@ const ExploreDestination = () => {
   const handlePrev = () => swiperRef.current?.slidePrev();
 
   return (
-    // Corrigido: pb-15 → pb-[3.75rem]
     <div className="flex flex-col items-center pt-3 py-8 pb-[3.75rem]">
       <div className="w-full max-w-7xl">
         <Title align="left" title={t("explore.destination")} />
 
         <div className="relative mt-6">
-          <button
-            onClick={handlePrev}
+          <button onClick={handlePrev}
             className="hidden md:flex absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
-            aria-label={t("common.prev") || "Anterior"}
-          >
+            aria-label={t("common.prev") || "Anterior"}>
             <img src={leftarrow} className="w-5 h-5" alt="" />
           </button>
 
@@ -118,7 +141,6 @@ const ExploreDestination = () => {
             }}
           >
             {destinos.map((destino) => (
-              // Corrigido: key={index} → key={destino.name} (estável, não muda com reorder)
               <SwiperSlide key={destino.name}>
                 <Link
                   to={`/praias/${encodeURIComponent(destino.name)}`}
@@ -138,11 +160,9 @@ const ExploreDestination = () => {
             ))}
           </Swiper>
 
-          <button
-            onClick={handleNext}
+          <button onClick={handleNext}
             className="hidden md:flex absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
-            aria-label={t("common.next") || "Próximo"}
-          >
+            aria-label={t("common.next") || "Próximo"}>
             <img src={rightarrow} className="w-5 h-5" alt="" />
           </button>
         </div>
