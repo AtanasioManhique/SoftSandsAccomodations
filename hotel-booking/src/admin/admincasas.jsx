@@ -1,10 +1,9 @@
 // src/admin/AdminCasas.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import AdminLayout from "./adminlayout";
 import { api } from "../services/api";
-import { Plus, Pencil, Trash2, X, MapPin, Search, ChevronLeft, ChevronRight } from "lucide-react";
-
-// ─────────────────────────────────────────────────────────────
+import { Plus, Pencil, Trash2, X, MapPin, Search, ChevronLeft, ChevronRight, ImagePlus } from "lucide-react";
+import { useSearchParams, Link } from "react-router-dom";
 // 🚧 DEV — Simulação frontend via localStorage
 // Remove este bloco quando o backend estiver pronto.
 const DEV_KEY = "dev_casas_admin";
@@ -42,10 +41,136 @@ const emptyForm = {
   rating:      5,
   coordinates: { lat: "", lng: "" },
   amenities:   [],
+  // images: array de { file, preview, url }
+  // file  → objeto File (para upload ao backend)
+  // preview → URL local (para mostrar ao admin antes do upload)
+  // url   → URL final após upload (guardada na BD)
   images:      [],
 };
 
+// ── Componente de Upload de Imagens ───────────────────────────
+const ImageUploader = ({ images, onChange }) => {
+  const inputRef = useRef(null);
+
+  const handleFiles = (files) => {
+    const novos = Array.from(files)
+      .filter((f) => f.type.startsWith("image/"))
+      .map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+        url:     null, // preenchido após upload ao backend
+      }));
+    onChange([...images, ...novos]);
+  };
+
+  const handleInputChange = (e) => {
+    if (e.target.files?.length) handleFiles(e.target.files);
+    e.target.value = ""; // reset para permitir selecionar a mesma imagem novamente
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files?.length) handleFiles(e.dataTransfer.files);
+  };
+
+  const handleRemove = (index) => {
+    const updated = images.filter((_, i) => i !== index);
+    // Liberta memória do URL.createObjectURL
+    if (images[index]?.preview && !images[index]?.url) {
+      URL.revokeObjectURL(images[index].preview);
+    }
+    onChange(updated);
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Grid de previews */}
+      {images.length > 0 && (
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          {images.map((img, i) => (
+            <div key={i} className="relative group aspect-square rounded-xl overflow-hidden border border-gray-200">
+              <img
+                src={img.preview ?? img.url}
+                alt={`Imagem ${i + 1}`}
+                className="w-full h-full object-cover"
+              />
+              {/* Overlay com botão remover */}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => handleRemove(i)}
+                  className="w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition"
+                >
+                  <X size={13} className="text-white" />
+                </button>
+              </div>
+              {/* Badge posição */}
+              {i === 0 && (
+                <div className="absolute bottom-1 left-1 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  Capa
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Botão + para adicionar mais */}
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+            className="aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 flex flex-col items-center justify-center gap-1 transition group"
+          >
+            <Plus size={20} className="text-gray-400 group-hover:text-blue-500 transition" />
+            <span className="text-xs text-gray-400 group-hover:text-blue-500 transition">Adicionar</span>
+          </button>
+        </div>
+      )}
+
+      {/* Zona de drop inicial (quando não há imagens) */}
+      {images.length === 0 && (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          className="w-full border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl py-8 flex flex-col items-center justify-center gap-2 transition group"
+        >
+          <div className="w-10 h-10 bg-gray-100 group-hover:bg-blue-100 rounded-xl flex items-center justify-center transition">
+            <ImagePlus size={20} className="text-gray-400 group-hover:text-blue-500 transition" />
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-medium text-gray-600 group-hover:text-blue-600 transition">
+              Clica para adicionar imagens
+            </p>
+            <p className="text-xs text-gray-400 mt-0.5">ou arrasta e larga aqui</p>
+          </div>
+        </button>
+      )}
+
+      {/* Input ficheiro oculto — aceita múltiplos */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleInputChange}
+        className="hidden"
+      />
+
+      {images.length > 0 && (
+        <p className="text-xs text-gray-400">
+          {images.length} imagem{images.length !== 1 ? "s" : ""} · A primeira é a imagem de capa.
+        </p>
+      )}
+    </div>
+  );
+};
+
 const AdminCasas = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const praiaParam = searchParams.get("praia") || "";
+
   const [casas, setCasas]                 = useState([]);
   const [praias, setPraias]               = useState([]);
   const [loading, setLoading]             = useState(true);
@@ -54,28 +179,23 @@ const AdminCasas = () => {
   const [form, setForm]                   = useState(emptyForm);
   const [novaPraia, setNovaPraia]         = useState("");
   const [saving, setSaving]               = useState(false);
-  const [search, setSearch]               = useState("");
+  const [search, setSearch]               = useState(praiaParam);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
-
-  // ── Paginação ─────────────────────────────────────────────
   const [currentPage, setCurrentPage]     = useState(1);
-  // ─────────────────────────────────────────────────────────
 
   useEffect(() => { loadData(); }, []);
-
-  // Volta à página 1 sempre que a pesquisa muda
+  useEffect(() => { setSearch(praiaParam); setCurrentPage(1); }, [praiaParam]);
   useEffect(() => { setCurrentPage(1); }, [search]);
 
   const loadData = async () => {
     try {
-      // BACKEND: GET /api/admin/accommodations
       const res = await api.get("/admin/accommodations");
       const data = res.data?.data ?? res.data ?? [];
       const todas = Array.isArray(data) ? data : [];
       setCasas(todas);
       setPraias([...new Set(todas.map((c) => c.location).filter(Boolean))]);
     } catch {
-      // 🚧 DEV — JSON local + localStorage
+      // 🚧 DEV
       try {
         const res = await fetch("/data/casas.json");
         const jsonCasas = await res.json();
@@ -83,13 +203,9 @@ const AdminCasas = () => {
         const todas = [...jsonCasas, ...devCasas];
         setCasas(todas);
         setPraias([...new Set(todas.map((c) => c.location).filter(Boolean))]);
-      } catch (err) {
-        console.error("Erro ao carregar casas:", err);
-      }
+      } catch (err) { console.error("Erro ao carregar casas:", err); }
       // 🚧 fim DEV
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   const openNew = () => {
@@ -113,39 +229,79 @@ const AdminCasas = () => {
       rating:      casa.rating   ?? 5,
       coordinates: { lat: casa.coordinates?.lat ?? "", lng: casa.coordinates?.lng ?? "" },
       amenities:   casa.amenities ?? [],
-      images:      casa.image     ?? [],
+      // Imagens existentes: sem file, preview = url existente
+      images: (casa.image ?? []).map((url) => ({ file: null, preview: url, url })),
     });
     setNovaPraia("");
     setEditingId(casa.id);
     setShowForm(true);
   };
 
+  // ── Upload de imagens ao backend ──────────────────────────
+  // BACKEND: POST /api/admin/upload-image
+  // Body: FormData com campo "image" (ficheiro)
+  // Response: { url: "https://..." }
+  //
+  // O backend guarda a imagem no storage (S3, Cloudinary, etc.)
+  // e devolve o URL público final.
+  const uploadImages = async (images) => {
+    const urls = [];
+
+    for (const img of images) {
+      // Imagem já existente no backend — usa URL directo
+      if (img.url) { urls.push(img.url); continue; }
+
+      try {
+        // BACKEND: faz upload e recebe URL
+        const formData = new FormData();
+        formData.append("image", img.file);
+        const res = await api.post("/admin/upload-image", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        urls.push(res.data?.url ?? res.data?.data?.url);
+      } catch {
+        // 🚧 DEV — sem backend: usa o preview local (objectURL)
+        // Em produção este URL não funciona fora do browser — o backend é obrigatório.
+        urls.push(img.preview);
+        // 🚧 fim DEV
+      }
+    }
+
+    return urls.filter(Boolean);
+  };
+  // ─────────────────────────────────────────────────────────
+
   const handleSave = async (e) => {
     e.preventDefault();
     const locationFinal = novaPraia.trim() || form.location;
-    if (!locationFinal) { alert("Seleciona uma praia ou escreve o nome de uma nova."); return; }
+    if (!locationFinal)                                    { alert("Seleciona uma praia ou escreve o nome de uma nova."); return; }
     if (!form.price.low_season || !form.price.high_season) { alert("Os preços de época baixa e alta são obrigatórios."); return; }
+    if (form.images.length === 0)                          { alert("Adiciona pelo menos uma imagem."); return; }
+
     setSaving(true);
 
-    const payload = {
-      location:    locationFinal,
-      description: form.description,
-      price: {
-        low_season:  Number(form.price.low_season),
-        high_season: Number(form.price.high_season),
-        currency:    form.price.currency,
-      },
-      bedroom:     Number(form.bedroom),
-      capacity:    Number(form.capacity),
-      rating:      Number(form.rating),
-      coordinates: form.coordinates.lat && form.coordinates.lng
-        ? { lat: Number(form.coordinates.lat), lng: Number(form.coordinates.lng) }
-        : null,
-      amenities: form.amenities,
-      image:     form.images,
-    };
-
     try {
+      // 1. Faz upload das imagens novas e recolhe os URLs finais
+      const imageUrls = await uploadImages(form.images);
+
+      const payload = {
+        location:    locationFinal,
+        description: form.description,
+        price: {
+          low_season:  Number(form.price.low_season),
+          high_season: Number(form.price.high_season),
+          currency:    form.price.currency,
+        },
+        bedroom:     Number(form.bedroom),
+        capacity:    Number(form.capacity),
+        rating:      Number(form.rating),
+        coordinates: form.coordinates.lat && form.coordinates.lng
+          ? { lat: Number(form.coordinates.lat), lng: Number(form.coordinates.lng) }
+          : null,
+        amenities: form.amenities,
+        image:     imageUrls,
+      };
+
       if (editingId) {
         // BACKEND: PUT /api/admin/accommodations/:id
         await api.put(`/admin/accommodations/${editingId}`, payload);
@@ -159,6 +315,24 @@ const AdminCasas = () => {
       }
     } catch {
       // 🚧 DEV
+      const imageUrls = await uploadImages(form.images);
+      const payload = {
+        location:    novaPraia.trim() || form.location,
+        description: form.description,
+        price: {
+          low_season:  Number(form.price.low_season),
+          high_season: Number(form.price.high_season),
+          currency:    form.price.currency,
+        },
+        bedroom:     Number(form.bedroom),
+        capacity:    Number(form.capacity),
+        rating:      Number(form.rating),
+        coordinates: form.coordinates.lat && form.coordinates.lng
+          ? { lat: Number(form.coordinates.lat), lng: Number(form.coordinates.lng) }
+          : null,
+        amenities: form.amenities,
+        image:     imageUrls,
+      };
       const devCasas = devGetCasas();
       if (editingId) {
         const atualizadas = devCasas.map((c) => c.id === editingId ? { ...c, ...payload } : c);
@@ -166,8 +340,7 @@ const AdminCasas = () => {
         if (eraNoJson) atualizadas.push({ ...payload, id: editingId, _devOverride: true });
         devSaveCasas(atualizadas);
       } else {
-        const novaCasa = { ...payload, id: `dev-${Date.now()}`, _devAdded: true };
-        devSaveCasas([...devCasas, novaCasa]);
+        devSaveCasas([...devCasas, { ...payload, id: `dev-${Date.now()}`, _devAdded: true }]);
       }
       await loadData();
       // 🚧 fim DEV
@@ -179,7 +352,6 @@ const AdminCasas = () => {
 
   const handleDelete = async (id) => {
     try {
-      // BACKEND: DELETE /api/admin/accommodations/:id
       await api.delete(`/admin/accommodations/${id}`);
       setCasas((prev) => prev.filter((c) => c.id !== id));
     } catch {
@@ -188,9 +360,7 @@ const AdminCasas = () => {
       devSaveCasas(devCasas.filter((c) => c.id !== id));
       setCasas((prev) => prev.filter((c) => c.id !== id));
       // 🚧 fim DEV
-    } finally {
-      setDeleteConfirm(null);
-    }
+    } finally { setDeleteConfirm(null); }
   };
 
   const toggleAmenity = (amenity) => {
@@ -205,11 +375,14 @@ const AdminCasas = () => {
     });
   };
 
-  // ── Lógica de paginação ───────────────────────────────────
-  const filtered = casas.filter(
-    (c) => !search || c.location?.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    if (value) setSearchParams({ praia: value });
+    else setSearchParams({});
+  };
 
+  // Paginação
+  const filtered    = casas.filter((c) => !search || c.location?.toLowerCase().includes(search.toLowerCase()));
   const totalPages  = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const startIndex  = (currentPage - 1) * ITEMS_PER_PAGE;
   const casasPagina = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -220,14 +393,12 @@ const AdminCasas = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Gera array de páginas a mostrar (máx 5 botões)
   const getPageNumbers = () => {
     if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
     if (currentPage <= 3) return [1, 2, 3, 4, 5];
     if (currentPage >= totalPages - 2) return [totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
     return [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
   };
-  // ─────────────────────────────────────────────────────────
 
   return (
     <AdminLayout>
@@ -236,20 +407,31 @@ const AdminCasas = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Gestão de Casas</h2>
+            <h2 className="text-xl font-bold text-gray-900">
+              {praiaParam ? (
+                <span className="flex items-center gap-2">
+                  <Link to="/admin/praias" className="text-blue-600 hover:text-blue-800 transition">← Praias</Link>
+                  <span className="text-gray-300">/</span>
+                  <span>{praiaParam}</span>
+                </span>
+              ) : "Gestão de Casas"}
+            </h2>
             <p className="text-sm text-gray-500 mt-0.5">
-              Casas criadas aqui aparecem automaticamente no explorar.
+              {praiaParam ? `A mostrar apenas casas de ${praiaParam}.` : "Casas criadas aqui aparecem automaticamente no explorar."}
             </p>
           </div>
           <div className="flex gap-3">
             <div className="relative">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+              <input value={search} onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Pesquisar por praia..."
-                className="pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-400 w-full sm:w-52 bg-white"
+                className="pl-9 pr-8 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-400 w-full sm:w-52 bg-white"
               />
+              {search && (
+                <button onClick={() => handleSearchChange("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <X size={14} />
+                </button>
+              )}
             </div>
             <button onClick={openNew} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm shrink-0">
               <Plus size={16} /> Nova Casa
@@ -260,7 +442,7 @@ const AdminCasas = () => {
         {/* Banner DEV */}
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-xs text-yellow-800 flex items-start gap-2">
           <span className="font-bold shrink-0">🚧 Modo DEV:</span>
-          <span>Casas adicionadas ficam no <strong>localStorage</strong> e aparecem no site automaticamente. Remove este banner quando o backend estiver pronto.</span>
+          <span>Casas adicionadas ficam no <strong>localStorage</strong>. Em DEV as imagens ficam como objectURL locais — não persistem ao fechar o browser. O upload real ao backend é necessário para produção.</span>
         </div>
 
         {loading ? (
@@ -269,53 +451,26 @@ const AdminCasas = () => {
           </div>
         ) : (
           <>
-            {/* Info + Paginação (acima das casas) */}
             {filtered.length > 0 && (
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                {/* Contagem */}
                 <p className="text-sm text-gray-500">
-                  A mostrar{" "}
-                  <span className="font-semibold text-gray-700">
-                    {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)}
-                  </span>{" "}
-                  de{" "}
-                  <span className="font-semibold text-gray-700">{filtered.length}</span>{" "}
-                  casas
+                  A mostrar <span className="font-semibold text-gray-700">{startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)}</span> de <span className="font-semibold text-gray-700">{filtered.length}</span> casas
+                  {search && <span className="text-blue-600 font-medium"> em "{search}"</span>}
                 </p>
-
-                {/* Botões de página */}
                 {totalPages > 1 && (
                   <div className="flex items-center gap-1.5">
-                    {/* Anterior */}
-                    <button
-                      onClick={() => goToPage(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white"
-                    >
+                    <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white">
                       <ChevronLeft size={15} />
                     </button>
-
-                    {/* Números */}
                     {getPageNumbers().map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => goToPage(page)}
-                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold transition border ${
-                          page === currentPage
-                            ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                            : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
-                        }`}
-                      >
+                      <button key={page} onClick={() => goToPage(page)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold transition border ${page === currentPage ? "bg-blue-600 text-white border-blue-600 shadow-sm" : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"}`}>
                         {page}
                       </button>
                     ))}
-
-                    {/* Próxima */}
-                    <button
-                      onClick={() => goToPage(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white"
-                    >
+                    <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}
+                      className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white">
                       <ChevronRight size={15} />
                     </button>
                   </div>
@@ -323,7 +478,6 @@ const AdminCasas = () => {
               </div>
             )}
 
-            {/* Grid de casas — só a página atual */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {casasPagina.map((casa) => (
                 <div key={casa.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${casa._devAdded ? "border-yellow-300" : "border-gray-100"}`}>
@@ -352,30 +506,24 @@ const AdminCasas = () => {
                       <MapPin size={11} /> {casa.location}
                     </div>
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-blue-600 font-bold text-sm">
-                        {casa.price?.low_season?.toLocaleString()} {casa.price?.currency ?? "ZAR"} / época baixa
-                      </span>
-                      <span className="text-gray-400 text-xs">
-                        {casa.price?.high_season?.toLocaleString()} {casa.price?.currency ?? "ZAR"} / época alta
-                      </span>
+                      <span className="text-blue-600 font-bold text-sm">{casa.price?.low_season?.toLocaleString()} {casa.price?.currency ?? "ZAR"} / época baixa</span>
+                      <span className="text-gray-400 text-xs">{casa.price?.high_season?.toLocaleString()} {casa.price?.currency ?? "ZAR"} / época alta</span>
                     </div>
                     <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                      <span>{casa.capacity} hósp.</span>
-                      <span>·</span>
+                      <span>{casa.capacity} hósp.</span><span>·</span>
                       <span>{casa.bedroom} quarto{casa.bedroom !== 1 ? "s" : ""}</span>
+                      {casa.image?.length > 0 && <><span>·</span><span>{casa.image.length} foto{casa.image.length !== 1 ? "s" : ""}</span></>}
                     </div>
                   </div>
                 </div>
               ))}
-
               {filtered.length === 0 && (
                 <div className="col-span-full text-center py-16 text-gray-400 text-sm">
-                  Nenhuma casa encontrada.
+                  {search ? `Nenhuma casa encontrada em "${search}".` : "Nenhuma casa encontrada."}
                 </div>
               )}
             </div>
 
-            {/* Paginação também em baixo (conveniência) */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-1.5 pt-2">
                 <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}
@@ -384,11 +532,7 @@ const AdminCasas = () => {
                 </button>
                 {getPageNumbers().map((page) => (
                   <button key={page} onClick={() => goToPage(page)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold transition border ${
-                      page === currentPage
-                        ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
-                    }`}>
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold transition border ${page === currentPage ? "bg-blue-600 text-white border-blue-600 shadow-sm" : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"}`}>
                     {page}
                   </button>
                 ))}
@@ -417,16 +561,13 @@ const AdminCasas = () => {
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Praia / Localização *</label>
                 <p className="text-xs text-gray-400 mb-2">Seleciona uma praia existente <strong>ou</strong> escreve o nome de uma nova.</p>
-                <select
-                  value={novaPraia ? "" : form.location}
+                <select value={novaPraia ? "" : form.location}
                   onChange={(e) => { setForm((p) => ({ ...p, location: e.target.value })); setNovaPraia(""); }}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white mb-2"
-                >
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white mb-2">
                   <option value="">Selecionar praia existente</option>
                   {praias.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
-                <input
-                  value={novaPraia}
+                <input value={novaPraia}
                   onChange={(e) => { setNovaPraia(e.target.value); setForm((p) => ({ ...p, location: "" })); }}
                   placeholder="Ou escreve nova praia ex: Pemba"
                   className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
@@ -437,9 +578,8 @@ const AdminCasas = () => {
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Descrição</label>
                 <textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                  placeholder="Descreve a casa, ambiente, proximidade ao mar..." rows={4}
-                  className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white resize-none"
-                />
+                  placeholder="Descreve a casa, ambiente, proximidade ao mar..." rows={3}
+                  className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white resize-none" />
               </div>
 
               {/* Preços */}
@@ -452,23 +592,20 @@ const AdminCasas = () => {
                     <input type="number" min={0} value={form.price.low_season} required
                       onChange={(e) => setForm((p) => ({ ...p, price: { ...p.price, low_season: e.target.value } }))}
                       placeholder="ex: 3000"
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                    />
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Época alta *</p>
                     <input type="number" min={0} value={form.price.high_season} required
                       onChange={(e) => setForm((p) => ({ ...p, price: { ...p.price, high_season: e.target.value } }))}
                       placeholder="ex: 5000"
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                    />
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Moeda</p>
                     <select value={form.price.currency}
                       onChange={(e) => setForm((p) => ({ ...p, price: { ...p.price, currency: e.target.value } }))}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                    >
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white">
                       <option value="ZAR">ZAR</option>
                       <option value="MZN">MZN</option>
                       <option value="USD">USD</option>
@@ -484,42 +621,37 @@ const AdminCasas = () => {
                   <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Quartos</label>
                   <input type="number" min={1} max={20} value={form.bedroom}
                     onChange={(e) => setForm((p) => ({ ...p, bedroom: e.target.value }))}
-                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                  />
+                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Capacidade</label>
                   <input type="number" min={1} max={30} value={form.capacity}
                     onChange={(e) => setForm((p) => ({ ...p, capacity: e.target.value }))}
-                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                  />
+                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Rating</label>
                   <input type="number" min={1} max={5} step={0.1} value={form.rating}
                     onChange={(e) => setForm((p) => ({ ...p, rating: e.target.value }))}
-                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                  />
+                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white" />
                 </div>
               </div>
 
-              {/* Coordenadas GPS */}
+              {/* GPS */}
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide flex items-center gap-1">
                   <MapPin size={12} /> Coordenadas GPS
                 </label>
-                <p className="text-xs text-gray-400 mb-2">Google Maps → clique direito → "O que há aqui?" → copiar lat/lng. Deixa vazio se não tiver.</p>
+                <p className="text-xs text-gray-400 mb-2">Google Maps → clique direito → "O que há aqui?" → copiar lat/lng.</p>
                 <div className="grid grid-cols-2 gap-3">
                   <input type="number" step="any" value={form.coordinates.lat}
                     onChange={(e) => setForm((p) => ({ ...p, coordinates: { ...p.coordinates, lat: e.target.value } }))}
                     placeholder="Latitude ex: -26.8451"
-                    className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                  />
+                    className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white" />
                   <input type="number" step="any" value={form.coordinates.lng}
                     onChange={(e) => setForm((p) => ({ ...p, coordinates: { ...p.coordinates, lng: e.target.value } }))}
                     placeholder="Longitude ex: 32.8898"
-                    className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                  />
+                    className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white" />
                 </div>
               </div>
 
@@ -531,9 +663,7 @@ const AdminCasas = () => {
                     const selected = form.amenities.find((x) => x.name === a.name);
                     return (
                       <button key={a.name} type="button" onClick={() => toggleAmenity(a)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs border transition-all ${
-                          selected ? "bg-blue-600 border-blue-600 text-white" : "bg-gray-50 border-gray-200 text-gray-600 hover:border-blue-300"
-                        }`}>
+                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs border transition-all ${selected ? "bg-blue-600 border-blue-600 text-white" : "bg-gray-50 border-gray-200 text-gray-600 hover:border-blue-300"}`}>
                         <img src={a.icon} alt={a.name} className={`w-4 h-4 ${selected ? "brightness-200" : ""}`} onError={(e) => (e.target.style.display = "none")} />
                         {a.name}
                       </button>
@@ -542,16 +672,17 @@ const AdminCasas = () => {
                 </div>
               </div>
 
-              {/* URLs das imagens */}
+              {/* Upload de imagens */}
               <div>
-                <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">URLs das imagens</label>
-                <p className="text-xs text-gray-400 mb-2">Uma URL por linha.</p>
-                <textarea
-                  value={form.images.join("\n")}
-                  onChange={(e) => setForm((p) => ({ ...p, images: e.target.value.split("\n").filter(Boolean) }))}
-                  placeholder={"https://...\nhttps://..."}
-                  rows={3}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white resize-none font-mono"
+                <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                  Imagens *
+                </label>
+                <p className="text-xs text-gray-400 mb-2">
+                  A primeira imagem será a capa da casa.
+                </p>
+                <ImageUploader
+                  images={form.images}
+                  onChange={(imgs) => setForm((p) => ({ ...p, images: imgs }))}
                 />
               </div>
 
@@ -563,7 +694,12 @@ const AdminCasas = () => {
                 </button>
                 <button type="submit" disabled={saving}
                   className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2">
-                  {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : editingId ? "Guardar alterações" : "Adicionar casa"}
+                  {saving ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      A guardar...
+                    </>
+                  ) : editingId ? "Guardar alterações" : "Adicionar casa"}
                 </button>
               </div>
             </form>

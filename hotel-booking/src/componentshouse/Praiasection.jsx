@@ -18,7 +18,7 @@ const ITEMS_PER_PAGE = 5;
 //   houses     — casas já filtradas para esta praia
 //   title      — (opcional) título grande acima do link (ex: "O Seu Refúgio de Praia")
 //   subtitle   — (opcional) texto do link em vez do nome da praia (ex: "Praia da Ponta de Ouro")
-//   isFirst    — (opcional) aplica mt-20 na primeira secção como o original
+//   isFirst    — (opcional) aplica mt-20 na primeira secção (espaço para a navbar)
 
 const PraiaSection = ({ praia, houses, title, subtitle, isFirst = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,9 +35,13 @@ const PraiaSection = ({ praia, houses, title, subtitle, isFirst = false }) => {
   );
 
   return (
-    <div className={`flex flex-col items-start px-4 md:px-20 pt-8 ${isFirst ? "mt-20" : "mt-1"} relative`}>
+    // mt-20 só na primeira (clearfix da navbar); mt-10 para todas as outras
+    // pt-8 mantém o padding interno consistente em todas as secções
+    // isFirst → mt-20 pt-8 (clearfix da navbar + padding normal)
+    // outras  → mt-2 pt-4  (o pb-7 do Swiper já cria espaço suficiente abaixo)
+    <div className={`flex flex-col items-start px-4 md:px-20 ${isFirst ? "mt-20 -pt-5" : "mt-20 pt-0"} relative`}>
 
-      {/* Título grande — só aparece se for passado (primeira secção) */}
+      {/* Título grande — só aparece se for passado */}
       {title && (
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
           {title}
@@ -63,7 +67,7 @@ const PraiaSection = ({ praia, houses, title, subtitle, isFirst = false }) => {
           pagination={{ clickable: true }}
           spaceBetween={16}
           slidesPerView={1}
-          className="!pb-7 !px-2"
+          className="!pb-7 !px-1"
           loop={houses.length > 1}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
