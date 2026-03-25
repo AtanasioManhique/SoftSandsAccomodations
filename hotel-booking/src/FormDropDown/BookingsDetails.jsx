@@ -1,7 +1,9 @@
+// FormDropDown/BookingsDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import { api } from "../services/api";
 
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
@@ -13,50 +15,28 @@ const shimmerStyle = {
 const ReservaDetalhesSkeleton = () => (
   <div className="w-full max-w-5xl mx-auto py-10 px-4">
     <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
-
-    {/* Voltar */}
     <div style={{ ...shimmerStyle, width: "120px", height: "16px", borderRadius: "4px", marginBottom: "32px" }} />
-
-    {/* Título + badge */}
     <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "24px" }}>
       <div style={{ ...shimmerStyle, width: "220px", height: "36px", borderRadius: "8px" }} />
       <div style={{ ...shimmerStyle, width: "90px", height: "28px", borderRadius: "20px" }} />
     </div>
-
-    {/* Galeria de imagens */}
     <div style={{ display: "flex", gap: "8px", overflowX: "hidden", marginBottom: "40px" }}>
       {[...Array(3)].map((_, i) => (
         <div key={i} style={{ ...shimmerStyle, minWidth: "320px", height: "240px", borderRadius: "12px" }} />
       ))}
     </div>
-
-    {/* Grid dois cards */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {/* Card esquerdo */}
       <div style={{ background: "#fff", padding: "24px", borderRadius: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", flexDirection: "column", gap: "14px" }}>
         <div style={{ ...shimmerStyle, width: "180px", height: "22px", borderRadius: "6px" }} />
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <div style={{ ...shimmerStyle, width: "60px", height: "22px", borderRadius: "4px" }} />
-          <div style={{ ...shimmerStyle, width: "20px", height: "16px", borderRadius: "4px" }} />
-          <div style={{ ...shimmerStyle, width: "60px", height: "22px", borderRadius: "4px" }} />
-        </div>
         {[...Array(6)].map((_, i) => (
           <div key={i} style={{ ...shimmerStyle, width: i % 2 === 0 ? "80%" : "65%", height: "14px", borderRadius: "4px" }} />
         ))}
       </div>
-
-      {/* Card direito */}
       <div style={{ background: "#fff", padding: "24px", borderRadius: "16px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", border: "1px solid #eee", display: "flex", flexDirection: "column", gap: "14px" }}>
         <div style={{ ...shimmerStyle, width: "140px", height: "22px", borderRadius: "6px" }} />
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div style={{ ...shimmerStyle, width: "80px", height: "16px", borderRadius: "4px" }} />
-          <div style={{ ...shimmerStyle, width: "40px", height: "16px", borderRadius: "4px" }} />
-        </div>
-        <div style={{ ...shimmerStyle, width: "100%", height: "1px", borderRadius: "1px" }} />
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div style={{ ...shimmerStyle, width: "60px", height: "22px", borderRadius: "4px" }} />
-          <div style={{ ...shimmerStyle, width: "100px", height: "22px", borderRadius: "4px" }} />
-        </div>
+        {[...Array(4)].map((_, i) => (
+          <div key={i} style={{ ...shimmerStyle, width: i % 2 === 0 ? "70%" : "50%", height: "16px", borderRadius: "4px" }} />
+        ))}
         <div style={{ ...shimmerStyle, width: "100%", height: "48px", borderRadius: "12px" }} />
         <div style={{ ...shimmerStyle, width: "100%", height: "44px", borderRadius: "12px" }} />
       </div>
@@ -65,100 +45,142 @@ const ReservaDetalhesSkeleton = () => (
 );
 // ─────────────────────────────────────────────────────────────
 
+// ── Normaliza reserva para formato consistente ───────────────
+// Funciona tanto com dados do backend como do localStorage (DEV)
+const normalizeBooking = (raw, housesData = []) => {
+  const houseId     = raw.accommodationId ?? raw.houseId;
+  const localHouse  = housesData.find((h) => String(h.id) === String(houseId));
+  const embedded    = raw.house ?? raw.accommodation ?? null;
+
+  return {
+    id:         raw.id ?? raw._id,
+    houseId,
+    images:     embedded?.image ?? localHouse?.image ?? raw.images ?? [],
+    location:   embedded?.location ?? localHouse?.location ?? raw.houseName ?? raw.location ?? "Casa",
+    startDate:  raw.startDate ?? raw.checkIn,
+    endDate:    raw.endDate   ?? raw.checkOut,
+    guests:     raw.guests,
+    totalPrice: raw.totalPrice,
+    status:     raw.status ?? "pendente",
+    method:     raw.method ?? raw.paymentMethod ?? null,
+  };
+};
+// ─────────────────────────────────────────────────────────────
+
+function calcNights(startDate, endDate) {
+  const start = new Date(startDate);
+  const end   = new Date(endDate);
+  return Math.round((end - start) / (1000 * 60 * 60 * 24));
+}
+
+const formatDate = (dateString) => {
+  const d     = new Date(dateString);
+  const day   = String(d.getDate()).padStart(2, "0");
+  const month = d.toLocaleString("pt-PT", { month: "short" }).toUpperCase();
+  return `${day} ${month}`;
+};
+
+const getStatusColor = (status) => {
+  if (status === "confirmado") return "bg-green-100 text-green-700";
+  if (status === "pendente")   return "bg-yellow-100 text-yellow-700";
+  return "bg-red-100 text-red-700";
+};
+
+// ─────────────────────────────────────────────────────────────
+
 export default function ReservaDetalhes() {
-  const { id } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [booking, setBooking] = useState(null);
-  const [house, setHouse] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { id }       = useParams();
+  const location     = useLocation();
+  const navigate     = useNavigate();
+  const { t }        = useAuth() && useTranslation();
+  const { user }     = useAuth();
+
+  const [booking,         setBooking]         = useState(null);
+  const [loading,         setLoading]         = useState(true);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [canceling,       setCanceling]       = useState(false);
 
-  const { t } = useTranslation();
-  const { user } = useAuth();
+  const storageKey = user?.email
+    ? `minhasReservas_${user.email}`
+    : "minhasReservas_guest";
 
-  // BACKEND: Remover quando as reservas vierem da API
-  const storageKey = user?.email ? `minhasReservas_${user.email}` : "minhasReservas_guest";
+  useEffect(() => { loadData(); }, [id]);
 
-  const formatDate = (dateString) => {
-    const d = new Date(dateString);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = d.toLocaleString("pt-PT", { month: "short" }).toUpperCase();
-    return `${day} ${month}`;
-  };
-
-  const getStatusColor = (status) => {
-    if (status === "confirmado") return "bg-green-100 text-green-700";
-    if (status === "pendente") return "bg-yellow-100 text-yellow-700";
-    return "bg-red-100 text-red-700";
-  };
-
-  useEffect(() => {
-    async function loadData() {
+  async function loadData() {
+    setLoading(true);
+    try {
+      // ── BACKEND: GET /api/bookings/:id ────────────────────
+      // Retorna a reserva com a casa embutida.
+      // Exemplo de resposta esperada:
+      // {
+      //   id: "uuid",
+      //   accommodationId: 5,
+      //   accommodation: { id: 5, location: "Bilene", image: ["https://..."] },
+      //   startDate: "2025-09-01",
+      //   endDate:   "2025-09-05",
+      //   guests:    2,
+      //   totalPrice: "2.200 MZN",
+      //   status:    "confirmado",
+      //   method:    "M-Pesa",
+      // }
+      const res = await api.get(`/bookings/${id}`);
+      const raw = res.data?.data ?? res.data;
+      setBooking(normalizeBooking(raw));
+    } catch {
+      // 🚧 DEV — Fallback: state de navegação → localStorage
       try {
         const housesData = await fetch("/data/casas.json").then((r) => r.json());
+        const devCasas   = JSON.parse(localStorage.getItem("dev_casas_admin") || "[]");
+        const allHouses  = [...housesData, ...devCasas];
 
-        // ─────────────────────────────────────────────────────
-        // BACKEND: Substituir por:
-        // const res = await fetch(`/api/reservas/${id}`, {
-        //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        // });
-        // const foundBooking = await res.json();
-        // ─────────────────────────────────────────────────────
-
-        // 1. Via navigation state
+        // 1. Via state de navegação (vindo do BookingCard)
         if (location.state?.booking) {
-          const b = location.state.booking;
-          setBooking(b);
-          setHouse(housesData.find((c) => c.id === Number(b.houseId)));
-          setLoading(false);
+          setBooking(normalizeBooking(location.state.booking, allHouses));
           return;
         }
 
-        // 2. Fallback localStorage
-        const reservasLocais = JSON.parse(localStorage.getItem(storageKey)) || [];
-        const localBooking = reservasLocais.find((r) => r.id === id);
-
-        if (localBooking) {
-          setBooking(localBooking);
-          setHouse(housesData.find((c) => c.id === Number(localBooking.houseId)));
-          setLoading(false);
-          return;
-        }
-
-        setLoading(false);
+        // 2. Via localStorage
+        const reservasRaw  = JSON.parse(localStorage.getItem(storageKey)) || [];
+        const found        = reservasRaw.find((r) => (r.id ?? r._id) === id);
+        if (found) setBooking(normalizeBooking(found, allHouses));
       } catch (err) {
-        console.error("Erro:", err);
-        setLoading(false);
+        console.error("Erro ao carregar reserva:", err);
       }
+      // 🚧 fim DEV
+    } finally {
+      setLoading(false);
     }
+  }
 
-    loadData();
-  }, [id, location.state, storageKey]);
-
-  function handleCancelar() {
-    // ─────────────────────────────────────────────────────
-    // BACKEND: Substituir por:
-    // await fetch(`/api/reservas/${booking.id}/cancelar`, {
-    //   method: "PATCH",
-    //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    // });
-    // ─────────────────────────────────────────────────────
-    const reservas = JSON.parse(localStorage.getItem(storageKey)) || [];
-    const atualizadas = reservas.map((r) =>
-      r.id === booking.id ? { ...r, status: "cancelado" } : r
-    );
-    localStorage.setItem(storageKey, JSON.stringify(atualizadas));
-    setBooking((prev) => ({ ...prev, status: "cancelado" }));
-    setShowCancelModal(false);
+  async function handleCancelar() {
+    setCanceling(true);
+    try {
+      // ── BACKEND: PATCH /api/bookings/:id ─────────────────
+      // Cancela a reserva. O backend atualiza o status e pode
+      // enviar email de confirmação ao utilizador.
+      await api.patch(`/bookings/${id}`, { status: "cancelado" });
+      setBooking((prev) => ({ ...prev, status: "cancelado" }));
+    } catch {
+      // 🚧 DEV — Atualiza no localStorage
+      const reservas    = JSON.parse(localStorage.getItem(storageKey)) || [];
+      const atualizadas = reservas.map((r) =>
+        (r.id ?? r._id) === booking.id ? { ...r, status: "cancelado" } : r
+      );
+      localStorage.setItem(storageKey, JSON.stringify(atualizadas));
+      setBooking((prev) => ({ ...prev, status: "cancelado" }));
+      // 🚧 fim DEV
+    } finally {
+      setCanceling(false);
+      setShowCancelModal(false);
+    }
   }
 
   if (loading) return <ReservaDetalhesSkeleton />;
 
-  if (!booking || !house)
+  if (!booking)
     return <div className="p-10 text-center text-red-500">{t("bookingdetails.notfound")}</div>;
 
-  const nights = calcNights(booking.startDate, booking.endDate);
+  const nights     = calcNights(booking.startDate, booking.endDate);
   const isCanceled = booking.status === "cancelado";
 
   return (
@@ -183,14 +205,21 @@ export default function ReservaDetalhes() {
 
       {/* Galeria */}
       <div className="w-full overflow-x-auto whitespace-nowrap rounded-xl shadow mb-10 mt-6">
-        {house.image.map((img, index) => (
-          <img key={index} src={img} alt="Casa"
-            className="inline-block w-80 h-60 object-cover mr-2 rounded-xl" />
-        ))}
+        {booking.images.length > 0 ? (
+          booking.images.map((img, i) => (
+            <img key={i} src={img} alt="Casa"
+              className="inline-block w-80 h-60 object-cover mr-2 rounded-xl" />
+          ))
+        ) : (
+          <div className="inline-flex w-full h-60 items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl">
+            <span className="text-6xl">🏠</span>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* ESQUERDA */}
+
+        {/* ESQUERDA — informações da reserva */}
         <div className="bg-white p-6 rounded-2xl shadow">
           <h2 className="text-xl font-semibold mb-4">{t("bookingdetails.information")}</h2>
 
@@ -205,12 +234,17 @@ export default function ReservaDetalhes() {
             <p><strong>{t("center.outdate")}:</strong> {booking.endDate}</p>
             <p><strong>{t("center.guests")}:</strong> {booking.guests}</p>
             <p><strong>{t("bookingdetails.nights")}:</strong> {nights}</p>
-            <p><strong>Método de pagamento:</strong> {booking.method}</p>
-            <p><strong>Referência:</strong> <span className="text-xs break-all">{booking.id}</span></p>
+            {booking.method && (
+              <p><strong>Método de pagamento:</strong> {booking.method}</p>
+            )}
+            <p>
+              <strong>Referência:</strong>{" "}
+              <span className="text-xs break-all font-mono text-gray-500">{booking.id}</span>
+            </p>
           </div>
         </div>
 
-        {/* DIREITA */}
+        {/* DIREITA — resumo financeiro + ações */}
         <div className="bg-white p-6 rounded-2xl shadow border space-y-4">
           <h2 className="text-xl font-semibold">{t("bookingdetails.summary")}</h2>
 
@@ -227,14 +261,18 @@ export default function ReservaDetalhes() {
           </div>
 
           {!isCanceled && (
-            <button onClick={() => setShowCancelModal(true)}
-              className="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition">
+            <button
+              onClick={() => setShowCancelModal(true)}
+              className="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition"
+            >
               {t("bookingdetails.cancellation")}
             </button>
           )}
 
-          <Link to="/politicacancelamento"
-            className="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-gray-300 hover:border-black rounded-xl text-sm font-semibold text-gray-700 hover:text-black transition">
+          <Link
+            to="/politicacancelamento"
+            className="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-gray-300 hover:border-black rounded-xl text-sm font-semibold text-gray-700 hover:text-black transition"
+          >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
@@ -255,18 +293,31 @@ export default function ReservaDetalhes() {
               </div>
             </div>
             <h2 className="text-xl font-bold text-gray-900">Cancelar reserva?</h2>
-            <p className="text-gray-500 text-sm">Tem a certeza que deseja cancelar? Esta ação não pode ser desfeita.</p>
-            <Link to="/politicacancelamento" className="block text-sm text-blue-600 underline"
-              onClick={() => setShowCancelModal(false)}>
+            <p className="text-gray-500 text-sm">
+              Tem a certeza que deseja cancelar? Esta ação não pode ser desfeita.
+            </p>
+            <Link
+              to="/politicacancelamento"
+              className="block text-sm text-blue-600 underline"
+              onClick={() => setShowCancelModal(false)}
+            >
               Consultar política de cancelamento antes de decidir
             </Link>
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setShowCancelModal(false)}
-                className="flex-1 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-gray-400 transition">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="flex-1 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-gray-400 transition"
+              >
                 Voltar
               </button>
-              <button onClick={handleCancelar}
-                className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition">
+              <button
+                onClick={handleCancelar}
+                disabled={canceling}
+                className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {canceling && (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                )}
                 Confirmar cancelamento
               </button>
             </div>
@@ -275,10 +326,4 @@ export default function ReservaDetalhes() {
       )}
     </div>
   );
-}
-
-function calcNights(startDate, endDate) {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  return Math.round((end - start) / (1000 * 60 * 60 * 24));
 }

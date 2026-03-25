@@ -1,7 +1,7 @@
+// src/components/FeaturedDestination.jsx
 import { useEffect, useState, useRef } from "react";
 import { api } from "../services/api";
 import BeachCard, { BeachCardSkeleton } from "./BeachCard";
-import Title from "./Title";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import rightarrow from "../assets/right-arrow.png";
@@ -10,6 +10,16 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/autoplay";
 import { useTranslation } from "react-i18next";
+
+// ─────────────────────────────────────────────────────────────
+// 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
+// Remove quando o backend estiver pronto.
+const DEV_KEY = "dev_casas_admin";
+const devGetCasas = () => {
+  try { return JSON.parse(localStorage.getItem(DEV_KEY)) || []; }
+  catch { return []; }
+};
+// 🚧 fim bloco DEV ────────────────────────────────────────────
 
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
@@ -24,9 +34,7 @@ const FeaturedDestinationSkeleton = () => (
     <div style={{ ...shimmerStyle, width: "320px", height: "20px", borderRadius: "6px", marginBottom: "40px" }} />
     <div className="w-full max-w-7xl mx-auto">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 px-4">
-        {[...Array(4)].map((_, i) => (
-          <BeachCardSkeleton key={i} />
-        ))}
+        {[...Array(4)].map((_, i) => <BeachCardSkeleton key={i} />)}
       </div>
     </div>
   </div>
@@ -40,34 +48,50 @@ const FeaturedDestination = () => {
   const swiperRef             = useRef(null);
   const { t }                 = useTranslation();
 
-  useEffect(() => {
-    // ── BACKEND: GET /api/casas/featured ──────────────────
-    // Descomentar quando o backend estiver pronto e apagar o bloco abaixo:
-    // api.get("/api/casas/featured", { withCredentials: true })
-    //   .then((res) => setHouses(res.data))
-    //   .catch(() => setError(true))
-    //   .finally(() => setLoading(false));
-    // ─────────────────────────────────────────────────────
+  const loadHouses = async () => {
+    try {
+      // BACKEND: GET /api/accommodations/featured
+      const res = await api.get("/accommodations/featured");
+      const data = res.data?.data ?? res.data;
+      setHouses(Array.isArray(data) ? data : []);
+    } catch {
+      // 🚧 DEV — JSON local + casas adicionadas pelo admin
+      try {
+        const res = await api.get("/data/casas.json", { baseURL: window.location.origin });
+        const devCasas = devGetCasas();
+        const todas = [...res.data, ...devCasas];
 
-    // Temporário — lê do ficheiro JSON estático:
-    api
-      .get("/data/casas.json", { baseURL: window.location.origin })
-      .then((res) => {
-        const grouped = res.data.reduce((acc, house) => {
+        // 2 casas por praia — mostra variedade
+        const grouped = todas.reduce((acc, house) => {
+          if (!house.location) return acc;
           if (!acc[house.location]) acc[house.location] = [];
           acc[house.location].push(house);
           return acc;
         }, {});
 
-        const groupedHouses = [];
+        const featured = [];
         Object.values(grouped).forEach((group) => {
-          groupedHouses.push(...group.slice(0, 2));
+          featured.push(...group.slice(0, 2));
         });
 
-        setHouses(groupedHouses);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+        setHouses(featured);
+      } catch {
+        setError(true);
+      }
+      // 🚧 fim DEV
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadHouses();
+
+    // 🚧 DEV — recarrega quando o admin adiciona uma casa
+    const handleDevUpdate = () => loadHouses();
+    window.addEventListener("dev_casas_updated", handleDevUpdate);
+    return () => window.removeEventListener("dev_casas_updated", handleDevUpdate);
+    // 🚧 fim DEV
   }, []);
 
   if (loading) return <FeaturedDestinationSkeleton />;
@@ -83,17 +107,14 @@ const FeaturedDestination = () => {
 
   return (
     <div className="flex flex-col items-center bg-slate-50 py-16 pb-10">
-      {/* Corrigido: max-2-174 (inválido) → max-w-2xl */}
       <p className="px-6 md:px-16 lg:px-24 text-xl text-gray-600/90 mt-4 max-w-2xl">
         {t("featured.title")}
       </p>
 
       <div className="relative w-full max-w-7xl mx-auto mt-10">
-        <button
-          onClick={handlePrev}
+        <button onClick={handlePrev}
           className="hidden md:flex absolute left-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
-          aria-label={t("common.prev") || "Anterior"}
-        >
+          aria-label={t("common.prev") || "Anterior"}>
           <img src={leftarrow} className="w-5 h-5" alt="" />
         </button>
 
@@ -112,18 +133,15 @@ const FeaturedDestination = () => {
           }}
         >
           {houses.map((house) => (
-            // Corrigido: key={house.id} já era estável — mantido
             <SwiperSlide key={house.id}>
               <BeachCard house={house} />
             </SwiperSlide>
           ))}
         </Swiper>
 
-        <button
-          onClick={handleNext}
+        <button onClick={handleNext}
           className="hidden md:flex absolute right-[-20px] top-1/2 -translate-y-1/2 bg-white shadow-md rounded-full p-2 hover:bg-gray-100 z-10 transition"
-          aria-label={t("common.next") || "Próximo"}
-        >
+          aria-label={t("common.next") || "Próximo"}>
           <img src={rightarrow} className="w-5 h-5" alt="" />
         </button>
       </div>

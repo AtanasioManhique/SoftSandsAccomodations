@@ -1,3 +1,4 @@
+// src/components/BeachCard.jsx
 import { Link } from "react-router-dom";
 import fullstar from "../assets/fullstar.png";
 import locationicon from "../assets/location.png";
@@ -5,10 +6,7 @@ import FavoriteButton from "../componentshouse/FavoriteButton";
 import { useTranslation } from "react-i18next";
 import { useSeasonPricing } from "../context/seasonPricing.js";
 
-// ── Skeleton do BeachCard ─────────────────────────────────────
-// Usado por FeaturedDestination e qualquer lista de casas.
-// Exportado para ser reutilizado noutros componentes se necessário.
-// ─────────────────────────────────────────────────────────────
+// ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
   background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
   backgroundSize: "200% 100%",
@@ -18,34 +16,22 @@ const shimmerStyle = {
 export const BeachCardSkeleton = () => (
   <>
     <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
-    <div style={{
-      borderRadius: "16px",
-      overflow: "hidden",
-      border: "1px solid #f0f0f0",
-      background: "#fff",
-    }}>
-      {/* Imagem */}
+    <div style={{ borderRadius: "16px", overflow: "hidden", border: "1px solid #f0f0f0", background: "#fff" }}>
       <div style={{ ...shimmerStyle, width: "100%", height: "192px" }} />
-
       <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: "8px" }}>
-        {/* Localização */}
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
           <div style={{ ...shimmerStyle, width: "16px", height: "16px", borderRadius: "50%", flexShrink: 0 }} />
           <div style={{ ...shimmerStyle, width: "110px", height: "14px", borderRadius: "4px" }} />
         </div>
-        {/* Preço e rating */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ ...shimmerStyle, width: "90px", height: "14px", borderRadius: "4px" }} />
           <div style={{ ...shimmerStyle, width: "36px", height: "14px", borderRadius: "4px" }} />
         </div>
       </div>
-
-      {/* Botão */}
       <div style={{ ...shimmerStyle, margin: "0 12px 12px", height: "36px", borderRadius: "8px" }} />
     </div>
   </>
 );
-
 // ─────────────────────────────────────────────────────────────
 
 const BeachCard = ({ house }) => {
@@ -59,9 +45,10 @@ const BeachCard = ({ house }) => {
       <FavoriteButton house={house} />
 
       <Link to={`/casas/${house.id}`} onClick={() => scrollTo(0, 0)}>
+        {/* ── optional chaining — evita crash se image for undefined ── */}
         <img
-          src={house.image[0]}
-          alt={house.location}
+          src={house.image?.[0]}
+          alt={house.location ?? "Casa"}
           className="w-full h-40 sm:h-44 md:h-48 object-cover"
         />
 
@@ -75,7 +62,6 @@ const BeachCard = ({ house }) => {
             <span className="text-sm font-semibold text-gray-900">
               {formatted} / {t("favorites.night")}
             </span>
-
             <div className="flex items-center gap-1 text-sm text-gray-700">
               <img src={fullstar} alt="rating" className="w-4 h-4" />
               <span>{house.rating}</span>

@@ -73,9 +73,7 @@ export default function ReserveAgora() {
   }, [houseId]);
 
   const handlePay = async () => {
-    // Redireciona para a página de pagamento do PaySuite.
-    // O utilizador escolhe o método (Visa, M-Pesa, e-Mola) na página do PaySuite.
-    const result = await initiatePayment({ bookingId, totalPrice, houseName, startDate, endDate, guests });
+    const result = await initiatePayment({ bookingId,accommodationId: houseId, images: house?.image ?? [],  totalPrice, houseName, startDate, endDate, guests });
 
     if (result.success) {
       safeRemoveStorage("preReserva");
@@ -144,17 +142,13 @@ export default function ReserveAgora() {
             <span className="text-xs text-gray-400">Aceita:</span>
             <div className="flex items-center gap-2">
               {/* Visa */}
-              <div className="bg-[#1A1F71] rounded-md px-2 py-0.5">
-                <span className="text-white text-xs font-bold tracking-wider">VISA</span>
-              </div>
+              <img src="/icons/visa1.png" alt="Visa" className="h-6 object-contain" />
+
               {/* M-Pesa */}
-              <div className="bg-red-600 rounded-full w-6 h-6 flex items-center justify-center">
-                <span className="text-white text-[10px] font-bold">M</span>
-              </div>
+              <img src="/icons/m-pesa-seeklogo.png" alt="M-Pesa" className="h-6 object-contain" />
+
               {/* e-Mola */}
-              <div className="bg-orange-500 rounded-full w-6 h-6 flex items-center justify-center">
-                <span className="text-white text-[10px] font-bold">e</span>
-              </div>
+              <img src="/icons/emola.png" alt="e-Mola" className="h-6 object-contain" />
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 // FormDropDown/LoginForm.jsx
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/palmtree.png";
 import { useTranslation } from "react-i18next";
@@ -32,10 +32,6 @@ const parseBackendError = (errorString) => {
 const LoginPage = ({ isModal = false, onSuccess }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
-  // ── isAdmin vem do AuthContext — já calculado a partir de user.role ──
-  // Após loginWithEmail/loginWithGoogle o AuthContext chama setUser()
-  // e isAdmin atualiza automaticamente. NÃO precisamos de result.user.
   const { loginWithEmail, loginWithGoogle, loading, isAdmin } = useAuth();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -52,18 +48,10 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
     if (generalError) setGeneralError(null);
   };
 
-  // ── Redireciona consoante o role ──────────────────────────
-  // isAdmin é lido do AuthContext DEPOIS de saveAuth() ter feito setUser().
-  // Neste ponto o estado já foi atualizado, então isAdmin reflete
-  // o role real que veio do backend.
   const redirectAfterLogin = () => {
-    if (isAdmin) {
-      navigate("/admin/dashboard");
-    } else {
-      navigate("/");
-    }
+    if (isAdmin) navigate("/admin/dashboard");
+    else navigate("/");
   };
-  // ─────────────────────────────────────────────────────────
 
   const handleFormLogin = async (e) => {
     e.preventDefault();
@@ -75,16 +63,11 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
     if (Object.keys(clientErrors).length > 0) { setFieldErrors(clientErrors); return; }
     setFieldErrors({});
 
-    // BACKEND: POST /api/auth/login
-    // AuthContext.loginWithEmail faz saveAuth() → setUser() → isAdmin atualiza
     const result = await loginWithEmail(formData.email, formData.password);
 
     if (result?.success) {
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        redirectAfterLogin();
-      }
+      if (onSuccess) onSuccess();
+      else redirectAfterLogin();
     } else {
       const { field, message } = parseBackendError(result?.error);
       if (field) setFieldErrors({ [field]: message });
@@ -98,9 +81,7 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
     try {
       const idToken = credentialResponse?.credential;
       if (!idToken) throw new Error("Google não retornou credential.");
-
       const result = await loginWithGoogle(idToken);
-
       if (result?.success) {
         if (onSuccess) onSuccess();
         else redirectAfterLogin();
@@ -170,6 +151,16 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
             {fieldErrors.password && (
               <p className="text-red-500 text-xs px-1">{fieldErrors.password}</p>
             )}
+          </div>
+
+          {/* ── Link recuperar senha ── */}
+          <div className="text-right -mt-1">
+            <Link
+              to="/recuperar-senha"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Esqueceu a palavra-passe?
+            </Link>
           </div>
 
           {generalError && (
