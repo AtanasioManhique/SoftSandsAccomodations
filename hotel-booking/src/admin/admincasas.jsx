@@ -4,21 +4,6 @@ import AdminLayout from "./adminlayout";
 import { api } from "../services/api";
 import { Plus, Pencil, Trash2, X, MapPin, Search } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────
-// 🚧 DEV — Simulação frontend via localStorage
-// Remove este bloco quando o backend estiver pronto.
-const DEV_KEY = "dev_casas_admin";
-const devGetCasas = () => {
-  try { return JSON.parse(localStorage.getItem(DEV_KEY)) || []; }
-  catch { return []; }
-};
-const devSaveCasas = (casas) => {
-  localStorage.setItem(DEV_KEY, JSON.stringify(casas));
-  // Notifica o AllHouses para recarregar as casas
-  window.dispatchEvent(new Event("dev_casas_updated"));
-};
-// 🚧 fim bloco DEV ────────────────────────────────────────────
-
 const AMENITY_ICONS = [
   { name: "Wi-Fi",               icon: "/icons/wi-fi.png"           },
   { name: "Piscina Privada",     icon: "/icons/swimming.png"        },
@@ -60,25 +45,13 @@ const AdminCasas = () => {
 
   const loadData = async () => {
     try {
-      // BACKEND: GET /api/admin/accommodations
       const res = await api.get("/admin/accommodations");
       const data = res.data?.data ?? res.data ?? [];
       const todas = Array.isArray(data) ? data : [];
       setCasas(todas);
       setPraias([...new Set(todas.map((c) => c.location).filter(Boolean))]);
-    } catch {
-      // 🚧 DEV — JSON local + localStorage
-      try {
-        const res = await fetch("/data/casas.json");
-        const jsonCasas = await res.json();
-        const devCasas = devGetCasas();
-        const todas = [...jsonCasas, ...devCasas];
-        setCasas(todas);
-        setPraias([...new Set(todas.map((c) => c.location).filter(Boolean))]);
-      } catch (err) {
-        console.error("Erro ao carregar casas:", err);
-      }
-      // 🚧 fim DEV
+    } catch (err) {
+      console.error("Erro ao carregar casas:", err);
     } finally {
       setLoading(false);
     }
@@ -140,30 +113,18 @@ const AdminCasas = () => {
 
     try {
       if (editingId) {
-        // BACKEND: PUT /api/admin/accommodations/:id
-        await api.put(`/admin/accommodations/${editingId}`, payload);
-        setCasas((prev) => prev.map((c) => c.id === editingId ? { ...c, ...payload, id: editingId } : c));
+        const res = await api.put(`/admin/accommodations/${editingId}`, payload);
+        const updated = res.data?.data?.accommodation ?? { ...payload, id: editingId };
+        setCasas((prev) => prev.map((c) => c.id === editingId ? updated : c));
       } else {
-        // BACKEND: POST /api/admin/accommodations
         const res = await api.post("/admin/accommodations", payload);
-        const nova = res.data?.data ?? res.data;
+        const nova = res.data?.data?.accommodation ?? res.data?.data ?? res.data;
         setCasas((prev) => [...prev, nova]);
         if (!praias.includes(locationFinal)) setPraias((prev) => [...prev, locationFinal]);
       }
-    } catch {
-      // 🚧 DEV — guarda no localStorage e notifica o AllHouses
-      const devCasas = devGetCasas();
-      if (editingId) {
-        const atualizadas = devCasas.map((c) => c.id === editingId ? { ...c, ...payload } : c);
-        const eraNoJson = !devCasas.find((c) => c.id === editingId);
-        if (eraNoJson) atualizadas.push({ ...payload, id: editingId, _devOverride: true });
-        devSaveCasas(atualizadas);
-      } else {
-        const novaCasa = { ...payload, id: `dev-${Date.now()}`, _devAdded: true };
-        devSaveCasas([...devCasas, novaCasa]);
-      }
-      await loadData();
-      // 🚧 fim DEV
+    } catch (err) {
+      console.error("Erro ao guardar casa:", err);
+      alert("Erro ao guardar. Tenta novamente.");
     } finally {
       setSaving(false);
       setShowForm(false);
@@ -172,15 +133,11 @@ const AdminCasas = () => {
 
   const handleDelete = async (id) => {
     try {
-      // BACKEND: DELETE /api/admin/accommodations/:id
       await api.delete(`/admin/accommodations/${id}`);
       setCasas((prev) => prev.filter((c) => c.id !== id));
-    } catch {
-      // 🚧 DEV
-      const devCasas = devGetCasas();
-      devSaveCasas(devCasas.filter((c) => c.id !== id));
-      setCasas((prev) => prev.filter((c) => c.id !== id));
-      // 🚧 fim DEV
+    } catch (err) {
+      console.error("Erro ao eliminar casa:", err);
+      alert("Erro ao eliminar. Tenta novamente.");
     } finally {
       setDeleteConfirm(null);
     }
@@ -228,15 +185,6 @@ const AdminCasas = () => {
           </div>
         </div>
 
-        {/* Banner DEV */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-xs text-yellow-800 flex items-start gap-2">
-          <span className="font-bold shrink-0">🚧 Modo DEV:</span>
-          <span>
-            Casas adicionadas ficam no <strong>localStorage</strong> e aparecem no site automaticamente.
-            Remove este banner quando o backend estiver pronto.
-          </span>
-        </div>
-
         {/* Grid de casas */}
         {loading ? (
           <div className="flex items-center justify-center h-40">
@@ -245,25 +193,20 @@ const AdminCasas = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((casa) => (
-              <div key={casa.id} className={`bg-white rounded-2xl border shadow-sm overflow-hidden ${casa._devAdded ? "border-yellow-300" : "border-gray-100"}`}>
+              <div key={casa.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="h-36 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative">
                   {casa.image?.[0] ? (
                     <img src={casa.image[0]} alt={casa.location} className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-5xl">🏠</div>
                   )}
-                  {casa._devAdded && (
-                    <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded-full">DEV</div>
-                  )}
                   <div className="absolute top-2 right-2 flex gap-1.5">
                     <button onClick={() => openEdit(casa)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
                       <Pencil size={13} className="text-blue-600" />
                     </button>
-                    {casa._devAdded && (
-                      <button onClick={() => setDeleteConfirm(casa.id)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
-                        <Trash2 size={13} className="text-red-500" />
-                      </button>
-                    )}
+                    <button onClick={() => setDeleteConfirm(casa.id)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
+                      <Trash2 size={13} className="text-red-500" />
+                    </button>
                   </div>
                 </div>
                 <div className="p-4">
