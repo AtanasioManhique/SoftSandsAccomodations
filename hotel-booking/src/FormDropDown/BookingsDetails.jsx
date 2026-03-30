@@ -127,7 +127,7 @@ export default function ReservaDetalhes() {
       const raw = res.data?.data ?? res.data;
       setBooking(normalizeBooking(raw));
     } catch {
-      // 🚧 DEV — Fallback: state de navegação → localStorage
+      /*// 🚧 DEV — Fallback: state de navegação → localStorage
       try {
         const housesData = await fetch("/data/casas.json").then((r) => r.json());
         const devCasas   = JSON.parse(localStorage.getItem("dev_casas_admin") || "[]");
@@ -146,7 +146,7 @@ export default function ReservaDetalhes() {
       } catch (err) {
         console.error("Erro ao carregar reserva:", err);
       }
-      // 🚧 fim DEV
+      // 🚧 fim DEV // fallback */
     } finally {
       setLoading(false);
     }
@@ -161,14 +161,14 @@ export default function ReservaDetalhes() {
       await api.patch(`/bookings/${id}`, { status: "cancelado" });
       setBooking((prev) => ({ ...prev, status: "cancelado" }));
     } catch {
-      // 🚧 DEV — Atualiza no localStorage
+      /* // 🚧 DEV — Atualiza no localStorage
       const reservas    = JSON.parse(localStorage.getItem(storageKey)) || [];
       const atualizadas = reservas.map((r) =>
         (r.id ?? r._id) === booking.id ? { ...r, status: "cancelado" } : r
       );
       localStorage.setItem(storageKey, JSON.stringify(atualizadas));
       setBooking((prev) => ({ ...prev, status: "cancelado" }));
-      // 🚧 fim DEV
+      // 🚧 fim DEV // fallback */
     } finally {
       setCanceling(false);
       setShowCancelModal(false);

@@ -7,13 +7,13 @@ import { HouseCardSkeleton } from "../componentshouse/HouseCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────
-// 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
+/* // 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
 const DEV_KEY = "dev_casas_admin";
 const devGetCasas = () => {
   try { return JSON.parse(localStorage.getItem(DEV_KEY)) || []; }
   catch { return []; }
 };
-// 🚧 fim bloco DEV ────────────────────────────────────────────
+// 🚧 fim bloco DEV ──────────────────────────────────────────── */
 
 const PRAIAS_PER_PAGE = 4;
 
@@ -56,7 +56,7 @@ const AllHouses = () => {
       const data = res.data?.data ?? res.data;
       setHouses(Array.isArray(data) ? data : []);
     } catch {
-      // 🚧 DEV — JSON local + casas adicionadas pelo admin no localStorage
+      /*// 🚧 DEV — JSON local + casas adicionadas pelo admin no localStorage
       try {
         const res      = await fetch("/data/casas.json");
         const jsonCasas = await res.json();
@@ -65,7 +65,7 @@ const AllHouses = () => {
       } catch (err) {
         console.error("Erro ao carregar casas:", err);
       }
-      // 🚧 fim DEV
+      // 🚧 fim DEV // fallback */
     } finally {
       setLoading(false);
     }
@@ -74,11 +74,11 @@ const AllHouses = () => {
   useEffect(() => {
     loadHouses();
 
-    // 🚧 DEV — Ouve evento disparado pelo AdminCasas quando uma casa é adicionada/editada
+   /* // 🚧 DEV — Ouve evento disparado pelo AdminCasas quando uma casa é adicionada/editada
     const handleDevUpdate = () => { setCurrentPage(1); loadHouses(); };
     window.addEventListener("dev_casas_updated", handleDevUpdate);
     return () => window.removeEventListener("dev_casas_updated", handleDevUpdate);
-    // 🚧 fim DEV
+    // 🚧 fim DEV */
   }, [loadHouses]);
 
   if (loading) return <AllHousesSkeleton />;

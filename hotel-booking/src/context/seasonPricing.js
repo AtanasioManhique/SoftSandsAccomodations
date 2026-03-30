@@ -1,5 +1,5 @@
 import { useCurrency } from "../FormDropDown/CurrencyContext";
-import { convertPrice, formatCurrency } from "../context/utils/currencyHelpers";
+import { convertPrice, formatCurrency } from "../context/utils/currency";
 import { useTranslation } from "react-i18next";
 
 export function useSeasonPricing() {

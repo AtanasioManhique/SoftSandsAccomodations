@@ -121,11 +121,9 @@ const Center = () => {
     if (!selectedDestino || !startDate || !endDate || !guests) return;
 
     // ── BACKEND: GET /api/casas com filtros ───────────────
-    // Descomentar quando o backend estiver pronto:
-    // navigate(
-    //   `/pesquisa?destino=${encodeURIComponent(selectedDestino)}&entrada=${startDate.toISOString()}&saida=${endDate.toISOString()}&hospedes=${guests}`
-    // );
-    // ─────────────────────────────────────────────────────
+      navigate(
+        `/pesquisa?destino=${encodeURIComponent(selectedDestino)}&entrada=${startDate.toISOString()}&saida=${endDate.toISOString()}&hospedes=${guests}`
+      );
 
     // Temporário — navega para /praias com filtros básicos:
     navigate(

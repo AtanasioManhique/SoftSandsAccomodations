@@ -12,14 +12,14 @@ import "swiper/css/autoplay";
 import { useTranslation } from "react-i18next";
 
 // ─────────────────────────────────────────────────────────────
-// 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
+/* // 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
 // Remove quando o backend estiver pronto.
 const DEV_KEY = "dev_casas_admin";
 const devGetCasas = () => {
   try { return JSON.parse(localStorage.getItem(DEV_KEY)) || []; }
   catch { return []; }
 };
-// 🚧 fim bloco DEV ────────────────────────────────────────────
+// 🚧 fim bloco DEV ──────────────────────────────────────────── */
 
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
@@ -50,35 +50,12 @@ const FeaturedDestination = () => {
 
   const loadHouses = async () => {
     try {
-      // BACKEND: GET /api/accommodations/featured
-      const res = await api.get("/accommodations/featured");
+      const res = await api.get("/accommodations", { params: { limit: 12 } });
       const data = res.data?.data ?? res.data;
       setHouses(Array.isArray(data) ? data : []);
-    } catch {
-      // 🚧 DEV — JSON local + casas adicionadas pelo admin
-      try {
-        const res = await api.get("/data/casas.json", { baseURL: window.location.origin });
-        const devCasas = devGetCasas();
-        const todas = [...res.data, ...devCasas];
-
-        // 2 casas por praia — mostra variedade
-        const grouped = todas.reduce((acc, house) => {
-          if (!house.location) return acc;
-          if (!acc[house.location]) acc[house.location] = [];
-          acc[house.location].push(house);
-          return acc;
-        }, {});
-
-        const featured = [];
-        Object.values(grouped).forEach((group) => {
-          featured.push(...group.slice(0, 2));
-        });
-
-        setHouses(featured);
-      } catch {
-        setError(true);
-      }
-      // 🚧 fim DEV
+    } catch (err) {
+      console.error("Erro ao carregar casas:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -87,11 +64,11 @@ const FeaturedDestination = () => {
   useEffect(() => {
     loadHouses();
 
-    // 🚧 DEV — recarrega quando o admin adiciona uma casa
+    /* // 🚧 DEV — recarrega quando o admin adiciona uma casa
     const handleDevUpdate = () => loadHouses();
     window.addEventListener("dev_casas_updated", handleDevUpdate);
     return () => window.removeEventListener("dev_casas_updated", handleDevUpdate);
-    // 🚧 fim DEV
+    // 🚧 fim DEV */
   }, []);
 
   if (loading) return <FeaturedDestinationSkeleton />;

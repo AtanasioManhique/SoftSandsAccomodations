@@ -55,7 +55,7 @@ export default function ReserveAgora() {
         const res = await api.get(`/accommodations/${houseId}`);
         setHouse(res.data?.data ?? res.data);
       } catch {
-        // 🚧 DEV — fallback JSON + localStorage
+        /* // 🚧 DEV — fallback JSON + localStorage
         try {
           const res  = await fetch("/data/casas.json");
           const list = await res.json();
@@ -66,7 +66,7 @@ export default function ReserveAgora() {
           }
           setHouse(found || null);
         } catch { setHouse(null); }
-        // 🚧 fim DEV
+        // 🚧 fim DEV */
       }
     };
     load();

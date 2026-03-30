@@ -1,14 +1,3 @@
-// src/services/api.js
-// ─────────────────────────────────────────────────────────────
-// Em desenvolvimento: usa o proxy do Vite ("/api" → localhost:3000)
-// Em produção (Vercel): usa a URL real do backend via variável
-// de ambiente VITE_API_URL.
-//
-// No Vercel, adiciona a variável de ambiente:
-//   VITE_API_URL = https://teu-backend.onrender.com/api
-//   (ou o URL real do backend do teu amigo)
-// ─────────────────────────────────────────────────────────────
-
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_URL || "/api";
@@ -19,6 +8,7 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Interceptor de request — adiciona o token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -26,6 +16,48 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Interceptor de response — refresh automático quando o token expira
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) throw new Error("No refresh token");
+
+        const res = await axios.post(`${baseURL}/auth/refresh-token`, {
+          refreshToken,
+        });
+
+        const payload = res.data?.data ?? res.data;
+        const newToken = payload?.tokens?.accessToken ?? payload?.accessToken;
+
+        if (!newToken) throw new Error("No token in refresh response");
+
+        localStorage.setItem("token", newToken);
+        if (payload?.tokens?.refreshToken) {
+          localStorage.setItem("refreshToken", payload.tokens.refreshToken);
+        }
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
+      } catch {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
+    }
+
+    return Promise.reject(error);
+  }
 );
 
 export default api;
