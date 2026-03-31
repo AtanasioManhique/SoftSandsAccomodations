@@ -1,9 +1,11 @@
+// components/Center.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Calendar } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { api } from "../services/api";
 
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
@@ -56,49 +58,79 @@ const CenterSkeleton = () => (
 // ─────────────────────────────────────────────────────────────
 
 const Center = () => {
-  const [destinos, setDestinos]               = useState([]);
-  const [selectedDestino, setSelectedDestino] = useState("");
-  const [startDate, setStartDate]             = useState(null);
-  const [endDate, setEndDate]                 = useState(null);
-  const [guests, setGuests]                   = useState("");
-  const [loading, setLoading]                 = useState(true);
-  const [activeField, setActiveField]         = useState(null); // "start" | "end"
+  const [destinos,         setDestinos]         = useState([]);
+  const [selectedDestino,  setSelectedDestino]  = useState("");
+  const [startDate,        setStartDate]        = useState(null);
+  const [endDate,          setEndDate]          = useState(null);
+  const [guests,           setGuests]           = useState("");
+  const [loading,          setLoading]          = useState(true);
+  const [activeField,      setActiveField]      = useState(null);
+  const [guestWarning,     setGuestWarning]     = useState(false);
 
-  const { t }        = useTranslation();
-  const navigate     = useNavigate();
-  // Corrigido: voltou ao ref mas com wrapper seguro — setOpen é o único
-  // método fiável para abrir/fechar o DatePicker programaticamente
-  // sem ter de montar/desmontar o componente
+  const { t }         = useTranslation();
+  const navigate      = useNavigate();
   const datepickerRef = useRef(null);
 
   useEffect(() => {
-    // ── BACKEND: GET /api/destinos ─────────────────────────
-    // Descomentar quando o backend estiver pronto e apagar os dados estáticos:
-    // fetch("/api/destinos", { credentials: "include" })
-    //   .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
-    //   .then((data) => setDestinos(data))
-    //   .catch(() => setDestinos([]))
-    //   .finally(() => setLoading(false));
-    // ───────────────────────────────────────────────────────
-
-    // Temporário — dados estáticos:
-    setDestinos([
-      { id: 1, nome: "Ponta de Ouro" },
-      { id: 2, nome: "Bilene" },
-      { id: 3, nome: "Ponta Mamoli" },
-      { id: 4, nome: "Praia do Tofo" },
-      { id: 5, nome: "Ponta Malongane" },
-      { id: 6, nome: "Ilha de Inhaca" },
-    ]);
-    setLoading(false);
+    loadDestinos();
   }, []);
+
+  const loadDestinos = async () => {
+    try {
+      // ── BACKEND: GET /api/accommodations ─────────────────
+      // Carrega todas as casas e extrai os destinos (locations) únicos.
+      // O backend pode ter um endpoint dedicado GET /api/destinations
+      // que devolve só os nomes e totais — mais eficiente.
+      //
+      // Resposta esperada de /api/destinations:
+      // [{ id: 1, nome: "Ponta de Ouro", total: 12 }, ...]
+      //
+      // Ou, com /api/accommodations, extraímos os locations únicos:
+      const res  = await api.get("/accommodations");
+      const data = res.data?.data ?? res.data ?? [];
+      const casas = Array.isArray(data) ? data : [];
+
+      // Extrai locations únicos e constrói lista de destinos
+      const map = {};
+      casas.forEach((c, i) => {
+        if (!c.location) return;
+        if (!map[c.location]) map[c.location] = { id: i + 1, nome: c.location };
+      });
+      setDestinos(Object.values(map));
+    } catch {
+      // 🚧 DEV — dados estáticos + casas do localStorage
+      try {
+        const res   = await fetch("/data/casas.json");
+        const casas = await res.json();
+        const devCasas = JSON.parse(localStorage.getItem("dev_casas_admin") || "[]");
+        const todas = [...casas, ...devCasas];
+        const map = {};
+        todas.forEach((c, i) => {
+          if (!c.location || map[c.location]) return;
+          map[c.location] = { id: i + 1, nome: c.location };
+        });
+        setDestinos(Object.values(map));
+      } catch {
+        // Último fallback — lista estática hardcoded
+        setDestinos([
+          { id: 1, nome: "Ponta de Ouro"   },
+          { id: 2, nome: "Bilene"           },
+          { id: 3, nome: "Ponta Mamoli"     },
+          { id: 4, nome: "Praia do Tofo"    },
+          { id: 5, nome: "Ponta Malongane"  },
+          { id: 6, nome: "Ilha de Inhaca"   },
+        ]);
+      }
+      // 🚧 fim DEV
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) return <CenterSkeleton />;
 
   const openCalendar = (field) => {
     setActiveField(field);
-    // Pequeno timeout garante que o activeField já foi atualizado
-    // antes do calendário abrir, evitando mostrar o campo errado
     setTimeout(() => datepickerRef.current?.setOpen(true), 0);
   };
 
@@ -106,7 +138,6 @@ const Center = () => {
     if (activeField === "start") {
       setStartDate(date);
       if (endDate && date > endDate) setEndDate(null);
-      // Após escolher entrada, muda para saída automaticamente
       setActiveField("end");
     } else {
       if (!startDate || date >= startDate) {
@@ -116,24 +147,52 @@ const Center = () => {
     }
   };
 
+  const handleGuestsChange = (e) => {
+    const val = Number(e.target.value);
+    setGuests(e.target.value);
+
+    // ── Aviso de grupo grande ────────────────────────────────
+    // Se o utilizador pede mais hóspedes do que qualquer casa suporta
+    // sozinha, mostramos um aviso ANTES de pesquisar.
+    // O número 8 deve vir do backend (capacidade máxima do catálogo).
+    //
+    // Com backend: GET /api/accommodations/max-capacity
+    // Response: { maxCapacity: 8 }
+    //
+    // Por agora usamos 8 como valor estático (DEV).
+    // Quando o backend estiver pronto, substitui MAX_CAPACITY pelo
+    // valor que vem da API.
+    const MAX_CAPACITY = 8; // 🚧 DEV — substituir por valor dinâmico do backend
+    setGuestWarning(val > MAX_CAPACITY);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedDestino || !startDate || !endDate || !guests) return;
 
-    // ── BACKEND: GET /api/casas com filtros ───────────────
-    // Descomentar quando o backend estiver pronto:
-    // navigate(
-    //   `/pesquisa?destino=${encodeURIComponent(selectedDestino)}&entrada=${startDate.toISOString()}&saida=${endDate.toISOString()}&hospedes=${guests}`
-    // );
-    // ─────────────────────────────────────────────────────
+    // Constrói os query params para o AllHouses filtrar.
+    // O AllHouses.jsx lê estes params e filtra as casas.
+    //
+    // ── BACKEND: quando o backend aceitar filtros ─────────────
+    // Podes passar todos os filtros e o servidor devolve só
+    // as casas que correspondem:
+    //
+    //   GET /api/accommodations?search=Ponta+de+Ouro&startDate=2025-09-01&endDate=2025-09-05&guests=4
+    //
+    // O backend verifica disponibilidade de datas (sem reservas no período)
+    // e filtra por capacidade >= guests.
+    // ─────────────────────────────────────────────────────────
+    const params = new URLSearchParams({
+      search:    selectedDestino,
+      startDate: startDate.toISOString().split("T")[0],
+      endDate:   endDate.toISOString().split("T")[0],
+      guests:    guests,
+    });
 
-    // Temporário — navega para /praias com filtros básicos:
-    navigate(
-      `/praias?destino=${encodeURIComponent(selectedDestino)}&hospedes=${guests}`
-    );
+    navigate(`/praias?${params.toString()}`);
   };
 
-  // ── Campos partilhados entre desktop e mobile ─────────────
+  // ── Campos partilhados ────────────────────────────────────
   const destinoField = (
     <select
       className="rounded border border-gray-200 px-3 py-1.5 text-sm outline-none w-full"
@@ -173,8 +232,12 @@ const Center = () => {
       type="number"
       min={1}
       value={guests}
-      onChange={(e) => setGuests(e.target.value)}
-      className="rounded border border-gray-200 px-3 py-1.5 text-sm w-full"
+      onChange={handleGuestsChange}
+      className={`rounded border px-3 py-1.5 text-sm w-full outline-none transition-colors ${
+        guestWarning
+          ? "border-orange-300 bg-orange-50 text-orange-800"
+          : "border-gray-200"
+      }`}
       placeholder="0"
       required
     />
@@ -185,25 +248,43 @@ const Center = () => {
       px-4 md:px-14 lg:[padding-left:5.5rem] xl:[padding-left:7.5rem]
       min-h-[90vh] text-white pt-10 md:pt-0 -mb-9"
     >
-      {/* Background separado para não ser afetado por overlays externos */}
       <div
         className="absolute inset-0 -z-10 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/src/assets/backgroundimage.png')" }}
       />
+
       <h1 className="font-playfair text-3xl md:text-5xl font-bold max-w-xl mt-4">
         {t("center.title")}
       </h1>
-
       <p className="max-w-[32.5rem] mt-2 text-sm md:text-base">
         {t("center.subtitle")}
       </p>
 
+      {/* ── Aviso grupo grande ───────────────────────────────────
+          Aparece quando o nº de hóspedes excede a capacidade máxima
+          de qualquer casa individual. Não bloqueia a pesquisa —
+          deixa o utilizador avançar e vê todas as casas disponíveis
+          para poder reservar mais do que uma.
+      ──────────────────────────────────────────────────────────── */}
+      {guestWarning && (
+        <div className="mt-3 flex items-start gap-2 bg-orange-500/20 backdrop-blur border border-orange-300/40 rounded-xl px-4 py-3 max-w-[500px] w-full">
+          <span className="text-lg leading-none mt-0.5">⚠️</span>
+          <div>
+            <p className="text-white text-sm font-semibold leading-snug">
+              Grupo grande detectado
+            </p>
+            <p className="text-white/80 text-xs mt-0.5 leading-relaxed">
+              Nenhuma casa suporta {guests} hóspedes sozinha. Mostraremos todas as casas disponíveis — podes reservar mais do que uma para o teu grupo.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ==================== DESKTOP ==================== */}
-      {/* Restaurado: items-center como estava originalmente */}
       <form
         onSubmit={handleSubmit}
         className="hidden md:flex bg-white text-gray-700 rounded-lg px-3 py-3
-        flex-row items-center gap-3 mt-6 w-full max-w-[900px]"
+        flex-row items-center gap-3 mt-4 w-full max-w-[900px]"
       >
         <div className="flex flex-col w-[180px]">
           <label className="text-sm font-medium mb-1">{t("center.destiny")}</label>
@@ -233,7 +314,7 @@ const Center = () => {
       <form
         onSubmit={handleSubmit}
         className="md:hidden bg-white text-gray-700 rounded-lg px-4 py-4
-        mt-6 w-full max-w-[360px]"
+        mt-4 w-full max-w-[360px]"
       >
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col col-span-2">
