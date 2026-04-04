@@ -4,7 +4,8 @@ import fullstar from "../assets/fullstar.png";
 import locationicon from "../assets/location.png";
 import FavoriteButton from "../componentshouse/FavoriteButton";
 import { useTranslation } from "react-i18next";
-import { useSeasonPricing } from "../context/seasonPricing.js";
+import { formatCurrency, convertPrice } from "../context/utils/currency";
+import { useCurrency } from "../FormDropDown/CurrencyContext";
 
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
@@ -36,8 +37,14 @@ export const BeachCardSkeleton = () => (
 
 const BeachCard = ({ house }) => {
   const { t } = useTranslation();
-  const { getNightPrice } = useSeasonPricing();
-  const { formatted } = getNightPrice(house.price);
+  const { currency, rates } = useCurrency();
+
+  // Imagem: backend retorna images array com objectos {url, is_primary}
+  const imageUrl = house.images?.[0]?.url ?? house.image?.[0] ?? null;
+
+  // Preço: backend guarda tudo em ZAR
+  const priceZAR = house.price_per_night ?? house.pricePerNight ?? 0;
+  const converted = convertPrice(priceZAR, "ZAR", currency, rates);
 
   return (
     <div className="relative block bg-white rounded-2xl overflow-hidden border border-gray-100 transition hover:scale-[1.02] sm:mx-0">
@@ -45,13 +52,18 @@ const BeachCard = ({ house }) => {
       <FavoriteButton house={house} />
 
       <Link to={`/casas/${house.id}`} onClick={() => scrollTo(0, 0)}>
-        <img
-          src={house.image?.[0]}
-          alt={house.location ?? "Casa"}
-          className="w-full h-40 sm:h-44 md:h-48 object-cover"
-        />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={house.name ?? house.location ?? "Casa"}
+            className="w-full h-40 sm:h-44 md:h-48 object-cover"
+          />
+        ) : (
+          <div className="w-full h-40 sm:h-44 md:h-48 bg-gray-100 flex items-center justify-center text-4xl">🏠</div>
+        )}
 
         <div className="p-2 flex flex-col gap-1.5">
+          <p className="text-sm font-semibold text-gray-900 truncate">{house.name}</p>
           <div className="flex items-center text-sm text-gray-600 gap-1">
             <img src={locationicon} alt="localização" className="w-4 h-4" />
             <span className="truncate">{house.location}</span>
@@ -59,12 +71,11 @@ const BeachCard = ({ house }) => {
 
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-gray-900">
-              {formatted} / {t("favorites.night")}
+              {formatCurrency(converted, currency)} / {t("favorites.night")}
             </span>
-            <div className="flex items-center gap-1 text-sm text-gray-700">
-              <img src={fullstar} alt="rating" className="w-4 h-4" />
-              <span>{house.rating}</span>
-            </div>
+            <span className="text-xs text-gray-400">
+              {house.max_guests ?? house.maxGuests} {t("favorites.guests") ?? "hósp."}
+            </span>
           </div>
         </div>
       </Link>

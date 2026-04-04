@@ -7,6 +7,7 @@ import PraiaSection from "../componentshouse/Praiasection";
 import { HouseCardSkeleton } from "../componentshouse/HouseCard";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
+
 const PRAIAS_PER_PAGE = 4;
 
 // ── Skeleton ──────────────────────────────────────────────────
@@ -70,19 +71,16 @@ const AllHouses = () => {
       });
       const data = res.data?.data ?? res.data;
       setHouses(Array.isArray(data) ? data : []);
-      
+
       setGrupoGrande(res.data?.grupoGrande ?? false);
-    } catch (err) {
-      console.error("Erro ao carregar casas:", err);
-      setHouses([]);
-      setGrupoGrande(false);
-    } finally {
-      setLoading(false);
+    } catch (err) { 
     }
   }, [searchQuery, startDate, endDate, guestsParam]);
 
   useEffect(() => {
     loadHouses();
+     
+
   }, [loadHouses]);
 
   if (loading) return <AllHousesSkeleton />;

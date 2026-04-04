@@ -61,8 +61,8 @@ function App() {
               <Route path="/casas/:id" element={<HouseDetails />} />
               <Route path="/sobre" element={<About />} />
               <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
-              <Route path="/recuperar-senha"  element={<ForgotPassword />} />
-              <Route path="/redefinir-senha"  element={<ResetPassword />} />
+              <Route path="/forgot-password"  element={<ForgotPassword />} />
+              <Route path="/reset-password"  element={<ResetPassword />} />
               <Route path="/admin/dashboard"  element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
               <Route path="/admin/reservas"   element={<ProtectedAdminRoute><AdminReservas /></ProtectedAdminRoute>} />
               <Route path="/admin/casas"      element={<ProtectedAdminRoute><AdminCasas /></ProtectedAdminRoute>} />

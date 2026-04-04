@@ -15,14 +15,14 @@ import { useLoginModal } from "../context/LoginModalContext";
 import { api } from "../services/api";
 
 // ─────────────────────────────────────────────────────────────
-// 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
+/* // 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
 // Remove quando o backend estiver pronto.
 const DEV_KEY = "dev_casas_admin";
 const devGetCasas = () => {
   try { return JSON.parse(localStorage.getItem(DEV_KEY)) || []; }
   catch { return []; }
 };
-// 🚧 fim bloco DEV ────────────────────────────────────────────
+// 🚧 fim bloco DEV ──────────────────────────────────────────── */
 
 // ── Utilitário de data (fix timezone) ────────────────────────
 const parseLocalDate = (dateStr) => {
@@ -180,12 +180,12 @@ const HouseDetails = () => {
           const casasArray = Array.isArray(data) ? data : data.casas;
           let found        = casasArray.find((h) => h.id === Number(id));
 
-          // 🚧 DEV — Fallback 2: casas adicionadas pelo admin no localStorage
+          /* // 🚧 DEV — Fallback 2: casas adicionadas pelo admin no localStorage
           if (!found) {
             const devCasas = devGetCasas();
             found = devCasas.find((h) => String(h.id) === String(id));
           }
-          // 🚧 fim DEV
+          // 🚧 fim DEV */
 
           if (found && mounted) {
             setHouse(normalizeAccommodation(found));
@@ -247,7 +247,7 @@ const HouseDetails = () => {
       navigate(`/pagamento/${bookingId || "pendente"}`, { state });
 
     } catch (err) {
-      // ─────────────────────────────────────────────────────
+      /* // ─────────────────────────────────────────────────────
       // 🚧 DEV — Backend indisponível: simula criação da reserva
       // e navega para o ReserveAgora para testar o fluxo de pagamento.
       // Remove este bloco catch quando o backend estiver pronto.
@@ -271,7 +271,7 @@ const HouseDetails = () => {
       };
 
       navigate(`/pagamento/${devBookingId}`, { state });
-      // 🚧 fim bloco DEV ──────────────────────────────────────
+      // 🚧 fim bloco DEV ────────────────────────────────────── */
     }
   };
 

@@ -21,7 +21,7 @@ const AdminCalendario = () => {
 
   const loadCasas = async () => {
     try {
-      const res = await api.get("/admin/accommodations");
+      const res = await api.get("/accommodations");
       const data = res.data?.data ?? res.data ?? [];
       setCasas(Array.isArray(data) ? data : []);
       if (data?.[0]) setSelectedCasa(data[0].id);
@@ -39,7 +39,7 @@ const AdminCalendario = () => {
   const loadBookings = async (casaId) => {
     setLoading(true);
     try {
-      const res = await api.get(`/admin/accommodations/${casaId}/bookings`, { params: { month: month + 1, year } });
+      const res = await api.get(`/accommodations/${casaId}/bookings`, { params: { month: month + 1, year } });
       setBookings(res.data?.data ?? res.data ?? []);
     } catch {
       setBookings([

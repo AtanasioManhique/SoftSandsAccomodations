@@ -127,22 +127,24 @@ export default function ReservaDetalhes() {
       const res = await api.get(`/bookings/${id}`);
       const raw = res.data?.data ?? res.data;
       setBooking(normalizeBooking(raw));
-    } catch {
-      try {
-        const housesData = await fetch("/data/casas.json").then((r) => r.json());
+    } 
+     // try {
+      //  const housesData = await fetch("/data/casas.json").then((r) => r.json());
 
         // 1. Via state de navegação (vindo do BookingCard)
         if (location.state?.booking) {
-          setBooking(normalizeBooking(location.state.booking, housesData));
+          setBooking(normalizeBooking(location.state.booking, allHouses));
           return;
         }
 
-        const reservasRaw = JSON.parse(localStorage.getItem(storageKey)) || [];
-        const found       = reservasRaw.find((r) => (r.id ?? r._id) === id);
-        if (found) setBooking(normalizeBooking(found, housesData));
+        // 2. Via localStorage
+        const reservasRaw  = JSON.parse(localStorage.getItem(storageKey)) || [];
+        const found        = reservasRaw.find((r) => (r.id ?? r._id) === id);
+        if (found) setBooking(normalizeBooking(found, allHouses));
       } catch (err) {
         console.error("Erro ao carregar reserva:", err);
       }
+      // 🚧 fim DEV // fallback */
     } finally {
       setLoading(false);
     }
@@ -155,12 +157,14 @@ export default function ReservaDetalhes() {
       await api.patch(`/bookings/${id}`, { status: "cancelado" });
       setBooking((prev) => ({ ...prev, status: "cancelado" }));
     } catch {
-      const reservas    = JSON.parse(localStorage.getItem(storageKey)) || [];
+      // 🚧 DEV — Atualiza no localStorage
+      /*const reservas    = JSON.parse(localStorage.getItem(storageKey)) || [];
       const atualizadas = reservas.map((r) =>
         (r.id ?? r._id) === booking.id ? { ...r, status: "cancelado" } : r
       );
       localStorage.setItem(storageKey, JSON.stringify(atualizadas));
       setBooking((prev) => ({ ...prev, status: "cancelado" }));
+      // 🚧 fim DEV // fallback */
     } finally {
       setCanceling(false);
       setShowCancelModal(false);

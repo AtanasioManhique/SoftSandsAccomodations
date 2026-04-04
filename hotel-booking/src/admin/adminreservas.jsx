@@ -3,64 +3,95 @@ import React, { useEffect, useState } from "react";
 import AdminLayout from "./adminlayout";
 import { api } from "../services/api";
 import { Check, X, Eye, Search } from "lucide-react";
+import { formatCurrency } from "../context/utils/currency";
+
+const STATUS_MAP = {
+  pending_payment:      { bg: "bg-yellow-100 text-yellow-700", label: "Aguarda pagamento" },
+  pending_confirmation: { bg: "bg-orange-100 text-orange-700", label: "Aguarda confirmação" },
+  confirmed:            { bg: "bg-green-100 text-green-700",   label: "Confirmado" },
+  cancelled:            { bg: "bg-red-100 text-red-700",       label: "Cancelado" },
+  rejected:             { bg: "bg-red-100 text-red-700",       label: "Rejeitado" },
+  completed:            { bg: "bg-blue-100 text-blue-700",     label: "Concluído" },
+};
 
 const StatusBadge = ({ status }) => {
-  const map    = { confirmado: "bg-green-100 text-green-700", pendente: "bg-yellow-100 text-yellow-700", cancelado: "bg-red-100 text-red-700" };
-  const labels = { confirmado: "Confirmado", pendente: "Pendente", cancelado: "Cancelado" };
+  const s = STATUS_MAP[status] ?? { bg: "bg-gray-100 text-gray-500", label: status };
   return (
-    <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${map[status] ?? "bg-gray-100 text-gray-500"}`}>
-      {labels[status] ?? status}
+    <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${s.bg}`}>
+      {s.label}
     </span>
   );
 };
 
-const AdminReservas = () => {
-  const [bookings, setBookings]       = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [filter, setFilter]           = useState("todos");
-  const [search, setSearch]           = useState("");
-  const [actionLoading, setActionLoading] = useState(null);
-  const [selected, setSelected]       = useState(null);
+const formatDate = (iso) => {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("pt-MZ", { day: "2-digit", month: "short", year: "numeric" });
+};
 
-  useEffect(() => { loadBookings(); }, []);
+const AdminReservas = () => {
+  const [bookings, setBookings]           = useState([]);
+  const [pagination, setPagination]       = useState(null);
+  const [loading, setLoading]             = useState(true);
+  const [filter, setFilter]               = useState("todos");
+  const [search, setSearch]               = useState("");
+  const [page, setPage]                   = useState(1);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [selected, setSelected]           = useState(null);
+
+  useEffect(() => { loadBookings(); }, [page]);
 
   const loadBookings = async () => {
+    setLoading(true);
     try {
-      const res = await api.get("/admin/bookings");
-      setBookings(res.data?.data ?? res.data ?? []);
-    } catch {
-      setBookings([
-        { id: "BKG-001", guestName: "Ana Silva",       guestEmail: "ana@email.com",    house: "Casa do Mar",      checkIn: "2025-09-01", checkOut: "2025-09-05", guests: 2, status: "confirmado", total: "2.200 MZN", method: "M-Pesa" },
-        { id: "BKG-002", guestName: "João Matos",      guestEmail: "joao@email.com",   house: "Villa Sunset",     checkIn: "2025-09-03", checkOut: "2025-09-07", guests: 4, status: "pendente",   total: "3.400 MZN", method: "eMola"  },
-        { id: "BKG-003", guestName: "Maria Costa",     guestEmail: "maria@email.com",  house: "Palhota Tofo",     checkIn: "2025-09-10", checkOut: "2025-09-12", guests: 2, status: "cancelado",  total: "1.800 MZN", method: "M-Pesa" },
-        { id: "BKG-004", guestName: "Pedro Nunes",     guestEmail: "pedro@email.com",  house: "Casa Bilene",      checkIn: "2025-09-15", checkOut: "2025-09-20", guests: 6, status: "pendente",   total: "4.000 MZN", method: "eMola"  },
-        { id: "BKG-005", guestName: "Beatriz Lima",    guestEmail: "bea@email.com",    house: "Cabana Malongane", checkIn: "2025-09-18", checkOut: "2025-09-21", guests: 3, status: "confirmado", total: "2.700 MZN", method: "M-Pesa" },
-        { id: "BKG-006", guestName: "Carlos Ferreira", guestEmail: "carlos@email.com", house: "Casa Mamoli",      checkIn: "2025-09-22", checkOut: "2025-09-25", guests: 2, status: "pendente",   total: "1.500 MZN", method: "M-Pesa" },
-      ]);
-    } finally { setLoading(false); }
+      const res = await api.get("/admin/bookings", { params: { page, limit: 20 } });
+      setBookings(res.data?.data ?? []);
+      setPagination(res.data?.pagination ?? null);
+    } catch (err) {
+      console.error("Erro ao carregar reservas:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAction = async (id, action) => {
     setActionLoading(id + action);
     try {
-      await api.patch(`/admin/bookings/${id}`, { status: action === "approve" ? "confirmado" : "cancelado" });
-      setBookings((prev) => prev.map((b) => b.id === id ? { ...b, status: action === "approve" ? "confirmado" : "cancelado" } : b));
-      if (selected?.id === id) setSelected((prev) => ({ ...prev, status: action === "approve" ? "confirmado" : "cancelado" }));
-    } catch { alert("Erro ao atualizar reserva."); }
-    finally { setActionLoading(null); }
+      const newStatus = action === "approve" ? "confirmed" : "rejected";
+      await api.patch(`/admin/bookings/${id}`, { status: newStatus });
+      setBookings((prev) => prev.map((b) => b.id === id ? { ...b, status: newStatus } : b));
+      if (selected?.id === id) setSelected((prev) => ({ ...prev, status: newStatus }));
+    } catch (err) {
+      console.error("Erro ao atualizar reserva:", err);
+      alert("Erro ao atualizar reserva.");
+    } finally {
+      setActionLoading(null);
+    }
   };
 
+  const isPending = (status) => status === "pending_payment" || status === "pending_confirmation";
+
   const filtered = bookings.filter((b) => {
-    const matchFilter = filter === "todos" || b.status === filter;
-    const matchSearch = !search || b.guestName.toLowerCase().includes(search.toLowerCase()) || b.house.toLowerCase().includes(search.toLowerCase()) || b.id.toLowerCase().includes(search.toLowerCase());
+    const matchFilter =
+      filter === "todos" ||
+      (filter === "pendente" && isPending(b.status)) ||
+      (filter !== "pendente" && b.status === filter);
+
+    const searchLower = search.toLowerCase();
+    const matchSearch =
+      !search ||
+      b.user?.name?.toLowerCase().includes(searchLower) ||
+      b.user?.email?.toLowerCase().includes(searchLower) ||
+      b.accommodation?.name?.toLowerCase().includes(searchLower) ||
+      b.id.toLowerCase().includes(searchLower);
+
     return matchFilter && matchSearch;
   });
 
   const tabs = [
-    { key: "todos",      label: "Todas",       count: bookings.length },
-    { key: "pendente",   label: "Pendentes",   count: bookings.filter((b) => b.status === "pendente").length },
-    { key: "confirmado", label: "Confirmadas", count: bookings.filter((b) => b.status === "confirmado").length },
-    { key: "cancelado",  label: "Canceladas",  count: bookings.filter((b) => b.status === "cancelado").length },
+    { key: "todos",     label: "Todas",       count: bookings.length },
+    { key: "pendente",  label: "Pendentes",   count: bookings.filter((b) => isPending(b.status)).length },
+    { key: "confirmed", label: "Confirmadas", count: bookings.filter((b) => b.status === "confirmed").length },
+    { key: "cancelled", label: "Canceladas",  count: bookings.filter((b) => b.status === "cancelled" || b.status === "rejected").length },
   ];
 
   return (
@@ -83,7 +114,7 @@ const AdminReservas = () => {
           </div>
         </div>
 
-        {/* Tabs — scroll horizontal mobile */}
+        {/* Tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {tabs.map((tab) => (
             <button key={tab.key} onClick={() => setFilter(tab.key)}
@@ -115,24 +146,24 @@ const AdminReservas = () => {
                 <div key={b.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="font-semibold text-gray-900 text-sm truncate">{b.guestName}</p>
-                      <p className="text-xs text-gray-400">{b.guestEmail}</p>
+                      <p className="font-semibold text-gray-900 text-sm truncate">{b.user?.name}</p>
+                      <p className="text-xs text-gray-400">{b.user?.email}</p>
                     </div>
                     <StatusBadge status={b.status} />
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
-                    <div><span className="text-gray-400">Casa:</span> <span className="font-medium text-gray-700">{b.house}</span></div>
+                    <div><span className="text-gray-400">Casa:</span> <span className="font-medium text-gray-700">{b.accommodation?.name}</span></div>
                     <div><span className="text-gray-400">Hóspedes:</span> <span className="font-medium text-gray-700">{b.guests}</span></div>
-                    <div><span className="text-gray-400">Check-in:</span> <span className="font-medium text-gray-700">{b.checkIn}</span></div>
-                    <div><span className="text-gray-400">Check-out:</span> <span className="font-medium text-gray-700">{b.checkOut}</span></div>
+                    <div><span className="text-gray-400">Check-in:</span> <span className="font-medium text-gray-700">{formatDate(b.checkInDate)}</span></div>
+                    <div><span className="text-gray-400">Check-out:</span> <span className="font-medium text-gray-700">{formatDate(b.checkOutDate)}</span></div>
                   </div>
                   <div className="flex items-center justify-between pt-1 border-t border-gray-50">
-                    <span className="font-bold text-gray-900 text-sm">{b.total}</span>
+                    <span className="font-bold text-gray-900 text-sm">{formatCurrency(b.totalPrice, b.currency)}</span>
                     <div className="flex gap-2">
                       <button onClick={() => setSelected(b)} className="p-2 rounded-lg bg-blue-50 text-blue-500">
                         <Eye size={15} />
                       </button>
-                      {b.status === "pendente" && (
+                      {isPending(b.status) && (
                         <>
                           <button onClick={() => handleAction(b.id, "approve")} disabled={!!actionLoading} className="flex items-center gap-1 px-3 py-1.5 bg-green-500 text-white rounded-lg text-xs font-semibold disabled:opacity-40">
                             <Check size={13} /> Aprovar
@@ -154,7 +185,6 @@ const AdminReservas = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100">
-                      <th className="text-left px-5 py-3">ID</th>
                       <th className="text-left px-5 py-3">Hóspede</th>
                       <th className="text-left px-5 py-3">Casa</th>
                       <th className="text-left px-5 py-3">Datas</th>
@@ -166,19 +196,18 @@ const AdminReservas = () => {
                   <tbody className="divide-y divide-gray-50">
                     {filtered.map((b) => (
                       <tr key={b.id} className="hover:bg-gray-50/60 transition">
-                        <td className="px-5 py-3 font-mono text-xs text-gray-400">{b.id}</td>
                         <td className="px-5 py-3">
-                          <p className="font-medium text-gray-900">{b.guestName}</p>
-                          <p className="text-xs text-gray-400">{b.guestEmail}</p>
+                          <p className="font-medium text-gray-900">{b.user?.name}</p>
+                          <p className="text-xs text-gray-400">{b.user?.email}</p>
                         </td>
-                        <td className="px-5 py-3 text-gray-600">{b.house}</td>
-                        <td className="px-5 py-3 text-gray-500 text-xs">{b.checkIn} → {b.checkOut}</td>
-                        <td className="px-5 py-3 font-semibold text-gray-800">{b.total}</td>
+                        <td className="px-5 py-3 text-gray-600">{b.accommodation?.name}</td>
+                        <td className="px-5 py-3 text-gray-500 text-xs">{formatDate(b.checkInDate)} → {formatDate(b.checkOutDate)}</td>
+                        <td className="px-5 py-3 font-semibold text-gray-800">{formatCurrency(b.totalPrice, b.currency)}</td>
                         <td className="px-5 py-3"><StatusBadge status={b.status} /></td>
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-1.5">
                             <button onClick={() => setSelected(b)} className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-500 transition"><Eye size={14} /></button>
-                            {b.status === "pendente" && (
+                            {isPending(b.status) && (
                               <>
                                 <button onClick={() => handleAction(b.id, "approve")} disabled={!!actionLoading} className="p-1.5 rounded-lg hover:bg-green-50 text-green-500 transition disabled:opacity-40"><Check size={14} /></button>
                                 <button onClick={() => handleAction(b.id, "cancel")} disabled={!!actionLoading} className="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition disabled:opacity-40"><X size={14} /></button>
@@ -192,6 +221,29 @@ const AdminReservas = () => {
                 </table>
               </div>
             </div>
+
+            {/* Paginação */}
+            {pagination && pagination.totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={!pagination.hasPreviousPage}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium disabled:opacity-40 hover:bg-gray-50 transition"
+                >
+                  ← Anterior
+                </button>
+                <span className="text-sm text-gray-500">
+                  Página {pagination.currentPage} de {pagination.totalPages}
+                </span>
+                <button
+                  onClick={() => setPage((p) => p + 1)}
+                  disabled={!pagination.hasNextPage}
+                  className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium disabled:opacity-40 hover:bg-gray-50 transition"
+                >
+                  Seguinte →
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -206,24 +258,29 @@ const AdminReservas = () => {
             </div>
             <div className="space-y-2 text-sm">
               {[
-                ["ID", <span className="font-mono font-semibold">{selected.id}</span>],
-                ["Hóspede", selected.guestName],
-                ["Email", <span className="text-blue-600">{selected.guestEmail}</span>],
-                ["Casa", selected.house],
-                ["Check-in", selected.checkIn],
-                ["Check-out", selected.checkOut],
-                ["Hóspedes", selected.guests],
-                ["Pagamento", selected.method],
-                ["Total", <span className="font-bold text-gray-900">{selected.total}</span>],
-                ["Estado", <StatusBadge status={selected.status} />],
+                ["Hóspede",      selected.user?.name],
+                ["Email",        <span className="text-blue-600">{selected.user?.email}</span>],
+                ["Casa",         selected.accommodation?.name],
+                ["Localização",  selected.accommodation?.location],
+                ["Check-in",     formatDate(selected.checkInDate)],
+                ["Check-out",    formatDate(selected.checkOutDate)],
+                ["Hóspedes",     selected.guests],
+                ["Total",        <span className="font-bold text-gray-900">{formatCurrency(selected.totalPrice, selected.currency)}</span>],
+                ["Pagamento",    <StatusBadge status={selected.paymentStatus === "pending" ? "pending_payment" : selected.paymentStatus} />],
+                ["Estado",       <StatusBadge status={selected.status} />],
+                ...(selected.specialRequests ? [["Pedidos especiais", selected.specialRequests]] : []),
+                ...(selected.adminNotes ? [["Notas admin", selected.adminNotes]] : []),
+                ...(selected.cancelledReason ? [["Motivo cancelamento", selected.cancelledReason]] : []),
+                ...(selected.rejectionReason ? [["Motivo rejeição", selected.rejectionReason]] : []),
+                ["Criado em",    formatDate(selected.createdAt)],
               ].map(([label, value], i) => (
-                <div key={i} className={`flex justify-between items-center ${i === 0 ? "border-b pb-2" : ""} ${i === 8 ? "border-t pt-2" : ""}`}>
+                <div key={i} className="flex justify-between items-center">
                   <span className="text-gray-500">{label}</span>
-                  <span>{value}</span>
+                  <span className="text-right">{value}</span>
                 </div>
               ))}
             </div>
-            {selected.status === "pendente" && (
+            {isPending(selected.status) && (
               <div className="flex gap-3 pt-2">
                 <button onClick={() => handleAction(selected.id, "approve")} className="flex-1 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition text-sm flex items-center justify-center gap-2">
                   <Check size={15} /> Aprovar

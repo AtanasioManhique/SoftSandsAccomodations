@@ -1,27 +1,7 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useMemo, useState } from "react";
 import api from "../services/api.js";
 
 const AuthContext = createContext(null);
-
-// ─────────────────────────────────────────────────────────────
-// 🚧 DEV ONLY — Credenciais temporárias para simular admin
-// Remove este bloco quando o backend estiver pronto.
-//
-// Para entrar como admin usa:
-//   Email:    admin@softsands.com
-//   Password: admin123
-// ─────────────────────────────────────────────────────────────
-const DEV_ADMIN = {
-  id:      "dev-admin-001",
-  name:    "Admin SoftSands",
-  email:   "admin@softsands.com",
-  role:    "admin",
-  picture: null,
-};
-const DEV_ADMIN_EMAIL    = "admin@softsands.com";
-const DEV_ADMIN_PASSWORD = "admin123";
-// ─────────────────────────────────────────────────────────────
 
 const unpack = (res) => res?.data?.data ?? res?.data ?? null;
 
@@ -75,25 +55,9 @@ export const AuthProvider = ({ children }) => {
     window.dispatchEvent(new Event("user_logged_in"));
   };
 
-  // ───────────────────────────────────────────────────────────
-  // LOGIN (EMAIL)
-  // ───────────────────────────────────────────────────────────
   const loginWithEmail = async (email, password) => {
     setLoading(true);
     try {
-
-      // 🚧 DEV — Simula login de admin sem backend
-      // Remove este bloco quando o backend estiver pronto.
-      if (
-        email.trim().toLowerCase()    === DEV_ADMIN_EMAIL &&
-        password                       === DEV_ADMIN_PASSWORD
-      ) {
-        saveAuth(DEV_ADMIN, "dev-token-admin", "dev-refresh-admin");
-        return { success: true };
-      }
-      // 🚧 fim do bloco DEV ──────────────────────────────────
-
-      // BACKEND: POST /api/auth/login
       const res = await api.post("/auth/login", { email, password });
       const payload = unpack(res);
 
@@ -114,14 +78,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ───────────────────────────────────────────────────────────
-  // REGISTER
-  // ───────────────────────────────────────────────────────────
   const register = async (formData) => {
     setLoading(true);
     try {
-      return { success: true }; // 🚧 DEV — remove quando o backend estiver pronto
-
       const res = await api.post("/auth/register", {
         name:            formData.name,
         email:           formData.email,
@@ -148,9 +107,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ───────────────────────────────────────────────────────────
-  // GOOGLE AUTH
-  // ───────────────────────────────────────────────────────────
   const loginWithGoogle = async (idToken) => {
     setLoading(true);
     try {

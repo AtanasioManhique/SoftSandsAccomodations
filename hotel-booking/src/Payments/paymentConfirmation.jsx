@@ -42,7 +42,7 @@ export default function PaymentConfirmation() {
       const res = await api.get(`/bookings/${bookingId}`);
       setBooking(res.data?.data ?? res.data);
     } catch {
-      // fallback DEV — lê do localStorage
+      /* // 🚧 DEV — lê do localStorage
       if (isDev) {
         const allKeys = Object.keys(localStorage).filter((k) => k.startsWith("minhasReservas_"));
         for (const key of allKeys) {
@@ -51,6 +51,7 @@ export default function PaymentConfirmation() {
           if (found) { setBooking(found); break; }
         }
       }
+      // 🚧 fim DEV */
     } finally {
       setLoading(false);
     }

@@ -156,7 +156,7 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
           {/* ── Link recuperar senha ── */}
           <div className="text-right -mt-1">
             <Link
-              to="/recuperar-senha"
+              to="/forgot-password"
               className="text-sm text-blue-600 hover:underline"
             >
               Esqueceu a palavra-passe?

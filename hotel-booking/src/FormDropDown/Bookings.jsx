@@ -103,6 +103,7 @@ export default function MinhasReservas() {
       const bookings = rawList.map((r) => normalizeBooking(r));
       split(bookings);
     } catch {
+     /* // 🚧 DEV — Fallback: lê do localStorage e enriquece com casas.json
       try {
         const housesData  = await fetch("/data/casas.json").then((r) => r.json());
         const reservasRaw = JSON.parse(localStorage.getItem(storageKey)) || [];
@@ -111,6 +112,7 @@ export default function MinhasReservas() {
       } catch (err) {
         console.error("Erro ao carregar reservas:", err);
       }
+      // 🚧 fim DEV */
     } finally {
       setLoading(false);
     }

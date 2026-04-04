@@ -23,7 +23,7 @@ const AdminReviews = () => {
 
   const loadReviews = async () => {
     try {
-      const res = await api.get("/admin/reviews");
+      const res = await api.get("/reviews");
       setReviews(res.data?.data ?? res.data ?? []);
     } catch {
       setReviews([

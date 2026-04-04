@@ -13,14 +13,14 @@ import "swiper/css/autoplay";
 import { useTranslation } from "react-i18next";
 
 // ─────────────────────────────────────────────────────────────
-// 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
+/* // 🚧 DEV — Lê casas adicionadas pelo admin no localStorage
 // Remove quando o backend estiver pronto.
 const DEV_KEY = "dev_casas_admin";
 const devGetCasas = () => {
   try { return JSON.parse(localStorage.getItem(DEV_KEY)) || []; }
   catch { return []; }
 };
-// 🚧 fim bloco DEV ────────────────────────────────────────────
+// 🚧 fim bloco DEV ──────────────────────────────────────────── */
 
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
@@ -56,37 +56,12 @@ const ExploreDestination = () => {
 
   const loadDestinos = async () => {
     try {
-      // BACKEND: GET /api/destinations
-      // Retorna: [{ name, image, totalCasas }]
-      const res = await api.get("/destinations");
-      const data = res.data?.data ?? res.data;
+      const res = await api.get("/accommodations/destinations");
+      const data = res.data?.data?.destinations ?? [];
       setDestinos(Array.isArray(data) ? data : []);
-    } catch {
-      // 🚧 DEV — JSON local + casas adicionadas pelo admin
-      try {
-        const res = await api.get("/data/casas.json", { baseURL: window.location.origin });
-        const devCasas = devGetCasas();
-        const todas = [...res.data, ...devCasas];
-
-        // Agrupa por location — cada praia é um destino
-        const grouped = todas.reduce((acc, house) => {
-          if (!house.location) return acc;
-          if (!acc[house.location]) acc[house.location] = [];
-          acc[house.location].push(house);
-          return acc;
-        }, {});
-
-        setDestinos(
-          Object.keys(grouped).map((location) => ({
-            name:       location,
-            image:      grouped[location][0].image?.[0],
-            totalCasas: grouped[location].length,
-          }))
-        );
-      } catch {
-        setError(true);
-      }
-      // 🚧 fim DEV
+    } catch (err) {
+      console.error("Erro ao carregar destinos:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -95,11 +70,11 @@ const ExploreDestination = () => {
   useEffect(() => {
     loadDestinos();
 
-    // 🚧 DEV — recarrega quando o admin adiciona uma casa/praia nova
+    /* // 🚧 DEV — recarrega quando o admin adiciona uma casa/praia nova
     const handleDevUpdate = () => loadDestinos();
     window.addEventListener("dev_casas_updated", handleDevUpdate);
     return () => window.removeEventListener("dev_casas_updated", handleDevUpdate);
-    // 🚧 fim DEV
+    // 🚧 fim DEV */
   }, []);
 
   if (loading) return <ExploreDestinationSkeleton />;
@@ -143,17 +118,17 @@ const ExploreDestination = () => {
             {destinos.map((destino) => (
               <SwiperSlide key={destino.name}>
                 <Link
-                  to={`/praias/${encodeURIComponent(destino.name)}`}
+                  to={`/praias/${encodeURIComponent(destino.location)}`}
                   className="relative rounded-xl overflow-hidden shadow-sm hover:shadow-md group block"
                 >
                   <img
-                    src={destino.image}
-                    alt={destino.name}
+                    src={destino.imageUrl}
+                    alt={destino.location}
                     className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
                     loading="lazy"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-center py-3 text-lg font-semibold">
-                    {destino.name} ({destino.totalCasas})
+                    {destino.location} ({destino.accomodationCount})
                   </div>
                 </Link>
               </SwiperSlide>
