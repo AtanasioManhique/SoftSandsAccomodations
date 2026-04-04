@@ -133,7 +133,9 @@
             "session": "Iniciar Sessão",
             "sign": "Registar-Se",
             "search": "Pesquisar...",
-            "cancel": "Cancelar"
+            "cancel": "Cancelar",
+            "results": "Ver todos os resultados para",
+            "noresults": "Nenhum resultado para"
         },
         "reservenow":{
             "error": "Erro: Dados da reserva não encontrados.",
@@ -371,7 +373,46 @@
         "info": "Para mais informações",
         "contacte":"contacte-nos",
         "method": "Escolha o método de pagamento"
-      }
+      },
+      "paysuite":{
+        "title": "Pagamento seguro via PaySuite",
+        "subtitle": "Serás redirecionado para a página de pagamento segura do PaySuite onde poderás pagar com",
+        "Aceita": "Aceita",
+        "direcc": "Serás redirecionado para a página segura do PaySuite.",
+        "process": "A direccionar...",
+         "pro": "A processar..."
+      },
       
+      "all":{
+                "confirm":"Confirmar cancelamento",
+                "back":"Voltar",
+                "consult": "Consultar política de cancelamento antes de decidir",
+                "sure": "Tem a certeza que deseja cancelar? Esta ação não pode ser desfeita.",
+                "read":"Ler política de cancelamento",
+                "ref": "Referência",
+                "method": "Método de pagamento",
+                "waiting": "A sua reserva está pendente de confirmação pelo administrador.",
+                "inicio": "Voltar ao inicio",
+                "reserves": "Ver Minhas Reservas",
+                "aguarda": "Aguarda confirmação",
+                "notified": "A sua reserva está pendente. Será notificado assim que o administrador confirmar. Pode acompanhar o estado em Minhas Reservas",
+                "pay": "O pagamento foi processado com sucesso pelo PaySuite.",
+                "submit": "Reserva submetida",
+                "try": "Tentar novamente",
+                "payment":"O pagamento não foi processado. Podes tentar novamente.",
+                "conclusion": "Pagamento não concluído",
+                "guest": "hóspede",
+                "clean": "Limpar filtros",
+                "in":"em",
+                "available": "disponíveis no período selecionado",
+                "destiny": "Estamos a mostrar todas as casas disponíveis. Para grupos grandes, podes reservar mais do que uma casa no mesmo destino.",
+                "support": "Nenhuma casa suporta",
+                "casas": "hóspedes sozinha",
+                "found": "Nenhuma casa encontrada",
+                "criterio": "Não encontrámos casas com esses critérios. Tenta ajustar as datas, o número de hóspedes ou o destino.",
+                "see":"Ver todas as praias",
+                "beach": "Praias"
+      }
+                
     }
     

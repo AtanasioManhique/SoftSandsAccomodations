@@ -66,6 +66,7 @@ const Center = () => {
   const [loading,          setLoading]          = useState(true);
   const [activeField,      setActiveField]      = useState(null);
   const [guestWarning,     setGuestWarning]     = useState(false);
+  const [maxCapacity,      setMaxCapacity]      = useState(16);
 
   const { t }         = useTranslation();
   const navigate      = useNavigate();
@@ -73,55 +74,43 @@ const Center = () => {
 
   useEffect(() => {
     loadDestinos();
+    loadMaxCapacity();
   }, []);
+
+  const loadMaxCapacity = async () => {
+    try {
+      // GET /api/accommodations/max-capacity
+      // Resposta esperada: { maxCapacity: 16 }
+      const res = await api.get("/accommodations/max-capacity");
+      setMaxCapacity(res.data.maxCapacity);
+    } catch {
+      // fallback — valor por omissão
+      setMaxCapacity(16);
+    }
+  };
 
   const loadDestinos = async () => {
     try {
-      // ── BACKEND: GET /api/accommodations ─────────────────
-      // Carrega todas as casas e extrai os destinos (locations) únicos.
-      // O backend pode ter um endpoint dedicado GET /api/destinations
-      // que devolve só os nomes e totais — mais eficiente.
-      //
-      // Resposta esperada de /api/destinations:
-      // [{ id: 1, nome: "Ponta de Ouro", total: 12 }, ...]
-      //
-      // Ou, com /api/accommodations, extraímos os locations únicos:
-      const res  = await api.get("/accommodations");
+      // GET /api/destinations
+      // Resposta esperada: [{ id: 1, nome: "Ponta de Ouro" }, ...]
+      const res  = await api.get("/destinations");
       const data = res.data?.data ?? res.data ?? [];
-      const casas = Array.isArray(data) ? data : [];
-
-      // Extrai locations únicos e constrói lista de destinos
-      const map = {};
-      casas.forEach((c, i) => {
-        if (!c.location) return;
-        if (!map[c.location]) map[c.location] = { id: i + 1, nome: c.location };
-      });
-      setDestinos(Object.values(map));
+      setDestinos(Array.isArray(data) ? data : []);
     } catch {
-      // 🚧 DEV — dados estáticos + casas do localStorage
+      // fallback — extrai destinos a partir de /accommodations
       try {
-        const res   = await fetch("/data/casas.json");
-        const casas = await res.json();
-        const devCasas = JSON.parse(localStorage.getItem("dev_casas_admin") || "[]");
-        const todas = [...casas, ...devCasas];
-        const map = {};
-        todas.forEach((c, i) => {
+        const res   = await api.get("/accommodations");
+        const data  = res.data?.data ?? res.data ?? [];
+        const casas = Array.isArray(data) ? data : [];
+        const map   = {};
+        casas.forEach((c, i) => {
           if (!c.location || map[c.location]) return;
           map[c.location] = { id: i + 1, nome: c.location };
         });
         setDestinos(Object.values(map));
       } catch {
-        // Último fallback — lista estática hardcoded
-        setDestinos([
-          { id: 1, nome: "Ponta de Ouro"   },
-          { id: 2, nome: "Bilene"           },
-          { id: 3, nome: "Ponta Mamoli"     },
-          { id: 4, nome: "Praia do Tofo"    },
-          { id: 5, nome: "Ponta Malongane"  },
-          { id: 6, nome: "Ilha de Inhaca"   },
-        ]);
+        setDestinos([]);
       }
-      // 🚧 fim DEV
     } finally {
       setLoading(false);
     }
@@ -150,46 +139,16 @@ const Center = () => {
   const handleGuestsChange = (e) => {
     const val = Number(e.target.value);
     setGuests(e.target.value);
-
-    // ── Aviso de grupo grande ────────────────────────────────
-    // Se o utilizador pede mais hóspedes do que qualquer casa suporta
-    // sozinha, mostramos um aviso ANTES de pesquisar.
-    // O número 8 deve vir do backend (capacidade máxima do catálogo).
-    //
-    // Com backend: GET /api/accommodations/max-capacity
-    // Response: { maxCapacity: 8 }
-    //
-    // Por agora usamos 8 como valor estático (DEV).
-    // Quando o backend estiver pronto, substitui MAX_CAPACITY pelo
-    // valor que vem da API.
-    const MAX_CAPACITY = 8; // 🚧 DEV — substituir por valor dinâmico do backend
-    setGuestWarning(val > MAX_CAPACITY);
+    setGuestWarning(val > maxCapacity);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedDestino || !startDate || !endDate || !guests) return;
 
-    // Constrói os query params para o AllHouses filtrar.
-    // O AllHouses.jsx lê estes params e filtra as casas.
-    //
-    // ── BACKEND: quando o backend aceitar filtros ─────────────
-    // Podes passar todos os filtros e o servidor devolve só
-    // as casas que correspondem:
-    //
-    //   GET /api/accommodations?search=Ponta+de+Ouro&startDate=2025-09-01&endDate=2025-09-05&guests=4
-    //
-    // O backend verifica disponibilidade de datas (sem reservas no período)
-    // e filtra por capacidade >= guests.
-    // ─────────────────────────────────────────────────────────
-    const params = new URLSearchParams({
-      search:    selectedDestino,
-      startDate: startDate.toISOString().split("T")[0],
-      endDate:   endDate.toISOString().split("T")[0],
-      guests:    guests,
-    });
-
-    navigate(`/praias?${params.toString()}`);
+    navigate(
+      `/pesquisa?search=${encodeURIComponent(selectedDestino)}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&guests=${guests}`
+    );
   };
 
   // ── Campos partilhados ────────────────────────────────────
@@ -260,12 +219,6 @@ const Center = () => {
         {t("center.subtitle")}
       </p>
 
-      {/* ── Aviso grupo grande ───────────────────────────────────
-          Aparece quando o nº de hóspedes excede a capacidade máxima
-          de qualquer casa individual. Não bloqueia a pesquisa —
-          deixa o utilizador avançar e vê todas as casas disponíveis
-          para poder reservar mais do que uma.
-      ──────────────────────────────────────────────────────────── */}
       {guestWarning && (
         <div className="mt-3 flex items-start gap-2 bg-orange-500/20 backdrop-blur border border-orange-300/40 rounded-xl px-4 py-3 max-w-[500px] w-full">
           <span className="text-lg leading-none mt-0.5">⚠️</span>

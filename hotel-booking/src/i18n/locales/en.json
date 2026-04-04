@@ -133,7 +133,9 @@
             "session": "Log in",
             "sign": "Sign Up",
             "search": "Search...",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+             "results": "See all results for",
+            "noresults": "No results for"
         },
         "reservenow":{
             "error": "Error: Reservation data not found.",
@@ -374,6 +376,45 @@
         "info": "For more information",
         "contacte":"contact us",
         "method": "Choose payment method"
+      },
+      "paysuite":{
+        "title": "Secure payment via PaySuite",
+        "subtitle": "You will be redirected to the secure PaySuite payment page where you can pay with",
+        "Aceita": "Accepts",
+        "direcc": "You will be redirected to the PaySuite secure page.",
+        "process": "Redirecting...",
+        "pro": "Processing..."
+      },
+      
+      "all":{
+        "confirm":"Confirm cancellation",
+        "back": "Back",
+        "consult": "Check the cancellation policy before deciding",
+        "sure": "Are you sure you want to cancel? This action cannot be undone.",
+        "read": "Read cancellation policy",
+        "ref": "Reference",
+        "method": "Payment method",
+        "waiting": "Your reservation is pending confirmation by the administrator.",
+        "inicio": "Back to the start",
+          "reserves": "View My Reservations",
+          "aguarda": "Awaiting confirmation",
+          "notified": "Your reservation is pending. You will be notified once the administrator confirms. You can track the status in My Reservations",
+          "pay": "The payment was successfully processed by PaySuite.",
+          "submit": "Reservation submitted",
+          "try": "Try again",
+          "payment": "The payment was not processed. You can try again.",
+          "conclusion": "Payment not completed",
+           "guest": "hóspede",
+           "clean": "Limpar filtros",
+           "in": "in",
+           "available": "available in the selected period",
+           "destiny": "We are showing all available houses. For large groups, you can book more than one house at the same destination.",
+           "support": "No house can stand",
+           "casas": "guests alone",
+           "found": "No house found",
+            "criterio": "We didn't find any houses with these criteria. Try adjusting the dates, the number of guests, or the destination.",
+              "see":"See all the beaches",
+                "beach": "Beaches"
       }
     
      

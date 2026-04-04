@@ -24,6 +24,21 @@ const devGetCasas = () => {
 };
 // 🚧 fim bloco DEV ────────────────────────────────────────────
 
+// ── Utilitário de data (fix timezone) ────────────────────────
+const parseLocalDate = (dateStr) => {
+  if (!dateStr) return null;
+  return new Date(dateStr + "T00:00:00"); // sem Z = horário local, evita shift de dia
+};
+
+const formatLocalDate = (date) => {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+};
+// ─────────────────────────────────────────────────────────────
+
 // ── Skeleton ──────────────────────────────────────────────────
 const SkeletonBox = ({ width = "100%", height = "16px", borderRadius = "6px", className = "" }) => (
   <div
@@ -321,14 +336,16 @@ const HouseDetails = () => {
               <div className="p-2">
                 <label className="text-xs font-semibold uppercase text-gray-600">{t("center.entrydate")}</label>
                 <div onClick={() => { setActiveField("start"); datepickerRef.current?.setOpen(true); }} className="flex items-center justify-between cursor-pointer mt-1">
-                  <span className="text-sm">{checkIn ? new Date(checkIn).toLocaleDateString() : "dd/mm/yyyy"}</span>
+                  {/* ✅ fix timezone: parseLocalDate evita shift de dia */}
+                  <span className="text-sm">{checkIn ? parseLocalDate(checkIn).toLocaleDateString() : "dd/mm/yyyy"}</span>
                   <Calendar size={16} />
                 </div>
               </div>
               <div className="p-2">
                 <label className="text-xs font-semibold uppercase text-gray-600">{t("center.outdate")}</label>
                 <div onClick={() => { setActiveField("end"); datepickerRef.current?.setOpen(true); }} className="flex items-center justify-between cursor-pointer mt-1">
-                  <span className="text-sm">{checkOut ? new Date(checkOut).toLocaleDateString() : "dd/mm/yyyy"}</span>
+                  {/* ✅ fix timezone: parseLocalDate evita shift de dia */}
+                  <span className="text-sm">{checkOut ? parseLocalDate(checkOut).toLocaleDateString() : "dd/mm/yyyy"}</span>
                   <Calendar size={16} />
                 </div>
               </div>
@@ -374,23 +391,30 @@ const HouseDetails = () => {
         ref={datepickerRef}
         selected={
           activeField === "start"
-            ? checkIn ? new Date(checkIn) : null
-            : checkOut ? new Date(checkOut) : null
+            ? parseLocalDate(checkIn)       // ✅ fix timezone
+            : parseLocalDate(checkOut)      // ✅ fix timezone
         }
         onChange={(date) => {
           if (!date) return;
+
+          // ✅ fix timezone: usa getFullYear/getMonth/getDate em vez de toISOString()
+          const formatted = formatLocalDate(date);
+
           if (activeField === "start") {
-            const formatted = date.toISOString().split("T")[0];
             setCheckIn(formatted);
-            if (checkOut && new Date(formatted) > new Date(checkOut)) setCheckOut("");
+            if (checkOut && formatted > checkOut) setCheckOut("");
           } else {
-            if (!checkIn || date >= new Date(checkIn)) {
-              setCheckOut(date.toLocaleDateString("en-CA"));
+            if (!checkIn || formatted >= checkIn) {
+              setCheckOut(formatted);
             }
           }
           datepickerRef.current?.setOpen(false);
         }}
-        minDate={activeField === "end" && checkIn ? new Date(checkIn) : new Date()}
+        minDate={
+          activeField === "end" && checkIn
+            ? parseLocalDate(checkIn)       // ✅ fix timezone
+            : new Date()
+        }
         withPortal
         className="hidden"
       />

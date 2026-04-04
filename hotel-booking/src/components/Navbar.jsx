@@ -41,9 +41,6 @@ const DropdownBtn = ({ icon, label, to, onClose }) => {
 };
 
 // ── Componente SearchOverlay ──────────────────────────────────
-// Pesquisa em tempo real com debounce.
-// Em modo DEV filtra o casas.json localmente.
-// Com backend chama GET /api/search?q=query e usa a resposta.
 const SearchOverlay = ({ onClose }) => {
   const navigate    = useNavigate();
   const { t }       = useTranslation();
@@ -55,17 +52,14 @@ const SearchOverlay = ({ onClose }) => {
 
   const debouncedQuery = useDebounce(query, 300);
 
-  // Foca o input ao abrir
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 50); }, []);
 
-  // Fecha com ESC
   useEffect(() => {
     const fn = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", fn);
     return () => document.removeEventListener("keydown", fn);
   }, [onClose]);
 
-  // Pesquisa ao alterar o query (com debounce)
   useEffect(() => {
     if (!debouncedQuery.trim()) { setResults({ praias: [], casas: [] }); return; }
     search(debouncedQuery.trim());
@@ -74,20 +68,9 @@ const SearchOverlay = ({ onClose }) => {
   const search = async (q) => {
     setLoading(true);
     try {
-      // ── BACKEND: GET /api/search?q=query ──────────────────
+      // GET /api/search?q=query
       // Resposta esperada:
-      // {
-      //   praias: [{ name: "Praia do Tofo", total: 12 }, ...],
-      //   casas:  [{ id: 5, location: "Ponta de Ouro", bedroom: 3,
-      //              capacity: 6, price: { low_season: 2000, currency: "MZN" },
-      //              image: ["https://..."] }, ...]
-      // }
-      //
-      // O backend deve pesquisar em:
-      //   - accommodations.location  (praias)
-      //   - accommodations.description
-      //   - accommodations.amenities[].name
-      // E agrupar os locations únicos como "praias".
+      // { praias: [{ name, total }], casas: [{ id, location, bedroom, capacity, price, image }] }
       const res  = await api.get("/search", { params: { q } });
       const data = res.data?.data ?? res.data;
       setResults({
@@ -95,32 +78,7 @@ const SearchOverlay = ({ onClose }) => {
         casas:  data.casas  ?? [],
       });
     } catch {
-      // 🚧 DEV — Filtra casas.json localmente
-      try {
-        const res      = await fetch("/data/casas.json");
-        const allCasas = await res.json();
-        const devCasas = JSON.parse(localStorage.getItem("dev_casas_admin") || "[]");
-        const todas    = [...allCasas, ...devCasas];
-        const lower    = q.toLowerCase();
-
-        const casasFiltradas = todas.filter(
-          (h) =>
-            h.location?.toLowerCase().includes(lower) ||
-            h.description?.toLowerCase().includes(lower) ||
-            h.amenities?.some((a) => a.name?.toLowerCase().includes(lower))
-        );
-
-        // Praias únicas dos resultados
-        const praiasMap = {};
-        casasFiltradas.forEach((h) => {
-          if (!h.location) return;
-          praiasMap[h.location] = (praiasMap[h.location] || 0) + 1;
-        });
-        const praias = Object.entries(praiasMap).map(([name, total]) => ({ name, total }));
-
-        setResults({ praias, casas: casasFiltradas.slice(0, 4) });
-      } catch { setResults({ praias: [], casas: [] }); }
-      // 🚧 fim DEV
+      setResults({ praias: [], casas: [] });
     } finally {
       setLoading(false);
     }
@@ -197,7 +155,7 @@ const SearchOverlay = ({ onClose }) => {
 
             {!hasResults && !loading && (
               <p className="text-gray-400 text-sm py-6 text-center">
-                Nenhum resultado para "<strong className="text-gray-600">{query}</strong>"
+                {t("navbar.noresults")} "<strong className="text-gray-600">{query}</strong>"
               </p>
             )}
 
@@ -262,7 +220,7 @@ const SearchOverlay = ({ onClose }) => {
                 onClick={goToAll}
                 className="w-full text-center text-sm text-blue-600 font-medium py-3 hover:underline border-t border-gray-100 mt-1"
               >
-                Ver todos os resultados para "{query}" →
+                {t("navbar.results")} "{query}" →
               </button>
             )}
           </div>
@@ -393,7 +351,6 @@ const Navbar = () => {
 
         {/* Desktop: search + user */}
         <div className="hidden md:flex items-center gap-4 relative" ref={dropdownDesktopRef}>
-          {/* Botão lupa — abre SearchOverlay */}
           <button onClick={() => setIsSearchOpen(true)} className="flex items-center justify-center" aria-label="Pesquisar">
             <img src={ssearch} alt="Search" className={`h-7 cursor-pointer transition-all duration-500 ease-in-out ${scrolled ? "invert" : ""}`} />
           </button>
@@ -429,7 +386,6 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Lupa mobile — abre o mesmo SearchOverlay */}
           <button onClick={() => setIsSearchOpen(true)} aria-label="Pesquisar">
             <img src={ssearch} alt="Pesquisar" className={`h-6 cursor-pointer transition-all duration-500 ease-in-out ${scrolled ? "invert" : ""}`} />
           </button>
@@ -455,7 +411,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Search Overlay — desktop e mobile unificado */}
       {isSearchOpen && <SearchOverlay onClose={() => setIsSearchOpen(false)} />}
     </>
   );

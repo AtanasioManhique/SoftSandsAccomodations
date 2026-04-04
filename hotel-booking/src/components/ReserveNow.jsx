@@ -6,6 +6,26 @@ import { usePayment } from "../Payments/usePayments";
 import fullstar from "../assets/fullstar.png";
 import { api } from "../services/api";
 
+// ── Fix timezone — mesmo utilitário do HouseDetails ───────────
+// Evita shift de dia ao converter "YYYY-MM-DD" para Date.
+// new Date("2025-08-10") interpreta como UTC e pode mostrar "2025-08-09"
+// em fusos horários negativos. Com "T00:00:00" força horário local.
+const parseLocalDate = (dateStr) => {
+  if (!dateStr) return null;
+  return new Date(dateStr + "T00:00:00");
+};
+
+const formatDisplayDate = (dateStr) => {
+  if (!dateStr) return "—";
+  const date = parseLocalDate(dateStr);
+  return date.toLocaleDateString("pt-PT", {
+    day:   "2-digit",
+    month: "2-digit",
+    year:  "numeric",
+  });
+};
+// ─────────────────────────────────────────────────────────────
+
 // ── Helpers localStorage ──────────────────────────────────────
 const safeGetStorage = (key) => {
   try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : {}; }
@@ -29,13 +49,13 @@ export default function ReserveAgora() {
   const stateData  = location.state || {};
   const stored     = safeGetStorage("preReserva");
 
-  const bookingId  = stateData.id          || stateData.bookingId  || stored.bookingId;
-  const houseId    = stateData.accommodationId || stored.houseId   || Number(routeHouseId);
-  const startDate  = stateData.startDate   || stored.startDate;
-  const endDate    = stateData.endDate     || stored.endDate;
-  const guests     = stateData.guests      || stored.guests;
-  const totalPrice = stateData.totalPrice  || stored.totalPrice;
-  const houseName  = stateData.houseName   || stored.houseName;
+  const bookingId  = stateData.id            || stateData.bookingId  || stored.bookingId;
+  const houseId    = stateData.accommodationId || stored.houseId     || Number(routeHouseId);
+  const startDate  = stateData.startDate     || stored.startDate;
+  const endDate    = stateData.endDate       || stored.endDate;
+  const guests     = stateData.guests        || stored.guests;
+  const totalPrice = stateData.totalPrice    || stored.totalPrice;
+  const houseName  = stateData.houseName     || stored.houseName;
 
   const [house, setHouse] = useState(null);
 
@@ -55,29 +75,31 @@ export default function ReserveAgora() {
         const res = await api.get(`/accommodations/${houseId}`);
         setHouse(res.data?.data ?? res.data);
       } catch {
-        // 🚧 DEV — fallback JSON + localStorage
         try {
           const res  = await fetch("/data/casas.json");
           const list = await res.json();
-          let found  = list.find((h) => Number(h.id) === Number(houseId));
-          if (!found) {
-            const devCasas = JSON.parse(localStorage.getItem("dev_casas_admin") || "[]");
-            found = devCasas.find((h) => String(h.id) === String(houseId));
-          }
+          const found = list.find((h) => Number(h.id) === Number(houseId));
           setHouse(found || null);
         } catch { setHouse(null); }
-        // 🚧 fim DEV
       }
     };
     load();
   }, [houseId]);
 
   const handlePay = async () => {
-    const result = await initiatePayment({ bookingId,accommodationId: houseId, images: house?.image ?? [],  totalPrice, houseName, startDate, endDate, guests });
+    const result = await initiatePayment({
+      bookingId,
+      accommodationId: houseId,
+      images:          house?.image ?? [],
+      totalPrice,
+      houseName,
+      startDate,
+      endDate,
+      guests,
+    });
 
     if (result.success) {
       safeRemoveStorage("preReserva");
-      // Redireciona para o PaySuite (ou para a confirmação em modo DEV)
       window.location.href = result.paymentUrl;
     }
   };
@@ -114,15 +136,17 @@ export default function ReserveAgora() {
           {/* Detalhes da reserva */}
           <div className="text-sm space-y-2 text-gray-700">
             <div className="flex justify-between">
-              <span className="text-gray-500">{t("reservenow.checkin") || "Entrada"}</span>
-              <span className="font-medium">{startDate}</span>
+              <span className="text-gray-500">{t("center.entrydate")}</span>
+              {/* ✅ fix timezone: parseLocalDate evita shift de dia */}
+              <span className="font-medium">{formatDisplayDate(startDate)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">{t("reservenow.checkout") || "Saída"}</span>
-              <span className="font-medium">{endDate}</span>
+              <span className="text-gray-500">{t("center.outdate")}</span>
+              {/* ✅ fix timezone: parseLocalDate evita shift de dia */}
+              <span className="font-medium">{formatDisplayDate(endDate)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">{t("reservenow.guests") || "Hóspedes"}</span>
+              <span className="text-gray-500">{t("center.guests")}</span>
               <span className="font-medium">{guests}</span>
             </div>
             <div className="flex justify-between border-t pt-2 mt-2">
@@ -133,22 +157,17 @@ export default function ReserveAgora() {
 
           {/* Informação sobre o PaySuite */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 leading-relaxed space-y-1">
-            <p className="font-semibold">💳 Pagamento seguro via PaySuite</p>
-            <p>Serás redirecionado para a página de pagamento segura do PaySuite onde poderás pagar com <strong>Visa, M-Pesa ou e-Mola</strong>.</p>
+            <p className="font-semibold">{t("paysuite.title")}</p>
+            <p>{t("paysuite.subtitle")} <strong>Visa, M-Pesa ou e-Mola</strong>.</p>
           </div>
 
           {/* Logos dos métodos aceites */}
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400">Aceita:</span>
+            <span className="text-xs text-gray-400">{t("paysuite.Aceita")}:</span>
             <div className="flex items-center gap-2">
-              {/* Visa */}
-              <img src="/icons/visa1.png" alt="Visa" className="h-6 object-contain" />
-
-              {/* M-Pesa */}
-              <img src="/icons/m-pesa-seeklogo.png" alt="M-Pesa" className="h-6 object-contain" />
-
-              {/* e-Mola */}
-              <img src="/icons/emola.png" alt="e-Mola" className="h-6 object-contain" />
+              <img src="/icons/visa1.png"              alt="Visa"   className="h-6 object-contain" />
+              <img src="/icons/m-pesa-seeklogo.png"    alt="M-Pesa" className="h-6 object-contain" />
+              <img src="/icons/emola.png"              alt="e-Mola" className="h-6 object-contain" />
             </div>
           </div>
 
@@ -161,7 +180,7 @@ export default function ReserveAgora() {
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                {status === "redirecting" ? "A redirecionar..." : "A processar..."}
+                {status === "redirecting" ? t("paysuite.process") : t("paysuite.pro")}
               </>
             ) : (
               `Pagar ${totalPrice}`
@@ -173,7 +192,7 @@ export default function ReserveAgora() {
           )}
 
           <p className="text-xs text-gray-400 text-center">
-            Serás redirecionado para a página segura do PaySuite.
+            {t("paysuite.direcc")}
           </p>
         </div>
 

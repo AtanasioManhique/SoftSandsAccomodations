@@ -45,7 +45,6 @@ const BeachCard = ({ house }) => {
       <FavoriteButton house={house} />
 
       <Link to={`/casas/${house.id}`} onClick={() => scrollTo(0, 0)}>
-        {/* ── optional chaining — evita crash se image for undefined ── */}
         <img
           src={house.image?.[0]}
           alt={house.location ?? "Casa"}

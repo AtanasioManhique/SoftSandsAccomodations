@@ -5,6 +5,20 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 
+// ── Fix timezone — mesmo utilitário do HouseDetails ───────────
+const parseLocalDate = (dateStr) => {
+  if (!dateStr) return null;
+  return new Date(dateStr + "T00:00:00");
+};
+
+const formatDisplayDate = (dateStr) => {
+  if (!dateStr) return "—";
+  return parseLocalDate(dateStr).toLocaleDateString("pt-PT", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+  });
+};
+// ─────────────────────────────────────────────────────────────
+
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
   background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
@@ -14,18 +28,14 @@ const shimmerStyle = {
 
 const BookingCardSkeleton = () => (
   <div style={{
-    display: "flex",
-    flexDirection: "row",
-    borderRadius: "16px",
-    overflow: "hidden",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-    background: "#fff",
+    display: "flex", flexDirection: "row", borderRadius: "16px",
+    overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", background: "#fff",
   }}>
     <div style={{ ...shimmerStyle, width: "160px", minWidth: "160px", height: "160px" }} />
     <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div style={{ ...shimmerStyle, width: "160px", height: "22px", borderRadius: "6px" }} />
-        <div style={{ ...shimmerStyle, width: "80px", height: "22px", borderRadius: "20px" }} />
+        <div style={{ ...shimmerStyle, width: "80px",  height: "22px", borderRadius: "20px" }} />
       </div>
       <div style={{ ...shimmerStyle, width: "200px", height: "14px", borderRadius: "4px" }} />
       <div style={{ ...shimmerStyle, width: "120px", height: "14px", borderRadius: "4px" }} />
@@ -50,33 +60,22 @@ const MinhasReservasSkeleton = () => (
 // ─────────────────────────────────────────────────────────────
 
 // ── Normaliza a reserva para um formato consistente ──────────
-// Garante que tanto reservas vindas do backend como do localStorage
-// têm sempre os mesmos campos (houseId, images, location, etc.)
 const normalizeBooking = (raw, housesData = []) => {
-  // O backend devolve accommodationId; o localStorage pode ter houseId ou accommodationId
-  const houseId = raw.accommodationId ?? raw.houseId;
-
-  // Tenta encontrar a casa no JSON local (modo DEV / fallback)
-  const localHouse = housesData.find(
-    (h) => String(h.id) === String(houseId)
-  );
-
-  // O backend pode devolver a casa embutida em raw.house ou raw.accommodation
+  const houseId     = raw.accommodationId ?? raw.houseId;
+  const localHouse  = housesData.find((h) => String(h.id) === String(houseId));
   const embeddedHouse = raw.house ?? raw.accommodation ?? null;
 
   return {
-    id:              raw.id ?? raw._id,
+    id:         raw.id ?? raw._id,
     houseId,
-    // Imagem: backend embutida → JSON local → array vazio
-    images:          embeddedHouse?.image ?? localHouse?.image ?? raw.images ?? [],
-    // Localização: backend embutida → JSON local → fallback genérico
-    location:        embeddedHouse?.location ?? localHouse?.location ?? raw.houseName ?? raw.location ?? "Casa",
-    startDate:       raw.startDate ?? raw.checkIn,
-    endDate:         raw.endDate   ?? raw.checkOut,
-    guests:          raw.guests,
-    totalPrice:      raw.totalPrice,
-    status:          raw.status ?? "pendente",
-    method:          raw.method ?? raw.paymentMethod ?? null,
+    images:     embeddedHouse?.image ?? localHouse?.image ?? raw.images ?? [],
+    location:   embeddedHouse?.location ?? localHouse?.location ?? raw.houseName ?? raw.location ?? "Casa",
+    startDate:  raw.startDate ?? raw.checkIn,
+    endDate:    raw.endDate   ?? raw.checkOut,
+    guests:     raw.guests,
+    totalPrice: raw.totalPrice,
+    status:     raw.status ?? "pendente",
+    method:     raw.method ?? raw.paymentMethod ?? null,
   };
 };
 // ─────────────────────────────────────────────────────────────
@@ -89,7 +88,6 @@ export default function MinhasReservas() {
   const { t }    = useTranslation();
   const { user } = useAuth();
 
-  // Chave localStorage usada no modo DEV
   const storageKey = user?.email
     ? `minhasReservas_${user.email}`
     : "minhasReservas_guest";
@@ -99,41 +97,20 @@ export default function MinhasReservas() {
   async function loadReservas() {
     setLoading(true);
     try {
-      // ── BACKEND: GET /api/bookings (utilizador autenticado) ──
-      // O backend filtra automaticamente pelo token JWT.
-      // A resposta deve ser um array de reservas com a casa embutida
-      // (ou pelo menos accommodationId para o frontend enriquecer).
-      //
-      // Exemplo de resposta esperada:
-      // [
-      //   {
-      //     id: "uuid",
-      //     accommodationId: 5,
-      //     accommodation: { id: 5, location: "Ponta de Ouro", image: ["https://..."] },
-      //     startDate: "2025-09-01",
-      //     endDate:   "2025-09-05",
-      //     guests:    2,
-      //     totalPrice: "2.200 MZN",
-      //     status:    "confirmado",
-      //   }, ...
-      // ]
+      // GET /api/bookings — filtrado automaticamente pelo token JWT
       const res      = await api.get("/bookings");
       const rawList  = res.data?.data ?? res.data ?? [];
       const bookings = rawList.map((r) => normalizeBooking(r));
       split(bookings);
     } catch {
-      // 🚧 DEV — Fallback: lê do localStorage e enriquece com casas.json
       try {
-        const housesData   = await fetch("/data/casas.json").then((r) => r.json());
-        const devCasas     = JSON.parse(localStorage.getItem("dev_casas_admin") || "[]");
-        const allHouses    = [...housesData, ...devCasas];
-        const reservasRaw  = JSON.parse(localStorage.getItem(storageKey)) || [];
-        const bookings     = reservasRaw.map((r) => normalizeBooking(r, allHouses));
+        const housesData  = await fetch("/data/casas.json").then((r) => r.json());
+        const reservasRaw = JSON.parse(localStorage.getItem(storageKey)) || [];
+        const bookings    = reservasRaw.map((r) => normalizeBooking(r, housesData));
         split(bookings);
       } catch (err) {
         console.error("Erro ao carregar reservas:", err);
       }
-      // 🚧 fim DEV
     } finally {
       setLoading(false);
     }
@@ -154,7 +131,6 @@ export default function MinhasReservas() {
     <div className="w-full max-w-4xl mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mt-8 mb-3">{t("bookings.myreserves")}</h1>
 
-      {/* RESERVAS ATIVAS */}
       <h2 className="text-2xl font-semibold mb-4">{t("bookings.activereserves")}</h2>
       {activeBookings.length === 0 ? (
         <p className="text-gray-500 mb-10">{t("bookings.nonactive")}</p>
@@ -166,7 +142,6 @@ export default function MinhasReservas() {
         </div>
       )}
 
-      {/* CANCELADAS */}
       <h2 className="text-2xl font-semibold mt-4 mb-4">{t("bookings.cancellation")}</h2>
       {canceledBookings.length === 0 ? (
         <p className="text-gray-500">{t("bookings.noncancellation")}</p>
@@ -186,13 +161,8 @@ function BookingCard({ booking, t, canceled = false }) {
 
   return (
     <div className={`flex rounded-2xl overflow-hidden flex-col md:flex-row shadow-md hover:shadow-lg transition ${canceled ? "bg-gray-100" : "bg-white"}`}>
-      {/* Imagem da casa */}
       {image ? (
-        <img
-          src={image}
-          alt={booking.location}
-          className="w-full md:w-40 h-48 md:h-40 object-cover"
-        />
+        <img src={image} alt={booking.location} className="w-full md:w-40 h-48 md:h-40 object-cover" />
       ) : (
         <div className="w-full md:w-40 h-48 md:h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shrink-0">
           <span className="text-4xl">🏠</span>
@@ -206,8 +176,9 @@ function BookingCard({ booking, t, canceled = false }) {
           </h2>
           <StatusBadge status={booking.status} />
         </div>
+        {/* ✅ fix timezone: formatDisplayDate evita shift de dia */}
         <p className="text-gray-500 text-sm mt-1">
-          {booking.startDate} → {booking.endDate}
+          {formatDisplayDate(booking.startDate)} → {formatDisplayDate(booking.endDate)}
         </p>
         <p className="text-gray-700 font-medium mt-2">
           Total: <span className="font-bold">{booking.totalPrice}</span>

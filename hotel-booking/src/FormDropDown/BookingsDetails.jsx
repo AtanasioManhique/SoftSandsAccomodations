@@ -5,6 +5,28 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 
+// ── Fix timezone — mesmo utilitário do HouseDetails ───────────
+const parseLocalDate = (dateStr) => {
+  if (!dateStr) return null;
+  return new Date(dateStr + "T00:00:00");
+};
+
+const formatDisplayDate = (dateStr) => {
+  if (!dateStr) return "—";
+  return parseLocalDate(dateStr).toLocaleDateString("pt-PT", {
+    day: "2-digit", month: "2-digit", year: "numeric",
+  });
+};
+
+const formatShortDate = (dateStr) => {
+  if (!dateStr) return "—";
+  const date  = parseLocalDate(dateStr);
+  const day   = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("pt-PT", { month: "short" }).toUpperCase();
+  return `${day} ${month}`;
+};
+// ─────────────────────────────────────────────────────────────
+
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
   background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
@@ -18,7 +40,7 @@ const ReservaDetalhesSkeleton = () => (
     <div style={{ ...shimmerStyle, width: "120px", height: "16px", borderRadius: "4px", marginBottom: "32px" }} />
     <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "24px" }}>
       <div style={{ ...shimmerStyle, width: "220px", height: "36px", borderRadius: "8px" }} />
-      <div style={{ ...shimmerStyle, width: "90px", height: "28px", borderRadius: "20px" }} />
+      <div style={{ ...shimmerStyle, width: "90px",  height: "28px", borderRadius: "20px" }} />
     </div>
     <div style={{ display: "flex", gap: "8px", overflowX: "hidden", marginBottom: "40px" }}>
       {[...Array(3)].map((_, i) => (
@@ -45,12 +67,11 @@ const ReservaDetalhesSkeleton = () => (
 );
 // ─────────────────────────────────────────────────────────────
 
-// ── Normaliza reserva para formato consistente ───────────────
-// Funciona tanto com dados do backend como do localStorage (DEV)
+// ── Normaliza reserva ─────────────────────────────────────────
 const normalizeBooking = (raw, housesData = []) => {
-  const houseId     = raw.accommodationId ?? raw.houseId;
-  const localHouse  = housesData.find((h) => String(h.id) === String(houseId));
-  const embedded    = raw.house ?? raw.accommodation ?? null;
+  const houseId    = raw.accommodationId ?? raw.houseId;
+  const localHouse = housesData.find((h) => String(h.id) === String(houseId));
+  const embedded   = raw.house ?? raw.accommodation ?? null;
 
   return {
     id:         raw.id ?? raw._id,
@@ -67,18 +88,13 @@ const normalizeBooking = (raw, housesData = []) => {
 };
 // ─────────────────────────────────────────────────────────────
 
+
 function calcNights(startDate, endDate) {
-  const start = new Date(startDate);
-  const end   = new Date(endDate);
+  const start = parseLocalDate(startDate);
+  const end   = parseLocalDate(endDate);
+  if (!start || !end) return 0;
   return Math.round((end - start) / (1000 * 60 * 60 * 24));
 }
-
-const formatDate = (dateString) => {
-  const d     = new Date(dateString);
-  const day   = String(d.getDate()).padStart(2, "0");
-  const month = d.toLocaleString("pt-PT", { month: "short" }).toUpperCase();
-  return `${day} ${month}`;
-};
 
 const getStatusColor = (status) => {
   if (status === "confirmado") return "bg-green-100 text-green-700";
@@ -86,14 +102,12 @@ const getStatusColor = (status) => {
   return "bg-red-100 text-red-700";
 };
 
-// ─────────────────────────────────────────────────────────────
-
 export default function ReservaDetalhes() {
-  const { id }       = useParams();
-  const location     = useLocation();
-  const navigate     = useNavigate();
-  const { t }        = useAuth() && useTranslation();
-  const { user }     = useAuth();
+  const { id }   = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { t }    = useTranslation();
+  const { user } = useAuth();
 
   const [booking,         setBooking]         = useState(null);
   const [loading,         setLoading]         = useState(true);
@@ -109,44 +123,26 @@ export default function ReservaDetalhes() {
   async function loadData() {
     setLoading(true);
     try {
-      // ── BACKEND: GET /api/bookings/:id ────────────────────
-      // Retorna a reserva com a casa embutida.
-      // Exemplo de resposta esperada:
-      // {
-      //   id: "uuid",
-      //   accommodationId: 5,
-      //   accommodation: { id: 5, location: "Bilene", image: ["https://..."] },
-      //   startDate: "2025-09-01",
-      //   endDate:   "2025-09-05",
-      //   guests:    2,
-      //   totalPrice: "2.200 MZN",
-      //   status:    "confirmado",
-      //   method:    "M-Pesa",
-      // }
+      // GET /api/bookings/:id — retorna a reserva com a casa embutida
       const res = await api.get(`/bookings/${id}`);
       const raw = res.data?.data ?? res.data;
       setBooking(normalizeBooking(raw));
     } catch {
-      // 🚧 DEV — Fallback: state de navegação → localStorage
       try {
         const housesData = await fetch("/data/casas.json").then((r) => r.json());
-        const devCasas   = JSON.parse(localStorage.getItem("dev_casas_admin") || "[]");
-        const allHouses  = [...housesData, ...devCasas];
 
         // 1. Via state de navegação (vindo do BookingCard)
         if (location.state?.booking) {
-          setBooking(normalizeBooking(location.state.booking, allHouses));
+          setBooking(normalizeBooking(location.state.booking, housesData));
           return;
         }
 
-        // 2. Via localStorage
-        const reservasRaw  = JSON.parse(localStorage.getItem(storageKey)) || [];
-        const found        = reservasRaw.find((r) => (r.id ?? r._id) === id);
-        if (found) setBooking(normalizeBooking(found, allHouses));
+        const reservasRaw = JSON.parse(localStorage.getItem(storageKey)) || [];
+        const found       = reservasRaw.find((r) => (r.id ?? r._id) === id);
+        if (found) setBooking(normalizeBooking(found, housesData));
       } catch (err) {
         console.error("Erro ao carregar reserva:", err);
       }
-      // 🚧 fim DEV
     } finally {
       setLoading(false);
     }
@@ -155,20 +151,16 @@ export default function ReservaDetalhes() {
   async function handleCancelar() {
     setCanceling(true);
     try {
-      // ── BACKEND: PATCH /api/bookings/:id ─────────────────
-      // Cancela a reserva. O backend atualiza o status e pode
-      // enviar email de confirmação ao utilizador.
+      // PATCH /api/bookings/:id — cancela a reserva
       await api.patch(`/bookings/${id}`, { status: "cancelado" });
       setBooking((prev) => ({ ...prev, status: "cancelado" }));
     } catch {
-      // 🚧 DEV — Atualiza no localStorage
       const reservas    = JSON.parse(localStorage.getItem(storageKey)) || [];
       const atualizadas = reservas.map((r) =>
         (r.id ?? r._id) === booking.id ? { ...r, status: "cancelado" } : r
       );
       localStorage.setItem(storageKey, JSON.stringify(atualizadas));
       setBooking((prev) => ({ ...prev, status: "cancelado" }));
-      // 🚧 fim DEV
     } finally {
       setCanceling(false);
       setShowCancelModal(false);
@@ -176,9 +168,7 @@ export default function ReservaDetalhes() {
   }
 
   if (loading) return <ReservaDetalhesSkeleton />;
-
-  if (!booking)
-    return <div className="p-10 text-center text-red-500">{t("bookingdetails.notfound")}</div>;
+  if (!booking) return <div className="p-10 text-center text-red-500">{t("bookingdetails.notfound")}</div>;
 
   const nights     = calcNights(booking.startDate, booking.endDate);
   const isCanceled = booking.status === "cancelado";
@@ -196,10 +186,9 @@ export default function ReservaDetalhes() {
         </span>
       </div>
 
-      {/* Banner pendente */}
       {booking.status === "pendente" && (
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
-          ⏳ A sua reserva está pendente de confirmação pelo administrador.
+          ⏳ {t("all.waiting")}
         </div>
       )}
 
@@ -219,26 +208,26 @@ export default function ReservaDetalhes() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-        {/* ESQUERDA — informações da reserva */}
         <div className="bg-white p-6 rounded-2xl shadow">
           <h2 className="text-xl font-semibold mb-4">{t("bookingdetails.information")}</h2>
 
           <div className="flex items-center gap-3 mb-5">
-            <div className="text-lg font-bold">{formatDate(booking.startDate)}</div>
+            <div className="text-lg font-bold">{formatShortDate(booking.startDate)}</div>
             <div className="text-gray-500 text-xl">→</div>
-            <div className="text-lg font-bold">{formatDate(booking.endDate)}</div>
+            <div className="text-lg font-bold">{formatShortDate(booking.endDate)}</div>
           </div>
 
           <div className="space-y-3 text-gray-700">
-            <p><strong>{t("center.entrydate")}:</strong> {booking.startDate}</p>
-            <p><strong>{t("center.outdate")}:</strong> {booking.endDate}</p>
+ 
+            <p><strong>{t("center.entrydate")}:</strong> {formatDisplayDate(booking.startDate)}</p>
+            <p><strong>{t("center.outdate")}:</strong> {formatDisplayDate(booking.endDate)}</p>
             <p><strong>{t("center.guests")}:</strong> {booking.guests}</p>
             <p><strong>{t("bookingdetails.nights")}:</strong> {nights}</p>
             {booking.method && (
-              <p><strong>Método de pagamento:</strong> {booking.method}</p>
+              <p><strong>{t("all.method")}:</strong> {booking.method}</p>
             )}
             <p>
-              <strong>Referência:</strong>{" "}
+              <strong>{t("all.ref")}:</strong>{" "}
               <span className="text-xs break-all font-mono text-gray-500">{booking.id}</span>
             </p>
           </div>
@@ -276,7 +265,7 @@ export default function ReservaDetalhes() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Ler política de cancelamento
+           {t("all.read")}
           </Link>
         </div>
       </div>
@@ -294,21 +283,21 @@ export default function ReservaDetalhes() {
             </div>
             <h2 className="text-xl font-bold text-gray-900">Cancelar reserva?</h2>
             <p className="text-gray-500 text-sm">
-              Tem a certeza que deseja cancelar? Esta ação não pode ser desfeita.
+             {t("all.sure")}
             </p>
             <Link
               to="/politicacancelamento"
               className="block text-sm text-blue-600 underline"
               onClick={() => setShowCancelModal(false)}
             >
-              Consultar política de cancelamento antes de decidir
+           {t("all.consult")}
             </Link>
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setShowCancelModal(false)}
                 className="flex-1 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-gray-400 transition"
               >
-                Voltar
+                {t("all.back")}
               </button>
               <button
                 onClick={handleCancelar}
@@ -318,7 +307,7 @@ export default function ReservaDetalhes() {
                 {canceling && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 )}
-                Confirmar cancelamento
+                {t("all.confirm")}
               </button>
             </div>
           </div>
