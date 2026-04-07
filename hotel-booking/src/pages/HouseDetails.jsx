@@ -217,8 +217,8 @@ const HouseDetails = () => {
     try {
       const payload = {
         accommodationId: house.id,
-        checkInDate:     checkIn,
-        checkOutDate:    checkOut,
+        checkIn:     checkIn,
+        checkOut:    checkOut,
         guests,
       };
       const res = await api.post("/bookings", payload);

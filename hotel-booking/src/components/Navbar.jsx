@@ -71,12 +71,20 @@ const SearchOverlay = ({ onClose }) => {
       // GET /api/search?q=query
       // Resposta esperada:
       // { praias: [{ name, total }], casas: [{ id, location, bedroom, capacity, price, image }] }
-      const res  = await api.get("/search", { params: { q } });
-      const data = res.data?.data ?? res.data;
-      setResults({
-        praias: data.praias ?? [],
-        casas:  data.casas  ?? [],
+      const res  = await api.get("/accommodations", { params: { search: q, limit: 20 } });
+      const casas = res.data?.data ?? [];
+
+      // agrupar por location para gerar as praias
+
+      const praiasMap = {};
+      casas.forEach((c) => {
+        if (!c.location) return;
+        praiasMap[c.location] = (praiasMap[c.location] ?? 0) +1;
       });
+
+      const praias = Object.entries(praiasMap).map(([name, total]) => ({ name, total }));
+
+      setResults({ praias, casas });
     } catch {
       setResults({ praias: [], casas: [] });
     } finally {
@@ -185,32 +193,39 @@ const SearchOverlay = ({ onClose }) => {
             {results.casas.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 py-2 mt-1">Casas</p>
-                {results.casas.map((casa) => (
-                  <button
-                    key={casa.id}
-                    onClick={() => goToCasa(casa.id)}
-                    className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-gray-50 transition text-left"
-                  >
+                {results.casas.map((casa) => {
+                  const imageUrl = casa.images?.casa_images?.[0]?.url || casa.image?.[0];
+                  const price = casa.price_per_night ?? casa.PricePerNight;
+                  const bedrooms = casa.bedroom ?? casa.Bedroom;
+                  const guests = casa.max_guests ?? casa.maxGuests;
+
+                  return (
+                    <button
+                      key={casa.id}
+                      onClick={() => goToCasa(casa.id)}
+                      className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-gray-50 transition text-left"
+                    >
                     <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center shrink-0 overflow-hidden">
-                      {casa.image?.[0] ? (
-                        <img src={casa.image[0]} alt={casa.location} className="w-full h-full object-cover" />
-                      ) : (
-                        <Home size={16} className="text-green-600" />
-                      )}
+                      {imageUrl ? (
+                        <img src={imageUrl} alt={casa.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Home size={16} className="text-green-600" />
+                        )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-800 truncate">{casa.location}</p>
                       <p className="text-xs text-gray-400">
-                        {casa.bedroom} quarto{casa.bedroom !== 1 ? "s" : ""} · {casa.capacity} hósp.
+                        {casa.location} · {bedrooms} quarto{bedrooms !== 1 ? "s" : ""} · {guests} hósp.
                       </p>
                     </div>
-                    {casa.price?.low_season && (
+                    {price && (
                       <p className="text-sm font-semibold text-gray-700 shrink-0">
-                        {Number(casa.price.low_season).toLocaleString()} {casa.price.currency ?? "MZN"}/noite
+                       R {Number(price).toLocaleString("en-ZA")}/noite
                       </p>
                     )}
                   </button>
-                ))}
+                );
+              })}
               </div>
             )}
 
