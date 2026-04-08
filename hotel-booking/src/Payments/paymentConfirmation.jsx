@@ -1,7 +1,7 @@
-
-
+// pages/PaymentConfirmation.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
 
 // ── Fix timezone — mesmo utilitário do HouseDetails ───────────
@@ -21,6 +21,7 @@ const formatDisplayDate = (dateStr) => {
 export default function PaymentConfirmation() {
   const navigate       = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t }          = useTranslation();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
 

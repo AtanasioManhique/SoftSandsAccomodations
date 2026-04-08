@@ -32,6 +32,7 @@ import AdminCalendario from "./admin/admincalendario";
 import AdminRelatorios from "./admin/adminrelatorios";
 import ForgotPassword from "./FormDropDown/ForgotPassword";
 import ResetPassword  from "./FormDropDown/ResetPassword";
+import CookieConsent from "./cookies/cookiescontent";
 
 function App() {
   const location = useLocation();
@@ -42,7 +43,7 @@ function App() {
       <FavoriteProvider>
         <div className="flex flex-col min-h-screen">
           <Navbar />
-
+          <CookieConsent />
           <div className="flex-1">
             <Routes>
               <Route path="/" element={<Home />} />

@@ -88,7 +88,7 @@ const normalizeBooking = (raw, housesData = []) => {
 };
 // ─────────────────────────────────────────────────────────────
 
-
+// ✅ fix timezone: usa parseLocalDate em vez de new Date(dateStr)
 function calcNights(startDate, endDate) {
   const start = parseLocalDate(startDate);
   const end   = parseLocalDate(endDate);
@@ -127,24 +127,8 @@ export default function ReservaDetalhes() {
       const res = await api.get(`/bookings/${id}`);
       const raw = res.data?.data ?? res.data;
       setBooking(normalizeBooking(raw));
-    } 
-     // try {
-      //  const housesData = await fetch("/data/casas.json").then((r) => r.json());
-
-        // 1. Via state de navegação (vindo do BookingCard)
-        if (location.state?.booking) {
-          setBooking(normalizeBooking(location.state.booking, allHouses));
-          return;
-        }
-
-        // 2. Via localStorage
-        const reservasRaw  = JSON.parse(localStorage.getItem(storageKey)) || [];
-        const found        = reservasRaw.find((r) => (r.id ?? r._id) === id);
-        if (found) setBooking(normalizeBooking(found, allHouses));
-      } catch (err) {
-        console.error("Erro ao carregar reserva:", err);
-      }
-      // 🚧 fim DEV // fallback */
+    } catch (err) {
+      console.error("Erro ao carregar reserva:", err);
     } finally {
       setLoading(false);
     }
@@ -157,14 +141,12 @@ export default function ReservaDetalhes() {
       await api.patch(`/bookings/${id}`, { status: "cancelado" });
       setBooking((prev) => ({ ...prev, status: "cancelado" }));
     } catch {
-      // 🚧 DEV — Atualiza no localStorage
-      /*const reservas    = JSON.parse(localStorage.getItem(storageKey)) || [];
+      const reservas    = JSON.parse(localStorage.getItem(storageKey)) || [];
       const atualizadas = reservas.map((r) =>
         (r.id ?? r._id) === booking.id ? { ...r, status: "cancelado" } : r
       );
       localStorage.setItem(storageKey, JSON.stringify(atualizadas));
       setBooking((prev) => ({ ...prev, status: "cancelado" }));
-      // 🚧 fim DEV // fallback */
     } finally {
       setCanceling(false);
       setShowCancelModal(false);
@@ -192,7 +174,7 @@ export default function ReservaDetalhes() {
 
       {booking.status === "pendente" && (
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
-          ⏳ {t("all.waiting")}
+          ⏳ A sua reserva está pendente de confirmação pelo administrador.
         </div>
       )}
 
@@ -212,9 +194,11 @@ export default function ReservaDetalhes() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
+        {/* ESQUERDA — informações da reserva */}
         <div className="bg-white p-6 rounded-2xl shadow">
           <h2 className="text-xl font-semibold mb-4">{t("bookingdetails.information")}</h2>
 
+          {/* ✅ fix timezone: formatShortDate usa parseLocalDate */}
           <div className="flex items-center gap-3 mb-5">
             <div className="text-lg font-bold">{formatShortDate(booking.startDate)}</div>
             <div className="text-gray-500 text-xl">→</div>
@@ -222,16 +206,16 @@ export default function ReservaDetalhes() {
           </div>
 
           <div className="space-y-3 text-gray-700">
- 
+            {/* ✅ fix timezone: formatDisplayDate em vez de string crua */}
             <p><strong>{t("center.entrydate")}:</strong> {formatDisplayDate(booking.startDate)}</p>
             <p><strong>{t("center.outdate")}:</strong> {formatDisplayDate(booking.endDate)}</p>
             <p><strong>{t("center.guests")}:</strong> {booking.guests}</p>
             <p><strong>{t("bookingdetails.nights")}:</strong> {nights}</p>
             {booking.method && (
-              <p><strong>{t("all.method")}:</strong> {booking.method}</p>
+              <p><strong>Método de pagamento:</strong> {booking.method}</p>
             )}
             <p>
-              <strong>{t("all.ref")}:</strong>{" "}
+              <strong>Referência:</strong>{" "}
               <span className="text-xs break-all font-mono text-gray-500">{booking.id}</span>
             </p>
           </div>
@@ -269,7 +253,7 @@ export default function ReservaDetalhes() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-           {t("all.read")}
+            Ler política de cancelamento
           </Link>
         </div>
       </div>
@@ -287,21 +271,21 @@ export default function ReservaDetalhes() {
             </div>
             <h2 className="text-xl font-bold text-gray-900">Cancelar reserva?</h2>
             <p className="text-gray-500 text-sm">
-             {t("all.sure")}
+              Tem a certeza que deseja cancelar? Esta ação não pode ser desfeita.
             </p>
             <Link
               to="/politicacancelamento"
               className="block text-sm text-blue-600 underline"
               onClick={() => setShowCancelModal(false)}
             >
-           {t("all.consult")}
+              Consultar política de cancelamento antes de decidir
             </Link>
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setShowCancelModal(false)}
                 className="flex-1 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-gray-400 transition"
               >
-                {t("all.back")}
+                Voltar
               </button>
               <button
                 onClick={handleCancelar}
@@ -311,7 +295,7 @@ export default function ReservaDetalhes() {
                 {canceling && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 )}
-                {t("all.confirm")}
+                Confirmar cancelamento
               </button>
             </div>
           </div>

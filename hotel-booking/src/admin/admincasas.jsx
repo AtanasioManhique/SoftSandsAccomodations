@@ -32,19 +32,20 @@ const AMENITY_ICONS = {
 };
 
 const emptyForm = {
-  name:           "",
-  description:    "",
-  location:       "",
-  beachName:      "",
-  pricePerNight:  "",
-  lowSeasonPrice: "",
-  highSeasonPrice:"",
-  maxGuests:      2,
-  bedrooms:       1,
-  bathrooms:      1,
-  latitude:       "",
-  longitude:      "",
-  amenities:      [],
+  name:            "",
+  description:     "",
+  location:        "",
+  beachName:       "",
+  pricePerNight:   "",
+  lowSeasonPrice:  "",
+  highSeasonPrice: "",
+  peakSeasonPrice: "",
+  maxGuests:       2,
+  bedrooms:        1,
+  bathrooms:       1,
+  latitude:        "",
+  longitude:       "",
+  amenities:       [],
 };
 
 const AdminCasas = () => {
@@ -61,6 +62,7 @@ const AdminCasas = () => {
   const [imagesToUpload, setImagesToUpload]   = useState([]);
   const [existingImages, setExistingImages]   = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [isDragging, setIsDragging]           = useState(false);
 
   useEffect(() => { loadData(); }, []);
 
@@ -96,6 +98,7 @@ const AdminCasas = () => {
       pricePerNight:  casa.price_per_night ?? casa.pricePerNight ?? "",
       lowSeasonPrice: casa.low_season_price ?? casa.lowSeasonPrice ?? "",
       highSeasonPrice:casa.high_season_price ?? casa.highSeasonPrice ?? "",
+      peakSeasonPrice:casa.peak_season_price ?? casa.peakSeasonPrice ?? "",
       maxGuests:      casa.max_guests ?? casa.maxGuests ?? 2,
       bedrooms:       casa.bedrooms       ?? 1,
       bathrooms:      casa.bathrooms      ?? 1,
@@ -167,6 +170,7 @@ const AdminCasas = () => {
       amenities:      form.amenities,
       lowSeasonPrice: form.lowSeasonPrice  ? Number(form.lowSeasonPrice)  : null,
       highSeasonPrice:form.highSeasonPrice ? Number(form.highSeasonPrice) : null,
+      peakSeasonPrice:form.peakSeasonPrice ? Number(form.peakSeasonPrice) : null,
     };
 
     try {
@@ -267,11 +271,17 @@ const AdminCasas = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((casa) => (
               <div key={casa.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="h-36 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative">
+                <div className="h-36 bg-gray-100 flex items-center justify-center relative">
                   {getImage(casa) ? (
                     <img src={getImage(casa)} alt={casa.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="text-5xl">🏠</div>
+                    <div className="flex flex-col items-center gap-1 text-gray-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
+                      </svg>
+                      <span className="text-xs text-gray-300">Sem imagem</span>
+                    </div>
                   )}
                   <div className="absolute top-2 right-2 flex gap-1.5">
                     <button onClick={() => openEdit(casa)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
@@ -378,37 +388,55 @@ const AdminCasas = () => {
 
               {/* Preços */}
               <div>
-                <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Preços (ZAR) *</label>
-                <div className="grid grid-cols-3 gap-3 mt-1">
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Por noite *</p>
-                    <input type="number" min={0} value={form.pricePerNight}
-                      onChange={(e) => setForm((p) => ({ ...p, pricePerNight: e.target.value }))}
-                      placeholder="ex: 3000" required
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Época baixa</p>
-                    <input type="number" min={0} value={form.lowSeasonPrice}
+                <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Preços (ZAR)</label>
+                <p className="text-xs text-gray-400 mt-0.5 mb-3">Define o preço base e os preços sazonais opcionais.</p>
+
+                {/* Preço base — destaque */}
+                <div className="mb-3">
+                  <p className="text-xs text-gray-500 mb-1 font-medium">Preço base por noite *</p>
+                  <input
+                    type="number" min={0} value={form.pricePerNight}
+                    onChange={(e) => setForm((p) => ({ ...p, pricePerNight: e.target.value }))}
+                    placeholder="ex: 3000"
+                    required
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
+                  />
+                </div>
+
+                {/* 3 épocas em grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-blue-600 mb-1">Época baixa</p>
+                    <input
+                      type="number" min={0} value={form.lowSeasonPrice}
                       onChange={(e) => setForm((p) => ({ ...p, lowSeasonPrice: e.target.value }))}
                       placeholder="ex: 2500"
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
+                      className="w-full border border-blue-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-300 bg-white"
                     />
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Época alta</p>
-                    <input type="number" min={0} value={form.highSeasonPrice}
+                  <div className="bg-orange-50 border border-orange-100 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-orange-500 mb-1">Época alta</p>
+                    <input
+                      type="number" min={0} value={form.highSeasonPrice}
                       onChange={(e) => setForm((p) => ({ ...p, highSeasonPrice: e.target.value }))}
                       placeholder="ex: 5000"
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
+                      className="w-full border border-orange-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-300 bg-white"
+                    />
+                  </div>
+                  <div className="bg-red-50 border border-red-100 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-red-500 mb-1">Época de pico</p>
+                    <input
+                      type="number" min={0} value={form.peakSeasonPrice}
+                      onChange={(e) => setForm((p) => ({ ...p, peakSeasonPrice: e.target.value }))}
+                      placeholder="ex: 8000"
+                      className="w-full border border-red-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-red-300 bg-white"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Quartos + WC + Capacidade */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Quartos</label>
                   <input type="number" min={0} max={20} value={form.bedrooms}
@@ -423,7 +451,7 @@ const AdminCasas = () => {
                     className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
                   />
                 </div>
-                <div>
+                <div className="col-span-2 sm:col-span-1">
                   <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Hóspedes *</label>
                   <input type="number" min={1} max={30} value={form.maxGuests}
                     onChange={(e) => setForm((p) => ({ ...p, maxGuests: e.target.value }))}
@@ -499,42 +527,86 @@ const AdminCasas = () => {
                 </div>
               )}
 
-              {/* Upload novas imagens */}
+              {/* Upload novas imagens — drag & drop */}
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
                   {editingId ? "Adicionar imagens" : "Imagens"}
                 </label>
-                <p className="text-xs text-gray-400 mb-2">Máximo 5 imagens, 5MB cada. Formatos: JPG, PNG, WebP.</p>
+                <p className="text-xs text-gray-400 mt-0.5 mb-3">Máximo 5 imagens, 5MB cada. Formatos: JPG, PNG, WebP.</p>
+
+                {/* Grelha de previews + botão de adicionar */}
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                  {imagesToUpload.map((file, i) => (
+                    <div key={i} className="relative group aspect-square">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Preview ${i}`}
+                        className="w-full h-full object-cover rounded-xl border border-gray-100"
+                      />
+                      {i === 0 && (
+                        <span className="absolute bottom-1 left-1 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded-full leading-none">
+                          Principal
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setImagesToUpload((prev) => prev.filter((_, idx) => idx !== i))}
+                        className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-0.5 shadow transition opacity-0 group-hover:opacity-100"
+                      >
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Botão de adicionar — visível se ainda há espaço */}
+                  {imagesToUpload.length < 5 && (
+                    <div
+                      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setIsDragging(false);
+                        const dropped = Array.from(e.dataTransfer.files)
+                          .filter((f) => f.type.startsWith("image/"))
+                          .slice(0, 5 - imagesToUpload.length);
+                        setImagesToUpload((prev) => [...prev, ...dropped].slice(0, 5));
+                      }}
+                      onClick={() => document.getElementById("image-upload-input").click()}
+                      className={`
+                        aspect-square flex flex-col items-center justify-center gap-1
+                        rounded-xl border-2 border-dashed cursor-pointer
+                        transition-all duration-150 select-none
+                        ${isDragging
+                          ? "border-blue-400 bg-blue-50"
+                          : "border-gray-200 bg-gray-100 hover:border-gray-300 hover:bg-gray-150"
+                        }
+                      `}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                      <span className="text-[10px] text-gray-400 leading-tight text-center px-1">
+                        Adicionar
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <p className="text-xs text-gray-400 mt-2">
+                  Arrasta imagens para a zona acima ou clica em "Adicionar". A primeira imagem será a principal.
+                </p>
+
                 <input
+                  id="image-upload-input"
                   type="file"
                   accept="image/*"
                   multiple
+                  className="hidden"
                   onChange={(e) => {
-                    const files = Array.from(e.target.files).slice(0, 5);
-                    setImagesToUpload(files);
+                    const files = Array.from(e.target.files).slice(0, 5 - imagesToUpload.length);
+                    setImagesToUpload((prev) => [...prev, ...files].slice(0, 5));
                   }}
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
                 />
-                {imagesToUpload.length > 0 && (
-                  <div className="flex gap-2 mt-2">
-                    {imagesToUpload.map((file, i) => (
-                      <div key={i} className="relative">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`Preview ${i}`}
-                          className="w-16 h-16 object-cover rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setImagesToUpload((prev) => prev.filter((_, idx) => idx !== i))}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5"
-                        >
-                          <X size={10} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {/* Botões */}

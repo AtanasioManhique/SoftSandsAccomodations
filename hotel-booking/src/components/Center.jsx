@@ -7,6 +7,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { api } from "../services/api";
 
+// ── Fix timezone ──────────────────────────────────────────────
+const formatLocalDate = (date) => {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+};
+// ─────────────────────────────────────────────────────────────
+
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
   background: "linear-gradient(90deg, rgba(255,255,255,0.3) 25%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.3) 75%)",
@@ -146,8 +156,9 @@ const Center = () => {
     e.preventDefault();
     if (!selectedDestino || !startDate || !endDate || !guests) return;
 
+  
     navigate(
-      `/pesquisa?search=${encodeURIComponent(selectedDestino)}&startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}&guests=${guests}`
+      `/pesquisa?search=${encodeURIComponent(selectedDestino)}&startDate=${formatLocalDate(startDate)}&endDate=${formatLocalDate(endDate)}&guests=${guests}`
     );
   };
 
@@ -227,7 +238,7 @@ const Center = () => {
               Grupo grande detectado
             </p>
             <p className="text-white/80 text-xs mt-0.5 leading-relaxed">
-              Nenhuma casa suporta {guests} hóspedes sozinha. Mostraremos todas as casas disponíveis — podes reservar mais do que uma para o teu grupo.
+              Nenhuma casa suporta {guests} hóspedes sozinha. Mostraremos todas as casas disponíveis. Podes reservar mais do que uma para o teu grupo.
             </p>
           </div>
         </div>

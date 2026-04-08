@@ -71,16 +71,17 @@ const AllHouses = () => {
       });
       const data = res.data?.data ?? res.data;
       setHouses(Array.isArray(data) ? data : []);
-
       setGrupoGrande(res.data?.grupoGrande ?? false);
-    } catch (err) { 
+    } catch (err) {
+      console.error("Erro ao carregar casas:", err);
+      setHouses([]);
+    } finally {
+      setLoading(false);
     }
   }, [searchQuery, startDate, endDate, guestsParam]);
 
   useEffect(() => {
     loadHouses();
-     
-
   }, [loadHouses]);
 
   if (loading) return <AllHousesSkeleton />;

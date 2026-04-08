@@ -6,10 +6,6 @@ import { usePayment } from "../Payments/usePayments";
 import fullstar from "../assets/fullstar.png";
 import { api } from "../services/api";
 
-// ── Fix timezone — mesmo utilitário do HouseDetails ───────────
-// Evita shift de dia ao converter "YYYY-MM-DD" para Date.
-// new Date("2025-08-10") interpreta como UTC e pode mostrar "2025-08-09"
-// em fusos horários negativos. Com "T00:00:00" força horário local.
 const parseLocalDate = (dateStr) => {
   if (!dateStr) return null;
   return new Date(dateStr + "T00:00:00");
@@ -75,14 +71,8 @@ export default function ReserveAgora() {
         const res = await api.get(`/accommodations/${houseId}`);
         setHouse(res.data?.data ?? res.data);
       } catch {
-        /* // 🚧 DEV — fallback JSON + localStorage
-        try {
-          const res  = await fetch("/data/casas.json");
-          const list = await res.json();
-          const found = list.find((h) => Number(h.id) === Number(houseId));
-          setHouse(found || null);
-        } catch { setHouse(null); }
-      
+     
+
       }
     };
     load();
