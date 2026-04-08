@@ -74,22 +74,21 @@ const AdminDashboard = () => {
         api.get("/admin/dashboard/bookings", { params: { startDate, endDate, groupBy: "month" } }),
       ]);
 
-      const overview = overviewRes.data?.data ?? overviewRes.data;
-      const revenue  = revenueRes.data?.data  ?? revenueRes.data;
-      const bookings = bookingsRes.data?.data  ?? bookingsRes.data;
+      const overview = overviewRes.data?.data ?? {};
+      const revenue  = revenueRes.data?.data ?? {};
+      const bookings = bookingsRes.data?.data ?? {};
 
       setStats(overview);
-      setBookingsSummary(bookings?.summary ?? null);
+      setBookingsSummary(bookings.summary ?? null);
 
-      // Mapear breakdown para o gráfico
-      const chartData = (revenue?.breakdown ?? []).map((item) => ({
-        mes: item.period ?? item.month ?? item.date,
-        receita: Number(item.revenue ?? item.totalRevenue ?? 0),
-        reservas: Number(item.bookings ?? item.count ?? 0),
+      const chartData = (revenue.breakdown ?? []).map((item) => ({
+        mes: item.period,
+        receita: Number(item.revenue ?? 0),
+        reservas: Number(item.bookings ?? 0),
       }));
       setRevenueData(chartData);
     } catch (err) {
-      console.error("Erro ao carregar dashboard:", err);
+      console.error("Erro ao carregar dashboard:", err.response?.data ?? err.message ?? err);
     } finally {
       setLoading(false);
     }
