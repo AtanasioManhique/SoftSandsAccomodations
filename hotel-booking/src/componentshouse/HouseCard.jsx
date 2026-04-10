@@ -7,7 +7,6 @@ import FavoriteButton from "./FavoriteButton";
 import { useTranslation } from "react-i18next";
 import { useSeasonPricing } from "../context/seasonPricing.js";
 
-// ── Skeleton do HouseCard ─────────────────────────────────────
 const shimmerStyle = {
   background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
   backgroundSize: "200% 100%",
@@ -38,16 +37,29 @@ export const HouseCardSkeleton = () => (
     </div>
   </>
 );
-// ─────────────────────────────────────────────────────────────
 
-// ── Helper: extrai a URL da imagem principal seja qual for a estrutura ──
-// Backend devolve:  house.images = [{ url, is_primary, ... }]
-// Fallback antigo:  house.image  = ["url1", "url2"]
-const getMainImage = (house) =>
-  house.images?.find((img) => img.is_primary)?.url  // imagem marcada como principal
-  ?? house.images?.[0]?.url                          // primeira do array de objectos
-  ?? house.image?.[0]                                // fallback para array de strings
-  ?? null;
+const resolveImage = (house) => {
+  // ✅ Campo directo que o backend devolve
+  if (house.primaryImageUrl) return house.primaryImageUrl;
+
+  // Fallbacks para outros formatos possíveis
+  if (Array.isArray(house.images) && house.images.length > 0) {
+    const first = house.images[0];
+    if (typeof first === "string") return first;
+    if (first?.url)       return first.url;
+    if (first?.image_url) return first.image_url;
+    if (first?.src)       return first.src;
+  }
+  if (Array.isArray(house.image) && house.image.length > 0) {
+    const first = house.image[0];
+    if (typeof first === "string") return first;
+    if (first?.url) return first.url;
+  }
+  if (house.image_url) return house.image_url;
+  if (house.thumbnail) return house.thumbnail;
+
+  return null;
+};
 
 const HouseCard = ({ house }) => {
   const navigate = useNavigate();
@@ -55,12 +67,11 @@ const HouseCard = ({ house }) => {
   const { getNightPrice } = useSeasonPricing();
   const { formatted } = getNightPrice(house.price);
 
-  const mainImage = getMainImage(house);
+  const imageUrl = resolveImage(house);
 
   const handleReserveClick = (e) => {
     e.preventDefault();
-    const target = `/casas/${house.id}#reserveid`;
-    navigate(target);
+    navigate(`/casas/${house.id}#reserveid`);
     setTimeout(() => {
       const el = document.getElementById("reserveid");
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -72,9 +83,9 @@ const HouseCard = ({ house }) => {
       <FavoriteButton house={house} />
 
       <Link to={`/casas/${house.id}`}>
-        {mainImage ? (
+        {imageUrl ? (
           <img
-            src={mainImage}
+            src={imageUrl}
             alt={house.location ?? "Casa"}
             className="w-full h-48 object-cover"
           />
