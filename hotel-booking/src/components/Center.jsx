@@ -107,7 +107,7 @@ const Center = () => {
     try {
       // GET /api/accommodations/destinations
       // Resposta esperada: [{ id: 1, nome: "Ponta de Ouro" }, ...]
-      const res  = await api.get("/accommodations/destinations");
+      const res  = await api.get("/accommodations");
       const data = res.data?.data ?? res.data ?? [];
       setDestinos(Array.isArray(data) ? data : []);
     } catch {

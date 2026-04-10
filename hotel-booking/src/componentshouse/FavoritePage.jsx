@@ -88,7 +88,7 @@ export default function FavoritesPage() {
 
                 <Link to={`/casas/${house.id}`}>
                   <img
-                    src={house.image[0]}
+                    src={house.imageUrl ?? house.image?.[0]}
                     alt={house.name}
                     className="w-full h-48 object-cover"
                   />
