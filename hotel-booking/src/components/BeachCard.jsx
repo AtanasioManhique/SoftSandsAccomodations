@@ -35,7 +35,8 @@ export const BeachCardSkeleton = () => (
 );
 // ─────────────────────────────────────────────────────────────
 
-// Resolve a imagem independentemente do formato que o backend devolve
+if (house.primaryImageUrl) return house.primaryImageUrl;
+
 const resolveImage = (house) => {
   // Formato: images: [{ url: "..." }, ...]
   if (Array.isArray(house.images) && house.images.length > 0) {
