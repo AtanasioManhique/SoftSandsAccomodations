@@ -96,9 +96,10 @@ const BeachCard = ({ house }) => {
             <span className="text-sm font-semibold text-gray-900">
               {formatCurrency(converted, currency)} / {t("favorites.night")}
             </span>
-            <span className="text-xs text-gray-400">
-              {house.max_guests ?? house.maxGuests} {t("favorites.guests") ?? "hósp."}
-            </span>
+                        <div className="flex items-center text-sm text-gray-700 gap-1">
+                          <img src={fullstar} alt="rating" className="w-4 h-4" />
+                          <span>{house.rating}</span>
+                        </div>
           </div>
         </div>
       </Link>

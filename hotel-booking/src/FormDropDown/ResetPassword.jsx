@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../services/api";
 import logo from "../assets/palmtree.png";
+import {useTranslation} from "react-i18next"
 
 // ── Indicador de força da password ───────────────────────────
 const getStrength = (password) => {
@@ -45,13 +46,13 @@ const StrengthBar = ({ password }) => {
     </div>
   );
 };
-// ─────────────────────────────────────────────────────────────
+
 
 export default function ResetPassword() {
   const [searchParams]          = useSearchParams();
   const navigate                = useNavigate();
   const token                   = searchParams.get("token");
-
+  const {t} = useTranslation();
   const [password, setPassword]           = useState("");
   const [confirm, setConfirm]             = useState("");
   const [showPassword, setShowPassword]   = useState(false);
@@ -62,6 +63,7 @@ export default function ResetPassword() {
   const [generalError, setGeneralError]   = useState(null);
   const [tokenInvalid, setTokenInvalid]   = useState(false);
 
+
   // Verifica se o token existe na URL
   useEffect(() => {
     if (!token) setTokenInvalid(true);
@@ -69,10 +71,10 @@ export default function ResetPassword() {
 
   const validate = () => {
     const errs = {};
-    if (!password)              errs.password = "Introduza a nova palavra-passe.";
-    else if (password.length < 8) errs.password = "A palavra-passe deve ter no mínimo 8 caracteres.";
-    if (!confirm)               errs.confirm  = "Confirme a nova palavra-passe.";
-    else if (password !== confirm) errs.confirm = "As palavras-passe não coincidem.";
+    if (!password)              errs.password = t("reset.new");
+    else if (password.length < 8) errs.password = t("reset.caractere");
+    if (!confirm)               errs.confirm  = t("reset.confirm");
+    else if (password !== confirm) errs.confirm = t("reset.reconfirm");
     return errs;
   };
 

@@ -40,11 +40,22 @@ export const HouseCardSkeleton = () => (
 );
 // ─────────────────────────────────────────────────────────────
 
+// ── Helper: extrai a URL da imagem principal seja qual for a estrutura ──
+// Backend devolve:  house.images = [{ url, is_primary, ... }]
+// Fallback antigo:  house.image  = ["url1", "url2"]
+const getMainImage = (house) =>
+  house.images?.find((img) => img.is_primary)?.url  // imagem marcada como principal
+  ?? house.images?.[0]?.url                          // primeira do array de objectos
+  ?? house.image?.[0]                                // fallback para array de strings
+  ?? null;
+
 const HouseCard = ({ house }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { getNightPrice } = useSeasonPricing();
   const { formatted } = getNightPrice(house.price);
+
+  const mainImage = getMainImage(house);
 
   const handleReserveClick = (e) => {
     e.preventDefault();
@@ -61,12 +72,21 @@ const HouseCard = ({ house }) => {
       <FavoriteButton house={house} />
 
       <Link to={`/casas/${house.id}`}>
-        {/* ── optional chaining — evita crash se image for undefined ── */}
-        <img
-          src={house.image?.[0]}
-          alt={house.location ?? "Casa"}
-          className="w-full h-48 object-cover"
-        />
+        {mainImage ? (
+          <img
+            src={mainImage}
+            alt={house.location ?? "Casa"}
+            className="w-full h-48 object-cover"
+          />
+        ) : (
+          <div className="w-full h-48 bg-gray-100 flex flex-col items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
+            </svg>
+            <span className="text-xs text-gray-300">Sem imagem</span>
+          </div>
+        )}
       </Link>
 
       <div className="p-4">

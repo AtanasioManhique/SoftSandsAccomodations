@@ -412,6 +412,13 @@
                 "criterio": "Não encontrámos casas com esses critérios. Tenta ajustar as datas, o número de hóspedes ou o destino.",
                 "see":"Ver todas as praias",
                 "beach": "Praias"
+      },
+      "reset": {
+                "new": "Introduza a nova palavra-passe.",
+                "caractere": "A palavra-passe deve ter no mínimo 8 caracteres.",
+                "confirm": "Confirme a nova palavra-passe.",
+                "reconfirm": "As palavras-passe não coincidem."
+
       }
                 
     }
