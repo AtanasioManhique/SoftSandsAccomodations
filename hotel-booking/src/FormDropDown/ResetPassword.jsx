@@ -46,13 +46,13 @@ const StrengthBar = ({ password }) => {
     </div>
   );
 };
-const {t} = useTranslation();
+
 
 export default function ResetPassword() {
   const [searchParams]          = useSearchParams();
   const navigate                = useNavigate();
   const token                   = searchParams.get("token");
-
+  const {t} = useTranslation();
   const [password, setPassword]           = useState("");
   const [confirm, setConfirm]             = useState("");
   const [showPassword, setShowPassword]   = useState(false);
@@ -62,6 +62,7 @@ export default function ResetPassword() {
   const [errors, setErrors]               = useState({});
   const [generalError, setGeneralError]   = useState(null);
   const [tokenInvalid, setTokenInvalid]   = useState(false);
+
 
   // Verifica se o token existe na URL
   useEffect(() => {

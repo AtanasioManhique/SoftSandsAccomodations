@@ -1,5 +1,5 @@
 // src/pages/HouseDetails.jsx
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import locationicon from "../assets/location.png";
 import GaleriaCasa from "./GaleriaCasa";
@@ -14,6 +14,21 @@ import { api } from "../services/api";
 import { formatCurrency, convertPrice } from "../context/utils/currency";
 import { useCurrency } from "../FormDropDown/CurrencyContext";
 
+// ── Mapa de ícones de comodidades (igual ao AdminCasas) ──────
+const AMENITY_ICONS = {
+  "Wi-Fi":               "/icons/wi-fi.png",
+  "Piscina Privada":     "/icons/swimming.png",
+  "Estacionamento":      "/icons/car.png",
+  "Cozinha Equipada":    "/icons/kitchen.png",
+  "Ar-Condicionado":     "/icons/air-conditioner.png",
+  "Ventilação":          "/icons/fan.png",
+  "Área de Churrasco":   "/icons/barbecue.png",
+  "Vista ao Mar":        "/icons/sunset.png",
+  "Sala Mobilada":       "/icons/sofa.png",
+  "Serviços de Limpeza": "/icons/clean.png",
+};
+
+// ── Utilitários de data ──────────────────────────────────────
 const parseLocalDate = (dateStr) => {
   if (!dateStr) return null;
   return new Date(dateStr + "T00:00:00");
@@ -34,6 +49,7 @@ const calcNights = (checkIn, checkOut) => {
   return Math.max(0, Math.round((end - start) / (1000 * 60 * 60 * 24)));
 };
 
+// ── Skeleton ──────────────────────────────────────────────────
 const SkeletonBox = ({ width = "100%", height = "16px", borderRadius = "6px", className = "" }) => (
   <div
     className={className}
@@ -78,6 +94,7 @@ const HouseDetailsSkeleton = () => (
   </div>
 );
 
+// ── Mapa ─────────────────────────────────────────────────────
 const MapEmbed = ({ lat, lng, locationName }) => {
   const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
   const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
@@ -114,6 +131,7 @@ const MapEmbed = ({ lat, lng, locationName }) => {
   );
 };
 
+// ── Normalização ─────────────────────────────────────────────
 const normalizeHouse = (raw) => {
   if (!raw) return null;
   const imageUrls = (raw.images ?? []).map((img) => img.url);
@@ -139,6 +157,7 @@ const normalizeHouse = (raw) => {
   };
 };
 
+// ── Componente principal ──────────────────────────────────────
 const HouseDetails = () => {
   const { id }        = useParams();
   const navigate      = useNavigate();
@@ -162,8 +181,7 @@ const HouseDetails = () => {
       try {
         const res = await api.get(`/accommodations/${id}`);
         const raw = res.data?.data?.accommodation ?? res.data?.data ?? res.data;
-        const normalized = normalizeHouse(raw);
-        if (mounted) setHouse(normalized);
+        if (mounted) setHouse(normalizeHouse(raw));
       } catch (err) {
         console.error("Erro ao carregar casa:", err);
       } finally {
@@ -176,24 +194,21 @@ const HouseDetails = () => {
 
   if (loadingHouse) return <HouseDetailsSkeleton />;
   if (!house) return (
-    <div className="py-28 px-4 text-center text-gray-500">
-      Casa não encontrada.
-    </div>
+    <div className="py-28 px-4 text-center text-gray-500">Casa não encontrada.</div>
   );
 
-  const maxGuests = house.maxGuests || 1;
-  const lat = Number(house.latitude);
-  const lng = Number(house.longitude);
+  const maxGuests      = house.maxGuests || 1;
+  const lat            = Number(house.latitude);
+  const lng            = Number(house.longitude);
   const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
 
   const nightPriceConverted = convertPrice(house.pricePerNight, "ZAR", currency, rates);
-  const nightFormatted = formatCurrency(nightPriceConverted, currency);
-
-  const nights = calcNights(checkIn, checkOut);
-  const totalZAR = nights * (house.pricePerNight ?? 0);
-  const totalConverted = convertPrice(totalZAR, "ZAR", currency, rates);
-  const totalFormatted = formatCurrency(totalConverted, currency);
-  const hasDates = Boolean(checkIn && checkOut && nights > 0);
+  const nightFormatted      = formatCurrency(nightPriceConverted, currency);
+  const nights              = calcNights(checkIn, checkOut);
+  const totalZAR            = nights * (house.pricePerNight ?? 0);
+  const totalConverted      = convertPrice(totalZAR, "ZAR", currency, rates);
+  const totalFormatted      = formatCurrency(totalConverted, currency);
+  const hasDates            = Boolean(checkIn && checkOut && nights > 0);
 
   const handleReserve = async () => {
     if (!user) { openLogin(); return; }
@@ -202,44 +217,38 @@ const HouseDetails = () => {
     if (guests > maxGuests) { alert(`Esta casa suporta no máximo ${maxGuests} hóspedes.`); return; }
 
     try {
-      const payload = {
-        accommodationId: house.id,
-        checkIn,
-        checkOut,
-        guests,
-      };
-      const res = await api.post("/bookings", payload);
+      const payload = { accommodationId: house.id, checkIn, checkOut, guests };
+      const res     = await api.post("/bookings", payload);
       const booking = res.data?.data?.booking ?? res.data?.data ?? res.data;
       const bookingId = booking?.id;
 
-      const state = {
-        ...booking,
-        id:              bookingId,
-        accommodationId: house.id,
-        houseName:       house.name,
-        images:          house.image,
-        startDate:       checkIn,
-        endDate:         checkOut,
-        guests,
-        totalPrice:      booking?.totalPrice ?? totalZAR,
-        currency:        booking?.currency ?? "ZAR",
-        status:          booking?.status ?? "pending_payment",
-      };
-
-      navigate(`/pagamento/${bookingId}`, { state });
+      navigate(`/pagamento/${bookingId}`, {
+        state: {
+          ...booking,
+          id:              bookingId,
+          accommodationId: house.id,
+          houseName:       house.name,
+          images:          house.image,
+          startDate:       checkIn,
+          endDate:         checkOut,
+          guests,
+          totalPrice:      booking?.totalPrice ?? totalZAR,
+          currency:        booking?.currency   ?? "ZAR",
+          status:          booking?.status     ?? "pending_payment",
+        },
+      });
     } catch (err) {
       console.error("Erro ao criar reserva:", err.response?.data ?? err);
-      const msg = err.response?.data?.error?.message ?? "Erro ao criar reserva. Tenta novamente.";
-      alert(msg);
+      alert(err.response?.data?.error?.message ?? "Erro ao criar reserva. Tenta novamente.");
     }
   };
 
-  const hasReviews = house.reviews && Array.isArray(house.reviews) && house.reviews.length > 0;
+  const hasReviews = Array.isArray(house.reviews) && house.reviews.length > 0;
 
   return (
     <div className="py-28 px-4 md:px-16 lg:px-24 xl:px-32 space-y-10">
 
-      {/* Nome + localização + specs */}
+      {/* Nome + localização + barra de specs */}
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{house.name}</h1>
         <div className="flex items-center gap-1 text-gray-600">
@@ -300,14 +309,38 @@ const HouseDetails = () => {
       {/* Galeria */}
       <GaleriaCasa casa={house} />
 
-      {/* Comodidades */}
+      {/* Comodidades com ícones */}
       {house.amenities && house.amenities.length > 0 && (
         <div className="border-b pb-8">
           <h2 className="text-xl font-semibold mb-6">O que esta casa oferece:</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {house.amenities.map((amenity, index) => (
-              <div key={index} className="flex items-center gap-3">
-                <span className="text-gray-700 text-sm sm:text-base">✓ {amenity}</span>
+              <div
+                key={index}
+                className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3"
+              >
+                {AMENITY_ICONS[amenity] ? (
+                  <div className="w-9 h-9 rounded-full bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm">
+                    <img
+                      src={AMENITY_ICONS[amenity]}
+                      alt={amenity}
+                      className="w-5 h-5 object-contain"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "flex";
+                      }}
+                    />
+                    <span
+                      className="text-gray-400 text-base hidden items-center justify-center"
+                      aria-hidden="true"
+                    >✓</span>
+                  </div>
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm text-gray-400">
+                    ✓
+                  </div>
+                )}
+                <span className="text-gray-700 text-sm font-medium leading-tight">{amenity}</span>
               </div>
             ))}
           </div>
@@ -336,14 +369,20 @@ const HouseDetails = () => {
             <div className="grid grid-cols-2 divide-x">
               <div className="p-2">
                 <label className="text-xs font-semibold uppercase text-gray-600">{t("center.entrydate")}</label>
-                <div onClick={() => { setActiveField("start"); datepickerRef.current?.setOpen(true); }} className="flex items-center justify-between cursor-pointer mt-1">
+                <div
+                  onClick={() => { setActiveField("start"); datepickerRef.current?.setOpen(true); }}
+                  className="flex items-center justify-between cursor-pointer mt-1"
+                >
                   <span className="text-sm">{checkIn ? parseLocalDate(checkIn).toLocaleDateString() : "dd/mm/yyyy"}</span>
                   <Calendar size={16} />
                 </div>
               </div>
               <div className="p-2">
                 <label className="text-xs font-semibold uppercase text-gray-600">{t("center.outdate")}</label>
-                <div onClick={() => { setActiveField("end"); datepickerRef.current?.setOpen(true); }} className="flex items-center justify-between cursor-pointer mt-1">
+                <div
+                  onClick={() => { setActiveField("end"); datepickerRef.current?.setOpen(true); }}
+                  className="flex items-center justify-between cursor-pointer mt-1"
+                >
                   <span className="text-sm">{checkOut ? parseLocalDate(checkOut).toLocaleDateString() : "dd/mm/yyyy"}</span>
                   <Calendar size={16} />
                 </div>
