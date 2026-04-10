@@ -35,12 +35,35 @@ export const BeachCardSkeleton = () => (
 );
 // ─────────────────────────────────────────────────────────────
 
+// Resolve a imagem independentemente do formato que o backend devolve
+const resolveImage = (house) => {
+  // Formato: images: [{ url: "..." }, ...]
+  if (Array.isArray(house.images) && house.images.length > 0) {
+    const first = house.images[0];
+    if (typeof first === "string") return first;
+    if (first?.url) return first.url;
+    if (first?.image_url) return first.image_url;
+    if (first?.src) return first.src;
+  }
+  // Formato: image: ["url", ...]
+  if (Array.isArray(house.image) && house.image.length > 0) {
+    const first = house.image[0];
+    if (typeof first === "string") return first;
+    if (first?.url) return first.url;
+  }
+  // Formato: image_url: "..."
+  if (house.image_url) return house.image_url;
+  // Formato: thumbnail: "..."
+  if (house.thumbnail) return house.thumbnail;
+
+  return null;
+};
+
 const BeachCard = ({ house }) => {
   const { t } = useTranslation();
   const { currency, rates } = useCurrency();
 
-  // Imagem: backend retorna images array com objectos {url, is_primary}
-  const imageUrl = house.images?.[0]?.url ?? house.image?.[0] ?? null;
+  const imageUrl = resolveImage(house);
 
   // Preço: backend guarda tudo em ZAR
   const priceZAR = house.price_per_night ?? house.pricePerNight ?? 0;
