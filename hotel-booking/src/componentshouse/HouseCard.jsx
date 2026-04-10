@@ -5,7 +5,8 @@ import fullstar from "../assets/fullstar.png";
 import locationicon from "../assets/location.png";
 import FavoriteButton from "./FavoriteButton";
 import { useTranslation } from "react-i18next";
-import { useSeasonPricing } from "../context/seasonPricing.js";
+import { formatCurrency, convertPrice } from "../context/utils/currency";
+import { useCurrency } from "../FormDropDown/CurrencyContext";
 
 const shimmerStyle = {
   background: "linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%)",
@@ -64,10 +65,12 @@ const resolveImage = (house) => {
 const HouseCard = ({ house }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { getNightPrice } = useSeasonPricing();
-  const { formatted } = getNightPrice(house.price);
+  const { currency, rates } = useCurrency();
 
   const imageUrl = resolveImage(house);
+
+  const priceZAR = house.price_per_night ?? house.pricePerNight ?? 0;
+  const converted = convertPrice(priceZAR, "ZAR", currency, rates);
 
   const handleReserveClick = (e) => {
     e.preventDefault();
@@ -108,7 +111,7 @@ const HouseCard = ({ house }) => {
 
         <div className="flex items-center justify-between mt-4">
           <span className="text-sm font-semibold text-gray-900">
-            {formatted} / {t("favorites.night")}
+            {formatCurrency(converted, currency)} / {t("favorites.night")}
           </span>
           <div className="flex items-center text-sm text-gray-700 gap-1">
             <img src={fullstar} alt="rating" className="w-4 h-4" />

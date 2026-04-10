@@ -33,9 +33,7 @@ export const BeachCardSkeleton = () => (
     </div>
   </>
 );
-// ─────────────────────────────────────────────────────────────
-
-if (house.primaryImageUrl) return house.primaryImageUrl;
+// ─────────────────────────────────────────────────────────────;
 
 const resolveImage = (house) => {
 
