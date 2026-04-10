@@ -152,7 +152,6 @@ const AdminCasas = () => {
     const locationFinal = novaPraia.trim() || form.location;
     if (!locationFinal)     { alert("Seleciona uma praia ou escreve o nome de uma nova."); return; }
     if (!form.name.trim())  { alert("O nome da casa é obrigatório."); return; }
-    if (!form.pricePerNight){ alert("O preço por noite é obrigatório."); return; }
 
     setSaving(true);
 
@@ -161,7 +160,7 @@ const AdminCasas = () => {
       description:    form.description.trim(),
       location:       locationFinal,
       beachName:      form.beachName.trim() || null,
-      pricePerNight:  Number(form.pricePerNight),
+      pricePerNight:  form.lowSeasonPrice ? Number(form.lowSeasonPrice) : 0,
       maxGuests:      Number(form.maxGuests),
       bedrooms:       Number(form.bedrooms),
       bathrooms:      Number(form.bathrooms),
@@ -232,7 +231,7 @@ const AdminCasas = () => {
     (c) => !search || c.location?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const getPrice = (casa) => casa.price_per_night ?? casa.pricePerNight;
+  const getPrice = (casa) => casa.low_season_price ?? casa.lowSeasonPrice ?? casa.price_per_night ?? casa.pricePerNight;
   const getGuests = (casa) => casa.max_guests ?? casa.maxGuests;
   const getImage = (casa) => casa.images?.[0]?.url ?? casa.image?.[0];
 
@@ -389,47 +388,32 @@ const AdminCasas = () => {
               {/* Preços */}
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Preços (ZAR)</label>
-                <p className="text-xs text-gray-400 mt-0.5 mb-3">Define o preço base e os preços sazonais opcionais.</p>
-
-                {/* Preço base — destaque */}
-                <div className="mb-3">
-                  <p className="text-xs text-gray-500 mb-1 font-medium">Preço base por noite *</p>
-                  <input
-                    type="number" min={0} value={form.pricePerNight}
-                    onChange={(e) => setForm((p) => ({ ...p, pricePerNight: e.target.value }))}
-                    placeholder="ex: 3000"
-                    required
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
-                  />
-                </div>
-
-                {/* 3 épocas em grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-3">
-                    <p className="text-xs font-semibold text-blue-600 mb-1">Época baixa</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+                  <div className="border border-gray-200 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-gray-600 mb-1">Época baixa</p>
                     <input
                       type="number" min={0} value={form.lowSeasonPrice}
                       onChange={(e) => setForm((p) => ({ ...p, lowSeasonPrice: e.target.value }))}
                       placeholder="ex: 2500"
-                      className="w-full border border-blue-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
                     />
                   </div>
-                  <div className="bg-orange-50 border border-orange-100 rounded-xl p-3">
-                    <p className="text-xs font-semibold text-orange-500 mb-1">Época alta</p>
+                  <div className="border border-gray-200 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-gray-600 mb-1">Época alta</p>
                     <input
                       type="number" min={0} value={form.highSeasonPrice}
                       onChange={(e) => setForm((p) => ({ ...p, highSeasonPrice: e.target.value }))}
                       placeholder="ex: 5000"
-                      className="w-full border border-orange-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-orange-300 bg-white"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
                     />
                   </div>
-                  <div className="bg-red-50 border border-red-100 rounded-xl p-3">
-                    <p className="text-xs font-semibold text-red-500 mb-1">Época de pico</p>
+                  <div className="border border-gray-200 rounded-xl p-3">
+                    <p className="text-xs font-semibold text-gray-600 mb-1">Época de pico</p>
                     <input
                       type="number" min={0} value={form.peakSeasonPrice}
                       onChange={(e) => setForm((p) => ({ ...p, peakSeasonPrice: e.target.value }))}
                       placeholder="ex: 8000"
-                      className="w-full border border-red-100 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-red-300 bg-white"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white"
                     />
                   </div>
                 </div>
@@ -532,10 +516,9 @@ const AdminCasas = () => {
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
                   {editingId ? "Adicionar imagens" : "Imagens"}
                 </label>
-                <p className="text-xs text-gray-400 mt-0.5 mb-3">Máximo 5 imagens, 5MB cada. Formatos: JPG, PNG, WebP.</p>
 
                 {/* Grelha de previews + botão de adicionar */}
-                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-3">
                   {imagesToUpload.map((file, i) => (
                     <div key={i} className="relative group aspect-square">
                       <img
@@ -558,38 +541,35 @@ const AdminCasas = () => {
                     </div>
                   ))}
 
-                  {/* Botão de adicionar — visível se ainda há espaço */}
-                  {imagesToUpload.length < 5 && (
-                    <div
-                      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                      onDragLeave={() => setIsDragging(false)}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        setIsDragging(false);
-                        const dropped = Array.from(e.dataTransfer.files)
-                          .filter((f) => f.type.startsWith("image/"))
-                          .slice(0, 5 - imagesToUpload.length);
-                        setImagesToUpload((prev) => [...prev, ...dropped].slice(0, 5));
-                      }}
-                      onClick={() => document.getElementById("image-upload-input").click()}
-                      className={`
-                        aspect-square flex flex-col items-center justify-center gap-1
-                        rounded-xl border-2 border-dashed cursor-pointer
-                        transition-all duration-150 select-none
-                        ${isDragging
-                          ? "border-blue-400 bg-blue-50"
-                          : "border-gray-200 bg-gray-100 hover:border-gray-300 hover:bg-gray-150"
-                        }
-                      `}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                      </svg>
-                      <span className="text-[10px] text-gray-400 leading-tight text-center px-1">
-                        Adicionar
-                      </span>
-                    </div>
-                  )}
+                  {/* Botão de adicionar — sempre visível */}
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDragging(false);
+                      const dropped = Array.from(e.dataTransfer.files)
+                        .filter((f) => f.type.startsWith("image/"));
+                      setImagesToUpload((prev) => [...prev, ...dropped]);
+                    }}
+                    onClick={() => document.getElementById("image-upload-input").click()}
+                    className={`
+                      aspect-square flex flex-col items-center justify-center gap-1
+                      rounded-xl border-2 border-dashed cursor-pointer
+                      transition-all duration-150 select-none
+                      ${isDragging
+                        ? "border-blue-400 bg-blue-50"
+                        : "border-gray-200 bg-gray-100 hover:border-gray-300 hover:bg-gray-150"
+                      }
+                    `}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span className="text-[10px] text-gray-400 leading-tight text-center px-1">
+                      Adicionar
+                    </span>
+                  </div>
                 </div>
 
                 <p className="text-xs text-gray-400 mt-2">
@@ -603,8 +583,8 @@ const AdminCasas = () => {
                   multiple
                   className="hidden"
                   onChange={(e) => {
-                    const files = Array.from(e.target.files).slice(0, 5 - imagesToUpload.length);
-                    setImagesToUpload((prev) => [...prev, ...files].slice(0, 5));
+                    const files = Array.from(e.target.files);
+                    setImagesToUpload((prev) => [...prev, ...files]);
                   }}
                 />
               </div>
