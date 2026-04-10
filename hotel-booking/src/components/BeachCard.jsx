@@ -35,9 +35,9 @@ export const BeachCardSkeleton = () => (
 );
 // ─────────────────────────────────────────────────────────────
 
-if (house.primaryImageUrl) return house.primaryImageUrl;
-
+// ✅ CORRIGIDO: linha "if (house.primaryImageUrl)" estava solta fora da função
 const resolveImage = (house) => {
+  if (house.primaryImageUrl) return house.primaryImageUrl;
   // Formato: images: [{ url: "..." }, ...]
   if (Array.isArray(house.images) && house.images.length > 0) {
     const first = house.images[0];
@@ -97,10 +97,10 @@ const BeachCard = ({ house }) => {
             <span className="text-sm font-semibold text-gray-900">
               {formatCurrency(converted, currency)} / {t("favorites.night")}
             </span>
-                        <div className="flex items-center text-sm text-gray-700 gap-1">
-                          <img src={fullstar} alt="rating" className="w-4 h-4" />
-                          <span>{house.rating}</span>
-                        </div>
+            <div className="flex items-center text-sm text-gray-700 gap-1">
+              <img src={fullstar} alt="rating" className="w-4 h-4" />
+              <span>{house.rating}</span>
+            </div>
           </div>
         </div>
       </Link>

@@ -1,5 +1,6 @@
 // src/admin/AdminCasas.jsx
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminLayout from "./adminlayout";
 import { api } from "../services/api";
 import { Plus, Pencil, Trash2, X, MapPin, Search } from "lucide-react";
@@ -233,7 +234,13 @@ const AdminCasas = () => {
 
   const getPrice = (casa) => casa.low_season_price ?? casa.lowSeasonPrice ?? casa.price_per_night ?? casa.pricePerNight;
   const getGuests = (casa) => casa.max_guests ?? casa.maxGuests;
-  const getImage = (casa) => casa.images?.[0]?.url ?? casa.image?.[0];
+
+  // ✅ CORRIGIDO: agora usa primaryImageUrl como primeiro fallback
+  const getImage = (casa) =>
+    casa.primaryImageUrl ??
+    casa.images?.[0]?.url ??
+    casa.images?.[0]?.image_url ??
+    casa.image?.[0];
 
   return (
     <AdminLayout>
@@ -270,45 +277,64 @@ const AdminCasas = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((casa) => (
               <div key={casa.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="h-36 bg-gray-100 flex items-center justify-center relative">
-                  {getImage(casa) ? (
-                    <img src={getImage(casa)} alt={casa.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex flex-col items-center gap-1 text-gray-300">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
-                      </svg>
-                      <span className="text-xs text-gray-300">Sem imagem</span>
-                    </div>
-                  )}
-                  <div className="absolute top-2 right-2 flex gap-1.5">
-                    <button onClick={() => openEdit(casa)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
+
+                {/* ✅ CORRIGIDO: imagem clicável que navega para detalhes da casa */}
+                <Link to={`/casas/${casa.id}`} onClick={() => scrollTo(0, 0)}>
+                  <div className="h-36 bg-gray-100 flex items-center justify-center relative">
+                    {getImage(casa) ? (
+                      <img src={getImage(casa)} alt={casa.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-1 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
+                        </svg>
+                        <span className="text-xs text-gray-300">Sem imagem</span>
+                      </div>
+                    )}
+                  </div>
+                </Link>
+
+                {/* Botões de editar/apagar — fora do Link para não interferir */}
+                <div className="relative">
+                  <div className="absolute -top-[108px] right-2 flex gap-1.5 z-10">
+                    <button
+                      onClick={() => openEdit(casa)}
+                      className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm"
+                    >
                       <Pencil size={13} className="text-blue-600" />
                     </button>
-                    <button onClick={() => setDeleteConfirm(casa.id)} className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm">
+                    <button
+                      onClick={() => setDeleteConfirm(casa.id)}
+                      className="p-1.5 bg-white/90 rounded-lg hover:bg-white transition shadow-sm"
+                    >
                       <Trash2 size={13} className="text-red-500" />
                     </button>
                   </div>
                 </div>
-                <div className="p-4">
-                  <p className="text-sm font-semibold text-gray-900 truncate">{casa.name}</p>
-                  <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
-                    <MapPin size={11} /> {casa.location}
+
+                {/* ✅ Info também clicável */}
+                <Link to={`/casas/${casa.id}`} onClick={() => scrollTo(0, 0)}>
+                  <div className="p-4">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{casa.name}</p>
+                    <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                      <MapPin size={11} /> {casa.location}
+                    </div>
+                    <div className="flex flex-col gap-0.5 mt-2">
+                      <span className="text-blue-600 font-bold text-sm">
+                        {formatCurrency(getPrice(casa))} / noite
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                      <span>{getGuests(casa)} hósp.</span>
+                      <span>·</span>
+                      <span>{casa.bedrooms} quarto{casa.bedrooms !== 1 ? "s" : ""}</span>
+                      <span>·</span>
+                      <span>{casa.bathrooms} wc</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-0.5 mt-2">
-                    <span className="text-blue-600 font-bold text-sm">
-                      {formatCurrency(getPrice(casa))} / noite
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                    <span>{getGuests(casa)} hósp.</span>
-                    <span>·</span>
-                    <span>{casa.bedrooms} quarto{casa.bedrooms !== 1 ? "s" : ""}</span>
-                    <span>·</span>
-                    <span>{casa.bathrooms} wc</span>
-                  </div>
-                </div>
+                </Link>
+
               </div>
             ))}
             {filtered.length === 0 && (
@@ -517,7 +543,6 @@ const AdminCasas = () => {
                   {editingId ? "Adicionar imagens" : "Imagens"}
                 </label>
 
-                {/* Grelha de previews + botão de adicionar */}
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-3">
                   {imagesToUpload.map((file, i) => (
                     <div key={i} className="relative group aspect-square">
@@ -541,7 +566,6 @@ const AdminCasas = () => {
                     </div>
                   ))}
 
-                  {/* Botão de adicionar — sempre visível */}
                   <div
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                     onDragLeave={() => setIsDragging(false)}
