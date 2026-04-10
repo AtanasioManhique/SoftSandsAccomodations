@@ -123,6 +123,7 @@ const AdminCasas = () => {
 
       await api.post(`/accommodations/${accommodationId}/images`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        timeout: 60000, // 60 segundos para uploads grandes
       });
 
       setImagesToUpload([]);
