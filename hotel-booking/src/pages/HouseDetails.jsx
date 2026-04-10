@@ -14,7 +14,6 @@ import { api } from "../services/api";
 import { formatCurrency, convertPrice } from "../context/utils/currency";
 import { useCurrency } from "../FormDropDown/CurrencyContext";
 
-// ── Utilitários de data ──────────────────────────────────────
 const parseLocalDate = (dateStr) => {
   if (!dateStr) return null;
   return new Date(dateStr + "T00:00:00");
@@ -35,7 +34,6 @@ const calcNights = (checkIn, checkOut) => {
   return Math.max(0, Math.round((end - start) / (1000 * 60 * 60 * 24)));
 };
 
-// ── Skeleton ──────────────────────────────────────────────────
 const SkeletonBox = ({ width = "100%", height = "16px", borderRadius = "6px", className = "" }) => (
   <div
     className={className}
@@ -80,7 +78,6 @@ const HouseDetailsSkeleton = () => (
   </div>
 );
 
-// ── Mapa ─────────────────────────────────────────────────────
 const MapEmbed = ({ lat, lng, locationName }) => {
   const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
   const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
@@ -117,14 +114,9 @@ const MapEmbed = ({ lat, lng, locationName }) => {
   );
 };
 
-// ── Normalização da casa do backend ─────────────────────────
 const normalizeHouse = (raw) => {
   if (!raw) return null;
-
-  // Backend retorna images: [{ url, isPrimary, ... }]
-  // Frontend espera image: ["url1", "url2"]
   const imageUrls = (raw.images ?? []).map((img) => img.url);
-
   return {
     id:               raw.id,
     name:             raw.name,
@@ -148,10 +140,10 @@ const normalizeHouse = (raw) => {
 };
 
 const HouseDetails = () => {
-  const { id }       = useParams();
-  const navigate     = useNavigate();
-  const { t }        = useTranslation();
-  const { user }     = useAuth();
+  const { id }        = useParams();
+  const navigate      = useNavigate();
+  const { t }         = useTranslation();
+  const { user }      = useAuth();
   const { openLogin } = useLoginModal();
   const { currency, rates } = useCurrency();
 
@@ -165,12 +157,10 @@ const HouseDetails = () => {
 
   useEffect(() => {
     let mounted = true;
-
     const loadHouse = async () => {
       setLoadingHouse(true);
       try {
         const res = await api.get(`/accommodations/${id}`);
-        // Backend retorna { data: { accommodation: {...} } }
         const raw = res.data?.data?.accommodation ?? res.data?.data ?? res.data;
         const normalized = normalizeHouse(raw);
         if (mounted) setHouse(normalized);
@@ -180,7 +170,6 @@ const HouseDetails = () => {
         if (mounted) setLoadingHouse(false);
       }
     };
-
     loadHouse();
     return () => { mounted = false; };
   }, [id]);
@@ -197,11 +186,9 @@ const HouseDetails = () => {
   const lng = Number(house.longitude);
   const hasCoordinates = Number.isFinite(lat) && Number.isFinite(lng);
 
-  // Preço por noite na moeda do utilizador
   const nightPriceConverted = convertPrice(house.pricePerNight, "ZAR", currency, rates);
   const nightFormatted = formatCurrency(nightPriceConverted, currency);
 
-  // Total
   const nights = calcNights(checkIn, checkOut);
   const totalZAR = nights * (house.pricePerNight ?? 0);
   const totalConverted = convertPrice(totalZAR, "ZAR", currency, rates);
@@ -217,8 +204,8 @@ const HouseDetails = () => {
     try {
       const payload = {
         accommodationId: house.id,
-        checkIn:     checkIn,
-        checkOut:    checkOut,
+        checkIn,
+        checkOut,
         guests,
       };
       const res = await api.post("/bookings", payload);
@@ -252,24 +239,66 @@ const HouseDetails = () => {
   return (
     <div className="py-28 px-4 md:px-16 lg:px-24 xl:px-32 space-y-10">
 
-      {/* Nome + localização */}
+      {/* Nome + localização + specs */}
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{house.name}</h1>
         <div className="flex items-center gap-1 text-gray-600">
           <img src={locationicon} className="w-4 h-4" alt="location" />
           <span>{house.location}{house.beachName ? ` · ${house.beachName}` : ""}</span>
         </div>
+
+        {/* Barra de specs estilo Airbnb */}
+        <div className="flex items-stretch w-fit mt-3 bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden divide-x divide-gray-100">
+
+          <div className="flex items-center gap-3 px-5 py-3">
+            <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+              <svg className="w-[18px] h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Hóspedes</p>
+              <p className="text-[15px] font-semibold text-gray-900">{house.maxGuests}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 px-5 py-3">
+            <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+              <svg className="w-[18px] h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Quartos</p>
+              <p className="text-[15px] font-semibold text-gray-900">{house.bedrooms}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 px-5 py-3">
+            <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+              <svg className="w-[18px] h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12h16M4 6h7a5 5 0 0 1 5 5v1H4V6z"/>
+                <path d="M4 12v6"/>
+                <path d="M20 12v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/>
+                <line x1="8" y1="18" x2="8" y2="21"/>
+                <line x1="16" y1="18" x2="16" y2="21"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Casas de banho</p>
+              <p className="text-[15px] font-semibold text-gray-900">{house.bathrooms}</p>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       {/* Galeria */}
       <GaleriaCasa casa={house} />
-
-      {/* Specs */}
-      <div className="flex flex-wrap gap-6 text-gray-700 border-b pb-6">
-        <div><strong>{house.maxGuests}</strong> hóspedes</div>
-        <div><strong>{house.bedrooms}</strong> quarto{house.bedrooms !== 1 ? "s" : ""}</div>
-        <div><strong>{house.bathrooms}</strong> casa{house.bathrooms !== 1 ? "s" : ""} de banho</div>
-      </div>
 
       {/* Comodidades */}
       {house.amenities && house.amenities.length > 0 && (
@@ -296,7 +325,6 @@ const HouseDetails = () => {
       {/* Reserva + Mapa */}
       <div id="reserveid" className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
 
-        {/* Formulário de reserva */}
         <div className="bg-white p-4 rounded-xl shadow-md border">
           <div className="font-bold text-xl mb-3">
             {hasDates
@@ -339,7 +367,6 @@ const HouseDetails = () => {
           </button>
         </div>
 
-        {/* Mapa */}
         {hasCoordinates ? (
           <MapEmbed lat={lat} lng={lng} locationName={house.location} />
         ) : (
@@ -364,14 +391,11 @@ const HouseDetails = () => {
         onChange={(date) => {
           if (!date) return;
           const formatted = formatLocalDate(date);
-
           if (activeField === "start") {
             setCheckIn(formatted);
             if (checkOut && formatted > checkOut) setCheckOut("");
           } else {
-            if (!checkIn || formatted >= checkIn) {
-              setCheckOut(formatted);
-            }
+            if (!checkIn || formatted >= checkIn) setCheckOut(formatted);
           }
           datepickerRef.current?.setOpen(false);
         }}
