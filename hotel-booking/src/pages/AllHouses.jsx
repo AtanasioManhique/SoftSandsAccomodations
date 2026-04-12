@@ -67,6 +67,8 @@ const AllHouses = () => {
           startDate: startDate     || undefined,
           endDate:   endDate       || undefined,
           guests:    guestsParam   || undefined,
+
+          limit: 100,
         },
       });
       const data = res.data?.data ?? res.data;

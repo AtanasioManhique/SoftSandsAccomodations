@@ -89,13 +89,10 @@ const Center = () => {
 
   const loadMaxCapacity = async () => {
     try {
-      // GET /api/accommodations/max-capacity
-      // Resposta esperada: { maxCapacity: 16 }
       const res = await api.get("/accommodations", { params: { limit: 100}});
       const data = res.data?.data ?? [];
       const max = Math.max(...data.map((h) => h.max_guests ?? h.maxGuests ?? 0), 1);
       setMaxCapacity(max);
-      setMaxCapacity(res.data.maxCapacity);
     } catch(err) {
       // fallback — valor por omissão
       console.error("Erro ao carregar capacidade máxima:", err.response?.data ?? err.message ?? err);
@@ -105,26 +102,13 @@ const Center = () => {
 
   const loadDestinos = async () => {
     try {
-      // GET /api/accommodations/destinations
-      // Resposta esperada: [{ id: 1, nome: "Ponta de Ouro" }, ...]
-      const res  = await api.get("/accommodations");
-      const data = res.data?.data ?? res.data ?? [];
-      setDestinos(Array.isArray(data) ? data : []);
-    } catch {
-      // fallback — extrai destinos a partir de /accommodations
-      try {
-        const res   = await api.get("/accommodations");
-        const data  = res.data?.data ?? res.data ?? [];
-        const casas = Array.isArray(data) ? data : [];
-        const map   = {};
-        casas.forEach((c, i) => {
-          if (!c.location || map[c.location]) return;
-          map[c.location] = { id: i + 1, nome: c.location };
-        });
-        setDestinos(Object.values(map));
-      } catch {
-        setDestinos([]);
-      }
+      const res  = await api.get("/accommodations/destinations");
+      const data = res.data?.data?.destinations ?? [];
+
+      setDestinos(data.map((d, i) => ({ id: i + 1, nome: d.location })));
+    } catch (err) {
+      console.error("Erro ao carregar destinos",err);
+      setDestinos([]);
     } finally {
       setLoading(false);
     }
@@ -162,7 +146,7 @@ const Center = () => {
 
   
     navigate(
-      `/pesquisa?search=${encodeURIComponent(selectedDestino)}&startDate=${formatLocalDate(startDate)}&endDate=${formatLocalDate(endDate)}&guests=${guests}`
+      `/praias?search=${encodeURIComponent(selectedDestino)}&startDate=${formatLocalDate(startDate)}&endDate=${formatLocalDate(endDate)}&guests=${guests}`
     );
   };
 

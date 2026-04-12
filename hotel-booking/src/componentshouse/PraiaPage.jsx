@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { api } from "../services/api";
 import HouseCard, { HouseCardSkeleton } from "../componentshouse/HouseCard";
 import { useTranslation } from "react-i18next";
 
@@ -36,14 +37,13 @@ export default function PraiaPage() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    fetch("/data/casas.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const filtered = data.filter(
-          (house) => house.location.toLowerCase() === praia.toLowerCase()
-        );
-        setHouses(filtered);
-      })
+    const loadHouses = async () => {
+      const res = await api.get("/accommodations", { params: { location: praia } });
+      const data = res.data?.data ?? [];
+      setHouses(data);
+    };
+
+    loadHouses()
       .catch((err) => console.error("Erro ao carregar casas:", err))
       .finally(() => setLoading(false));
   }, [praia]);

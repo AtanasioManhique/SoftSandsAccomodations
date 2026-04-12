@@ -35,9 +35,10 @@ export const BeachCardSkeleton = () => (
 );
 // ─────────────────────────────────────────────────────────────
 
-if (house.primaryImageUrl) return house.primaryImageUrl;
 
 const resolveImage = (house) => {
+  
+  if (house.primaryImageUrl) return house.primaryImageUrl;
   // Formato: images: [{ url: "..." }, ...]
   if (Array.isArray(house.images) && house.images.length > 0) {
     const first = house.images[0];

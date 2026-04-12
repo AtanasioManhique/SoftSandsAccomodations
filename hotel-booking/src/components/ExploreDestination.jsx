@@ -128,7 +128,7 @@ const ExploreDestination = () => {
                     loading="lazy"
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-center py-3 text-lg font-semibold">
-                    {destino.location} ({destino.accomodationCount})
+                    {destino.location} ({destino.accommodationCount})
                   </div>
                 </Link>
               </SwiperSlide>
