@@ -172,6 +172,8 @@ const HouseDetails = () => {
   const [checkOut, setCheckOut]         = useState("");
   const [guests, setGuests]             = useState(1);
   const [activeField, setActiveField]   = useState(null);
+  const [hasBooking, setHasBooking]     = useState(false);
+  const [loadingBooking, setLoadingBooking] = useState(false);
   const datepickerRef                   = useRef(null);
 
   useEffect(() => {
@@ -191,6 +193,31 @@ const HouseDetails = () => {
     loadHouse();
     return () => { mounted = false; };
   }, [id]);
+
+  useEffect(() => {
+    if (!user || !id) return;
+
+    const checkBooking = async () => {
+      setLoadingBooking(true);
+      try {
+        const res = await api.get("/bookings");
+        const bookings = res.data?.data?.bookings ?? res.data?.data ?? res.data ?? [];
+        const confirmed = bookings.some(
+          (b) =>
+            String(b.accommodationId) === String(id) &&
+            ["confirmed", "completed"].includes(b.status)
+        );
+        setHasBooking(confirmed);
+      } catch (err) {
+        console.error("Erro ao verificar reservas:", err);
+        setHasBooking(false);
+      } finally {
+        setLoadingBooking(false);
+      }
+    };
+
+    checkBooking();
+  }, [user, id]);
 
   if (loadingHouse) return <HouseDetailsSkeleton />;
   if (!house) return (
@@ -406,21 +433,68 @@ const HouseDetails = () => {
           </button>
         </div>
 
-        {hasCoordinates ? (
+        {/* Mapa — só visível para quem tem reserva confirmada */}
+        {loadingBooking ? (
+          <div
+            className="flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200"
+            style={{ minHeight: "300px" }}
+          >
+            <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+          </div>
+        ) : !user ? (
+          <div
+            className="flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200"
+            style={{ minHeight: "300px" }}
+          >
+            <div className="text-center px-6">
+              <p className="text-2xl mb-3">🔒</p>
+              <p className="text-gray-800 font-semibold mb-1">Localização reservada</p>
+              <p className="text-sm text-gray-500 mb-4">
+                Faça login e reserve esta casa para ter acesso ao mapa e localização exata.
+              </p>
+              <button
+                onClick={openLogin}
+                className="bg-gray-800 text-white text-sm font-semibold px-5 py-2 rounded-lg hover:bg-gray-700 transition"
+              >
+                Fazer login
+              </button>
+            </div>
+          </div>
+        ) : !hasBooking ? (
+          <div
+            className="flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200"
+            style={{ minHeight: "300px" }}
+          >
+            <div className="text-center px-6">
+              <p className="text-2xl mb-3">🔒</p>
+              <p className="text-gray-800 font-semibold mb-1">Localização disponível após reserva</p>
+              <p className="text-sm text-gray-500">
+                O mapa e a localização exata desta casa só são revelados depois de confirmares a tua reserva.
+              </p>
+            </div>
+          </div>
+        ) : hasCoordinates ? (
           <MapEmbed lat={lat} lng={lng} locationName={house.location} />
         ) : (
-          <div className="flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200" style={{ minHeight: "300px" }}>
+          <div
+            className="flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-200"
+            style={{ minHeight: "300px" }}
+          >
             <div className="text-center px-6">
               <p className="text-gray-600 mb-2 font-medium">{t("location.avalaibilty")}</p>
               <p className="text-sm text-gray-500">
                 {t("location.info")},{" "}
-                <span onClick={() => navigate("/contactenos")} className="text-blue-600 underline cursor-pointer">
+                <span
+                  onClick={() => navigate("/contactenos")}
+                  className="text-blue-600 underline cursor-pointer"
+                >
                   {t("location.contacte")}
                 </span>
               </p>
             </div>
           </div>
         )}
+
       </div>
 
       {/* DatePicker oculto */}

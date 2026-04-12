@@ -8,8 +8,9 @@ import { useTranslation } from "react-i18next";
 import EmailVerificationModal from "./EmailVerificationModal";
 import Select from "react-select";
 import countries from "world-countries";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
-// ── Lista de países com bandeira emoji ───────────────────────
 const countryOptions = countries
   .map((c) => ({
     value: c.name.common,
@@ -55,8 +56,6 @@ const formatOptionLabel = ({ flag, label }) => (
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────
-
 const parseBackendError = (errorString) => {
   if (!errorString || typeof errorString !== "string") {
     return { field: null, message: "Erro ao criar conta. Tente novamente." };
@@ -82,6 +81,11 @@ const validateClient = (formData, t) => {
   if (!formData.name.trim()) errors.name = "O nome completo é obrigatório.";
   if (!formData.email.trim()) errors.email = "O email é obrigatório.";
   else if (!formData.email.includes("@")) errors.email = "Por favor introduza um email válido.";
+  if (!formData.phone || formData.phone.length < 4) {
+    errors.phone = "O número de telefone é obrigatório.";
+  } else if (!isValidPhoneNumber("+" + formData.phone)) {
+    errors.phone = "Por favor introduza um número de telefone válido.";
+  }
   if (!formData.password) errors.password = "A palavra-passe é obrigatória.";
   else if (formData.password.length < 8)
     errors.password = "A palavra-passe deve ter no mínimo 8 caracteres.";
@@ -95,16 +99,7 @@ const validateClient = (formData, t) => {
   return errors;
 };
 
-// ── Fora do RegisterPage para evitar perda de foco ───────────
-const InputField = ({
-  type = "text",
-  name,
-  placeholder,
-  value,
-  onChange,
-  onBlur,
-  error,
-}) => (
+const InputField = ({ type = "text", name, placeholder, value, onChange, onBlur, error }) => (
   <div className="flex flex-col gap-1 text-left">
     <input
       type={type}
@@ -123,8 +118,6 @@ const InputField = ({
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────
-
 const RegisterPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -133,6 +126,7 @@ const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
     city: "",
@@ -151,6 +145,18 @@ const RegisterPage = () => {
       setFieldErrors((prev) => {
         const n = { ...prev };
         delete n[name];
+        return n;
+      });
+    }
+    if (generalError) setGeneralError(null);
+  };
+
+  const handlePhoneChange = (value) => {
+    setFormData((prev) => ({ ...prev, phone: value }));
+    if (fieldErrors.phone) {
+      setFieldErrors((prev) => {
+        const n = { ...prev };
+        delete n.phone;
         return n;
       });
     }
@@ -188,6 +194,7 @@ const RegisterPage = () => {
     const result = await register({
       name: formData.name.trim(),
       email: formData.email.trim(),
+      phone: "+" + formData.phone,
       password: formData.password,
       confirmPassword: formData.confirmPassword,
       country: formData.city,
@@ -202,20 +209,13 @@ const RegisterPage = () => {
     }
   };
 
-  // ── Google Login corrigido ────────────────────────────────
   const handleGoogleSuccess = async (credentialResponse) => {
     setGoogleLoading(true);
     setGeneralError(null);
-
     try {
       const idToken = credentialResponse?.credential;
-
-      if (!idToken) {
-        throw new Error("Google não retornou credential.");
-      }
-
+      if (!idToken) throw new Error("Google não retornou credential.");
       const result = await loginWithGoogle(idToken);
-
       if (result?.success) {
         navigate("/");
       } else {
@@ -253,6 +253,7 @@ const RegisterPage = () => {
           <p className="text-gray-500 mb-6 text-sm">{t("register.subtitle")}</p>
 
           <form className="flex flex-col gap-3" onSubmit={handleSubmit} noValidate>
+
             <InputField
               name="name"
               placeholder={t("register.fullname")}
@@ -260,6 +261,7 @@ const RegisterPage = () => {
               onChange={handleChange}
               error={fieldErrors.name}
             />
+
             <InputField
               type="email"
               name="email"
@@ -269,6 +271,36 @@ const RegisterPage = () => {
               onBlur={handleEmailBlur}
               error={fieldErrors.email}
             />
+
+            <div className="flex flex-col gap-1 text-left">
+              <PhoneInput
+                country="mz"
+                value={formData.phone}
+                onChange={handlePhoneChange}
+                enableSearch
+                searchPlaceholder="Pesquisar país..."
+                inputStyle={{
+                  width: "100%",
+                  height: "40px",
+                  fontSize: "0.875rem",
+                  borderColor: fieldErrors.phone ? "#f87171" : "#d1d5db",
+                  borderRadius: "0.5rem",
+                  backgroundColor: fieldErrors.phone ? "#fef2f2" : "white",
+                  paddingLeft: "48px",
+                }}
+                buttonStyle={{
+                  borderColor: fieldErrors.phone ? "#f87171" : "#d1d5db",
+                  borderRadius: "0.5rem 0 0 0.5rem",
+                  backgroundColor: fieldErrors.phone ? "#fef2f2" : "white",
+                }}
+                containerStyle={{ width: "100%" }}
+                dropdownStyle={{ fontSize: "0.875rem", zIndex: 9999 }}
+              />
+              {fieldErrors.phone && (
+                <p className="text-red-500 text-xs px-1">{fieldErrors.phone}</p>
+              )}
+            </div>
+
             <InputField
               type="password"
               name="password"
@@ -277,6 +309,7 @@ const RegisterPage = () => {
               onChange={handleChange}
               error={fieldErrors.password}
             />
+
             <InputField
               type="password"
               name="confirmPassword"
@@ -341,6 +374,7 @@ const RegisterPage = () => {
             >
               {isLoading ? t("register.creating") : t("register.create")}
             </button>
+
           </form>
 
           <div className="flex items-center justify-center my-4">
