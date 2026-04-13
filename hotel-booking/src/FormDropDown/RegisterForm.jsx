@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/palmtree.png";
 import { useTranslation } from "react-i18next";
-import EmailVerificationModal from "./EmailVerificationModal";
+import EmailVerificationModal from "./Emailverificationmodal";
 import Select from "react-select";
 import countries from "world-countries";
 import PhoneInput from "react-phone-input-2";
