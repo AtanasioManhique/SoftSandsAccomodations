@@ -21,7 +21,8 @@ export default function PersonalData() {
     const loadProfile = async () => {
       try {
         const res = await api.get("/users/profile");
-        const profile = res.data?.user ?? res.data?.data ?? {};
+
+        const profile = res.data?.data?.user ?? {};
         setData({
           name: profile.name || "",
           email: profile.email || "",

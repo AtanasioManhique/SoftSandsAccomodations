@@ -8,8 +8,9 @@ import { useTranslation } from "react-i18next";
 import EmailVerificationModal from "./EmailVerificationModal";
 import Select from "react-select";
 import countries from "world-countries";
-import PhoneInput, { isValidPhoneNumber } from "react-phone-input-2";
+import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 const countryOptions = countries
   .map((c) => ({
