@@ -284,53 +284,54 @@ const HouseDetails = () => {
         </div>
 
         {/* Barra de specs estilo Airbnb */}
-        <div className="flex items-stretch w-fit mt-3 bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden divide-x divide-gray-100">
+              {/* Barra de specs estilo Airbnb */}
+<div className="grid grid-cols-3 sm:flex w-full sm:w-fit mt-3 bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden divide-x divide-gray-100">
 
-          <div className="flex items-center gap-3 px-5 py-3">
-            <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
-              <svg className="w-[18px] h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Hóspedes</p>
-              <p className="text-[15px] font-semibold text-gray-900">{house.maxGuests}</p>
-            </div>
-          </div>
+  <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-3 px-3 sm:px-5 py-3 text-center sm:text-left">
+    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+      <svg className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    <div>
+      <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-gray-400 leading-tight">Hóspedes</p>
+      <p className="text-[13px] sm:text-[15px] font-semibold text-gray-900">{house.maxGuests}</p>
+    </div>
+  </div>
 
-          <div className="flex items-center gap-3 px-5 py-3">
-            <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
-              <svg className="w-[18px] h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Quartos</p>
-              <p className="text-[15px] font-semibold text-gray-900">{house.bedrooms}</p>
-            </div>
-          </div>
+  <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-3 px-3 sm:px-5 py-3 text-center sm:text-left">
+    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+      <svg className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </div>
+    <div>
+      <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-gray-400 leading-tight">Quartos</p>
+      <p className="text-[13px] sm:text-[15px] font-semibold text-gray-900">{house.bedrooms}</p>
+    </div>
+  </div>
 
-          <div className="flex items-center gap-3 px-5 py-3">
-            <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
-              <svg className="w-[18px] h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 12h16M4 6h7a5 5 0 0 1 5 5v1H4V6z"/>
-                <path d="M4 12v6"/>
-                <path d="M20 12v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/>
-                <line x1="8" y1="18" x2="8" y2="21"/>
-                <line x1="16" y1="18" x2="16" y2="21"/>
-              </svg>
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Casas de banho</p>
-              <p className="text-[15px] font-semibold text-gray-900">{house.bathrooms}</p>
-            </div>
-          </div>
+  <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-3 px-3 sm:px-5 py-3 text-center sm:text-left">
+    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-50 flex items-center justify-center shrink-0">
+      <svg className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 12h16M4 6h7a5 5 0 0 1 5 5v1H4V6z"/>
+        <path d="M4 12v6"/>
+        <path d="M20 12v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/>
+        <line x1="8" y1="18" x2="8" y2="21"/>
+        <line x1="16" y1="18" x2="16" y2="21"/>
+      </svg>
+    </div>
+    <div>
+      <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest text-gray-400 leading-tight">Casas de banho</p>
+      <p className="text-[13px] sm:text-[15px] font-semibold text-gray-900">{house.bathrooms}</p>
+    </div>
+  </div>
 
-        </div>
+</div>
       </div>
 
       {/* Galeria */}

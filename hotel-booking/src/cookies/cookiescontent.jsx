@@ -1,10 +1,6 @@
-
-
 import { useState, useEffect } from "react";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
-
-// ─── textos por idioma ───────────────────────────────────────────────────────
 
 const texts = {
   pt: {
@@ -41,13 +37,10 @@ const texts = {
   },
 };
 
-// Detecta o idioma do browser — PT se português, EN para tudo o resto
 function detectLang() {
   const lang = navigator.language || navigator.userLanguage || "en";
   return lang.toLowerCase().startsWith("pt") ? "pt" : "en";
 }
-
-// ─── helpers ────────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = "cookie_consent";
 
@@ -77,14 +70,11 @@ async function sendToBackend(prefs) {
   }
 }
 
-// ─── component ──────────────────────────────────────────────────────────────
-
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [prefs, setPrefs] = useState({ analytics: false });
 
-  // Detecta idioma uma vez, no momento em que o componente é montado
   const T = texts[detectLang()];
 
   useEffect(() => {
@@ -97,53 +87,38 @@ export default function CookieConsent() {
 
   if (!visible) return null;
 
-  // ── handlers ──────────────────────────────────────────────────────────────
-
   function handleAcceptAll() {
-    const consent = {
-      essential: true,
-      analytics: true,
-      accepted_at: new Date().toISOString(),
-    };
+    const consent = { essential: true, analytics: true, accepted_at: new Date().toISOString() };
     saveLocally(consent);
     sendToBackend(consent);
     setVisible(false);
   }
 
   function handleRejectAll() {
-    const consent = {
-      essential: true,
-      analytics: false,
-      accepted_at: new Date().toISOString(),
-    };
+    const consent = { essential: true, analytics: false, accepted_at: new Date().toISOString() };
     saveLocally(consent);
     sendToBackend(consent);
     setVisible(false);
   }
 
   function handleSavePrefs() {
-    const consent = {
-      essential: true,
-      analytics: prefs.analytics,
-      accepted_at: new Date().toISOString(),
-    };
+    const consent = { essential: true, analytics: prefs.analytics, accepted_at: new Date().toISOString() };
     saveLocally(consent);
     sendToBackend(consent);
     setVisible(false);
   }
 
-  // ── render ────────────────────────────────────────────────────────────────
-
   return (
     <>
-      {/* Overlay subtil */}
+      {/* Overlay */}
       <div className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-40 pointer-events-none" />
 
-      {/* Banner */}
+      {/* Banner — canto inferior direito */}
       <div
         className="
-          fixed bottom-4 left-1/2 -translate-x-1/2
-          w-[calc(100%-2rem)] max-w-2xl
+          fixed bottom-4 right-4
+          w-[calc(100%-2rem)] sm:w-96
+          max-h-[90vh] overflow-y-auto
           bg-white rounded-2xl shadow-2xl border border-gray-100
           z-50 animate-slide-up
         "
@@ -152,9 +127,9 @@ export default function CookieConsent() {
         aria-label={T.title}
       >
         {/* Barra de cor no topo */}
-        <div className="h-1 rounded-t-2xl bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400" />
+        <div className="border-gray-100" />
 
-        <div className="p-5 sm:p-6">
+        <div className="p-4 sm:p-5">
           {/* Cabeçalho */}
           <div className="flex items-start gap-3 mb-3">
             <span className="text-2xl select-none">🍪</span>
@@ -162,22 +137,21 @@ export default function CookieConsent() {
               <h2 className="font-semibold text-gray-900 text-base leading-tight">
                 {T.title}
               </h2>
-              <p className="text-sm text-gray-500 mt-0.5">{T.description}</p>
+              <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+                {T.description}
+              </p>
             </div>
           </div>
 
           {/* Painel de detalhes (expandível) */}
           {showDetails && (
-            <div className="mt-4 mb-4 space-y-3 border-t pt-4">
-              {/* Essenciais — sempre activos */}
+            <div className="mt-3 mb-3 space-y-3 border-t pt-4">
               <CookieRow
                 title={T.essential_title}
                 description={T.essential_desc}
                 checked={true}
                 disabled={true}
               />
-
-              {/* Analytics */}
               <CookieRow
                 title={T.analytics_title}
                 description={T.analytics_desc}
@@ -188,61 +162,64 @@ export default function CookieConsent() {
           )}
 
           {/* Botões */}
-          <div className="flex flex-col sm:flex-row gap-2 mt-4">
-            <button
-              onClick={() => setShowDetails((s) => !s)}
-              className="
-                text-sm text-gray-500 underline underline-offset-2
-                hover:text-gray-800 transition-colors
-                sm:mr-auto self-center
-              "
-            >
-              {showDetails ? T.hide_details : T.manage}
-            </button>
-
-            {showDetails && (
+          <div className="flex flex-col gap-2 mt-4">
+            {/* Linha superior: aceitar + recusar */}
+            <div className="flex gap-2">
               <button
-                onClick={handleSavePrefs}
+                onClick={handleRejectAll}
                 className="
-                  px-4 py-2 rounded-xl text-sm font-medium
-                  border border-blue-500 text-blue-600
-                  hover:bg-blue-50 transition-colors
+                  flex-1 px-3 py-2 rounded-xl text-sm font-medium
+                  border border-gray-200 text-gray-600
+                  hover:bg-gray-50 transition-colors
                 "
               >
-                {T.save_prefs}
+                {T.reject}
               </button>
-            )}
+              <button
+                onClick={handleAcceptAll}
+                className="
+                  flex-1 px-3 py-2 rounded-xl text-sm font-semibold
+                  bg-blue-600 text-white
+                  hover:bg-blue-700 active:scale-95 transition-all
+                "
+              >
+                {T.accept_all}
+              </button>
+            </div>
 
-            <button
-              onClick={handleRejectAll}
-              className="
-                px-4 py-2 rounded-xl text-sm font-medium
-                border border-gray-200 text-gray-600
-                hover:bg-gray-50 transition-colors
-              "
-            >
-              {T.reject}
-            </button>
+            {/* Linha inferior: gerir preferências + guardar */}
+            <div className="flex items-center justify-between gap-2">
+              <button
+                onClick={() => setShowDetails((s) => !s)}
+                className="
+                  text-xs text-gray-400 underline underline-offset-2
+                  hover:text-gray-700 transition-colors
+                "
+              >
+                {showDetails ? T.hide_details : T.manage}
+              </button>
 
-            <button
-              onClick={handleAcceptAll}
-              className="
-                px-5 py-2 rounded-xl text-sm font-semibold
-                bg-blue-600 text-white
-                hover:bg-blue-700 active:scale-95 transition-all
-              "
-            >
-              {T.accept_all}
-            </button>
+              {showDetails && (
+                <button
+                  onClick={handleSavePrefs}
+                  className="
+                    px-4 py-1.5 rounded-xl text-xs font-medium
+                    border border-blue-500 text-blue-600
+                    hover:bg-blue-50 transition-colors
+                  "
+                >
+                  {T.save_prefs}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Animação slide-up */}
       <style>{`
         @keyframes slide-up {
-          from { opacity: 0; transform: translateX(-50%) translateY(24px); }
-          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
         .animate-slide-up {
           animation: slide-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -252,8 +229,6 @@ export default function CookieConsent() {
   );
 }
 
-// ─── sub-componente: linha de toggle ────────────────────────────────────────
-
 function CookieRow({ title, description, checked, disabled = false, onChange }) {
   return (
     <div className="flex items-start justify-between gap-4">
@@ -261,8 +236,6 @@ function CookieRow({ title, description, checked, disabled = false, onChange }) 
         <p className="text-sm font-medium text-gray-800">{title}</p>
         <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{description}</p>
       </div>
-
-      {/* Toggle */}
       <button
         role="switch"
         aria-checked={checked}
