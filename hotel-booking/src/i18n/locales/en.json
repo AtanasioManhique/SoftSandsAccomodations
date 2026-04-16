@@ -415,7 +415,43 @@
             "criterio": "We didn't find any houses with these criteria. Try adjusting the dates, the number of guests, or the destination.",
               "see":"See all the beaches",
                 "beach": "Beaches"
+      },
+            "reset": {
+                "new": "Introduza a nova palavra-passe.",
+                "caractere": "A palavra-passe deve ter no mínimo 8 caracteres.",
+                "confirm": "Confirme a nova palavra-passe.",
+                "reconfirm": "As palavras-passe não coincidem."
+
+      },
+      "pendente": {
+        "title": "Your reservation is pending confirmation by the administrator.",
+        "payment": "Payment method",
+        "reference": "Reference",
+        "policy": "Read cancellation policy",
+        "sure":"Cancel reservation?",
+        "action": "Are you sure you want to cancel? This action cannot be undone.",
+        "consult": "Check the cancellation policy before deciding",
+        "back": "Back",
+        "confirm": "Confirm cancellation"
+      },
+      "verification": {
+        "title": "Check your email",
+        "subtitle": "We sent a confirmation link to:",
+        "open": "Open your email and look for a message from SoftSands",
+        "click": "Click on the link",
+        "confirm": "Confirm your email",
+        "active": "to activate your account",
+        "confirmation": "After confirmation, you will be able to log in normally",
+        "login": "Go to Login",
+        "email": "Didn't receive the email? Check your spam or junk folder."
+
+      },
+      "recover": {
+        "title": "If there is an account associated with",
+        "link": "you will receive a link to reset your password."
+
       }
+      
     
      
 }

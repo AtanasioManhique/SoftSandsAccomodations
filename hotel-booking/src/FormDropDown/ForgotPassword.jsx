@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../services/api";
 import logo from "../assets/palmtree.png";
-
+import {useTranslation} from "react-i18next"
 export default function ForgotPassword() {
   const [email, setEmail]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [sent, setSent]         = useState(false);
   const [error, setError]       = useState(null);
-
+  const {t} = useTranslation();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -51,12 +51,12 @@ export default function ForgotPassword() {
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-800">Verifique o seu email</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{t("verification.title")}</h2>
 
           <p className="text-gray-500 text-sm leading-relaxed">
-            Se existe uma conta associada a{" "}
+          {t("recover.title")}{" "}
             <span className="font-semibold text-gray-700">{email}</span>,
-            receberá um link para redefinir a sua palavra-passe.
+            {t("recover.link")}
           </p>
 
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-700 text-left space-y-1">
@@ -75,7 +75,7 @@ export default function ForgotPassword() {
             to="/login"
             className="block text-sm text-blue-600 hover:underline font-medium"
           >
-            ← Voltar ao login
+            ← {t("verification.login")}
           </Link>
         </div>
       </div>

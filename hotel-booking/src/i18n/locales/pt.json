@@ -419,7 +419,35 @@
                 "confirm": "Confirme a nova palavra-passe.",
                 "reconfirm": "As palavras-passe não coincidem."
 
+      },
+      "pendente": {
+        "title": "A sua reserva está pendente de confirmação pelo administrador.",
+        "payment": "Método de Pagamento",
+        "reference": "Referência",
+        "policy": "Ler política de cancelamento",
+        "sure": "Cancelar reserva?",
+        "action": "Tem a certeza que deseja cancelar? Esta ação não pode ser desfeita.",
+        "consult": "Consultar política de cancelamento antes de decidir",
+        "back": "Voltar",
+        "confirm": "Confirmar Cancelamento"
+      },
+      "verification": {
+        "title": "Verifique o seu email",
+        "subtitle": "Enviámos um link de confirmação para:",
+        "open": "Abra o seu email e procure uma mensagem da SoftSands",
+        "click": "Clique no link",
+        "confirm": "Confirmar seu email",
+        "active": "para activar a sua conta",
+        "confirmation": "Após a confirmação, poderá iniciar sessão normalmente",
+        "login": "Ir para o login",
+        "email": "Não recebeu o email? Verifique a pasta de spam ou lixo electrónico."
+      },
+      "recover": {
+        "title": "Se existe uma conta associada a",
+        "link": "receberá um link para redefinir a sua palavra-passe."
+
       }
+      
                 
     }
     

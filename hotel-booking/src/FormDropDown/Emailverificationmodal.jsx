@@ -1,11 +1,11 @@
 // FormDropDown/EmailVerificationModal.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import {useTranslation} from "reaact-i18next"
 const EmailVerificationModal = ({ email, onClose }) => {
   const navigate = useNavigate();
   const [closing, setClosing] = useState(false);
-
+  const {t} = useTranslation();
   const handleGoToLogin = () => {
     setClosing(true);
     setTimeout(() => {
@@ -68,12 +68,12 @@ const EmailVerificationModal = ({ email, onClose }) => {
 
         {/* Título */}
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Verifique o seu email
+          {t("verification.title")}
         </h2>
 
         {/* Subtítulo */}
         <p className="text-gray-500 text-sm mb-1">
-          Enviámos um link de confirmação para:
+       {t("verification.subtitle")}
         </p>
         {email && (
           <p className="text-blue-600 font-semibold text-sm mb-4 break-all">
@@ -85,15 +85,15 @@ const EmailVerificationModal = ({ email, onClose }) => {
         <div className="bg-blue-50 rounded-xl px-5 py-4 mb-6 text-left space-y-2">
           <div className="flex items-start gap-3">
             <span className="text-blue-400 mt-0.5 text-base">1.</span>
-            <p className="text-gray-600 text-sm">Abra o seu email e procure uma mensagem da SoftSands.</p>
+            <p className="text-gray-600 text-sm">{t("verification.open")}.</p>
           </div>
           <div className="flex items-start gap-3">
             <span className="text-blue-400 mt-0.5 text-base">2.</span>
-            <p className="text-gray-600 text-sm">Clique no link <span className="font-medium text-gray-700">"Confirmar email"</span> para activar a sua conta.</p>
+            <p className="text-gray-600 text-sm">{t("verification.click")} <span className="font-medium text-gray-700">"{t("verification.confirm")}"</span> {t("verification.active")}.</p>
           </div>
           <div className="flex items-start gap-3">
             <span className="text-blue-400 mt-0.5 text-base">3.</span>
-            <p className="text-gray-600 text-sm">Após a confirmação, poderá iniciar sessão normalmente.</p>
+            <p className="text-gray-600 text-sm">{t("verification.confirmation")}.</p>
           </div>
         </div>
 
@@ -102,12 +102,12 @@ const EmailVerificationModal = ({ email, onClose }) => {
           onClick={handleGoToLogin}
           className="w-full bg-blue-600 text-white py-2.5 rounded-xl font-semibold hover:bg-blue-700 transition-all mb-3"
         >
-          Ir para o Login
+            {t("verification.login")}
         </button>
 
         {/* Nota de spam */}
         <p className="text-xs text-gray-400">
-          Não recebeu o email? Verifique a pasta de spam ou lixo electrónico.
+         {t("verification.email")}
         </p>
       </div>
     </div>

@@ -174,7 +174,7 @@ export default function ReservaDetalhes() {
 
       {booking.status === "pendente" && (
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
-          ⏳ A sua reserva está pendente de confirmação pelo administrador.
+          ⏳ {t("pendente.title")}
         </div>
       )}
 
@@ -212,10 +212,10 @@ export default function ReservaDetalhes() {
             <p><strong>{t("center.guests")}:</strong> {booking.guests}</p>
             <p><strong>{t("bookingdetails.nights")}:</strong> {nights}</p>
             {booking.method && (
-              <p><strong>Método de pagamento:</strong> {booking.method}</p>
+              <p><strong>{t("pendente.payment")}:</strong> {booking.method}</p>
             )}
             <p>
-              <strong>Referência:</strong>{" "}
+              <strong>{t("pendente.reference")}:</strong>{" "}
               <span className="text-xs break-all font-mono text-gray-500">{booking.id}</span>
             </p>
           </div>
@@ -253,7 +253,7 @@ export default function ReservaDetalhes() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Ler política de cancelamento
+           {t("pendente.policy")}
           </Link>
         </div>
       </div>
@@ -269,23 +269,23 @@ export default function ReservaDetalhes() {
                 </svg>
               </div>
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Cancelar reserva?</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t("pendente.sure")}</h2>
             <p className="text-gray-500 text-sm">
-              Tem a certeza que deseja cancelar? Esta ação não pode ser desfeita.
+            {t("pendente.action")}
             </p>
             <Link
               to="/politicacancelamento"
               className="block text-sm text-blue-600 underline"
               onClick={() => setShowCancelModal(false)}
             >
-              Consultar política de cancelamento antes de decidir
+            {t("pendente.consult")}
             </Link>
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setShowCancelModal(false)}
                 className="flex-1 py-2.5 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-gray-400 transition"
               >
-                Voltar
+                {t("pendente.back")}
               </button>
               <button
                 onClick={handleCancelar}
@@ -295,7 +295,7 @@ export default function ReservaDetalhes() {
                 {canceling && (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 )}
-                Confirmar cancelamento
+                {t("pendente.confirm")}
               </button>
             </div>
           </div>
