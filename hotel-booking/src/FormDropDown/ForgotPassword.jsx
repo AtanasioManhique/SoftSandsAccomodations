@@ -102,7 +102,7 @@ export default function ForgotPassword() {
               type="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(null); }}
-              placeholder=""
+              placeholder="Email"
               required
               className={`border rounded-lg px-4 py-2.5 focus:ring-2 outline-none transition-colors text-sm ${
                 error
