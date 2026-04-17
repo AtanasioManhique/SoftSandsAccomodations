@@ -1,11 +1,12 @@
 // FormDropDown/EmailVerificationModal.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {useTranslation} from "reaact-i18next"
+import {useTranslation} from "react-i18next"
+
+const {t}= useTranslation();
 const EmailVerificationModal = ({ email, onClose }) => {
   const navigate = useNavigate();
   const [closing, setClosing] = useState(false);
-  const {t} = useTranslation();
   const handleGoToLogin = () => {
     setClosing(true);
     setTimeout(() => {
