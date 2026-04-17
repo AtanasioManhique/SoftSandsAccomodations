@@ -113,7 +113,7 @@ const AllHouses = () => {
   // ─────────────────────────────────────────────────────────
 
   return (
-    <div className="mb-15">
+    <div className="mb-5">
 
       {/* ── Banner de filtros ativos ────────────────────────── */}
       {hasFilters && (
