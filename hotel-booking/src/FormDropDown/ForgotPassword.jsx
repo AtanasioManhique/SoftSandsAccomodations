@@ -124,7 +124,7 @@ export default function ForgotPassword() {
                 {t("recover.sending")}
               </>
             ) : (
-              {t("recover.send")}
+              t("recover.send")
             )}
           </button>
         </form>
