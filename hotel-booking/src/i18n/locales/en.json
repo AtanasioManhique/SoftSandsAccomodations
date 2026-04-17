@@ -404,8 +404,8 @@
           "try": "Try again",
           "payment": "The payment was not processed. You can try again.",
           "conclusion": "Payment not completed",
-           "guest": "hóspede",
-           "clean": "Limpar filtros",
+           "guest": "Guest",
+           "clean": "Clean filters",
            "in": "in",
            "available": "available in the selected period",
            "destiny": "We are showing all available houses. For large groups, you can book more than one house at the same destination.",
@@ -460,7 +460,16 @@
       },
       "resetpass":{
         "title": "Invalid or expired link",
-        "subtitle": "This recovery link is no longer valid. Links expire after 1 hour."
+        "subtitle": "This recovery link is no longer valid. Links expire after 1 hour.",
+        "link": "Request new link",
+        "new": "Password changed!",
+        "redefined": "Your password has been successfully reset. You can now log in with the new password.",
+        "pass": "New password",
+        "newpass": "Choose a new secure password for your account.",
+        "confirm": "Confirm password",
+        "password": "The passwords match",
+        "keep": "Saving...",
+        "newpassword": "Save new password"
       }
       
     

@@ -411,7 +411,10 @@
                 "found": "Nenhuma casa encontrada",
                 "criterio": "Não encontrámos casas com esses critérios. Tenta ajustar as datas, o número de hóspedes ou o destino.",
                 "see":"Ver todas as praias",
-                "beach": "Praias"
+                "houses": "casa",
+                "houses_plural": "casas",
+                "beaches": "praia",
+                "beaches_plural": "praias"
       },
       "reset": {
                 "new": "Introduza a nova palavra-passe.",
@@ -451,8 +454,21 @@
         "pass": "Recuperar palavra-passe",
         "email": "Introduza o email associado à sua conta e enviaremos um link para redefinir a sua palavra-passe.",
         "sending": "A enviar...",
-        "send": "Enviar link de recuperação"
-
+        "send": "Enviar link de recuperação",
+        "forget": "Esqueceu a palavra-passe?"
+      },
+      "resetpass": {
+        "title": "Link inválido ou expirado",
+        "subtitle": "Este link de recuperação já não é válido. Os links expiram após 1 hora.",
+        "link": "Pedir novo link",
+        "new": "Palavra-passe alterada!",
+        "redefined": "A sua palavra-passe foi redefinida com sucesso. Já pode fazer login com a nova palavra-passe.",
+        "pass": "Nova palavra-passe",
+        "newpass": "Escolha uma nova palavra-passe segura para a sua conta.",
+        "confirm": "Confirmar palavra-passe",
+        "password":"As palavras-passe coincidem",
+        "keep": "A guardar...",
+        "newpassword": "Guardar nova palavra-passe"
       }
       
                 

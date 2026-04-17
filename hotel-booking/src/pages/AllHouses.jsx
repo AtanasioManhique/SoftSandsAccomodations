@@ -5,10 +5,8 @@ import { useSearchParams } from "react-router-dom";
 import { api } from "../services/api";
 import PraiaSection from "../componentshouse/Praiasection";
 import { HouseCardSkeleton } from "../componentshouse/HouseCard";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { X } from "lucide-react";
 
-
-const PRAIAS_PER_PAGE = 4;
 
 // ── Skeleton ──────────────────────────────────────────────────
 const shimmerStyle = {
@@ -18,7 +16,7 @@ const shimmerStyle = {
 };
 
 const AllHousesSkeleton = () => (
-  <div className="mb-50">
+  <div className="mb-48">
     <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
     {[...Array(3)].map((_, si) => (
       <div key={si} className={`flex flex-col items-start px-4 md:px-20 pt-8 ${si === 0 ? "mt-20" : "mt-1"} relative`}>
@@ -40,7 +38,6 @@ const AllHouses = () => {
   const [houses,      setHouses]      = useState([]);
   const [grupoGrande, setGrupoGrande] = useState(false);
   const [loading,     setLoading]     = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
 
   const { t }                           = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,19 +52,15 @@ const AllHouses = () => {
   const hasDateFilter = !!(startDate && endDate);
   const hasGuestFilter = guestsParam > 0;
 
-  useEffect(() => { setCurrentPage(1); }, [searchQuery, startDate, endDate, guestsParam]);
-
   const loadHouses = useCallback(async () => {
     setLoading(true);
     try {
-     
-      const res  = await api.get("/accommodations", {
+      const res = await api.get("/accommodations", {
         params: {
-          search:    searchQuery    || undefined,
-          startDate: startDate     || undefined,
-          endDate:   endDate       || undefined,
-          guests:    guestsParam   || undefined,
-
+          search:    searchQuery  || undefined,
+          startDate: startDate   || undefined,
+          endDate:   endDate     || undefined,
+          guests:    guestsParam || undefined,
           limit: 100,
         },
       });
@@ -91,29 +84,11 @@ const AllHouses = () => {
   // Praias únicas por ordem de aparecimento
   const todasPraias = [...new Set(houses.map((h) => h.location).filter(Boolean))];
 
-  // ── Paginação ─────────────────────────────────────────────
-  const totalPages   = Math.ceil(todasPraias.length / PRAIAS_PER_PAGE);
-  const startIndex   = (currentPage - 1) * PRAIAS_PER_PAGE;
-  const praiasPagina = todasPraias.slice(startIndex, startIndex + PRAIAS_PER_PAGE);
-
-  const goToPage = (page) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const getPageNumbers = () => {
-    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
-    if (currentPage <= 3) return [1, 2, 3, 4, 5];
-    if (currentPage >= totalPages - 2) return [totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
-    return [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
-  };
-
-  const clearSearch = () => { setSearchParams({}); setCurrentPage(1); };
+  const clearSearch = () => setSearchParams({});
   // ─────────────────────────────────────────────────────────
 
   return (
-    <div className="mb-5">
+    <div className="mb-10">
 
       {/* ── Banner de filtros ativos ────────────────────────── */}
       {hasFilters && (
@@ -132,7 +107,7 @@ const AllHouses = () => {
             )}
             {hasGuestFilter && (
               <span className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full">
-                👥 {guestsParam} {"all.guest"}{guestsParam !== 1 ? "s" : ""}
+                👥 {guestsParam} {t("all.guest")}{guestsParam !== 1 ? "s" : ""}
               </span>
             )}
             <button
@@ -147,9 +122,10 @@ const AllHouses = () => {
           {houses.length > 0 && (
             <p className="text-sm text-gray-600">
               <span className="font-semibold text-gray-900">{houses.length}</span>{" "}
-              casa{houses.length !== 1 ? "s" : ""} {t("all.in")}{" "}
+              {t("all.houses", { count: houses.length })}{" "}
+              {t("all.in")}{" "}
               <span className="font-semibold text-gray-900">{todasPraias.length}</span>{" "}
-              praia{todasPraias.length !== 1 ? "s" : ""}
+              {t("all.beaches", { count: todasPraias.length })}
               {hasDateFilter && (
                 <span className="text-gray-400"> · {t("all.available")}</span>
               )}
@@ -165,7 +141,7 @@ const AllHouses = () => {
                   {t("all.support")}{guestsParam} {t("all.casas")}
                 </p>
                 <p className="text-xs text-orange-700 mt-0.5 leading-relaxed">
-                 {t("all.destiny")}
+                  {t("all.destiny")}
                 </p>
               </div>
             </div>
@@ -181,7 +157,7 @@ const AllHouses = () => {
             {t("all.found")}
           </h2>
           <p className="text-gray-500 text-sm mb-6 max-w-sm">
-           {t("all.criterio")}
+            {t("all.criterio")}
           </p>
           <button
             onClick={clearSearch}
@@ -193,46 +169,14 @@ const AllHouses = () => {
       )}
 
       {/* ── Praias ─────────────────────────────────────────── */}
-      {praiasPagina.map((praia, index) => (
+      {todasPraias.map((praia, index) => (
         <PraiaSection
           key={praia}
           praia={praia}
           houses={houses.filter((h) => h.location === praia)}
-          isFirst={index === 0 && currentPage === 1 && !hasFilters}
+          isFirst={index === 0 && !hasFilters}
         />
       ))}
-
-      {/* ── Paginação ──────────────────────────────────────── */}
-      {totalPages > 1 && (
-        <div className="flex flex-col items-center gap-3 py-10 px-4">
-          <p className="text-sm text-gray-500">
-            {t("all.beach")}{" "}
-            <span className="font-semibold text-gray-700">
-              {startIndex + 1}–{Math.min(startIndex + PRAIAS_PER_PAGE, todasPraias.length)}
-            </span>{" "}
-            de{" "}
-            <span className="font-semibold text-gray-700">{todasPraias.length}</span>
-          </p>
-          <div className="flex items-center gap-2">
-            <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}
-              className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:border-gray-800 hover:text-gray-800 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white shadow-sm">
-              <ChevronLeft size={16} />
-            </button>
-            {getPageNumbers().map((page) => (
-              <button key={page} onClick={() => goToPage(page)}
-                className={`w-9 h-9 flex items-center justify-center rounded-xl text-sm font-semibold transition border shadow-sm ${
-                  page === currentPage ? "bg-gray-800 text-white border-gray-800" : "bg-white text-gray-600 border-gray-200 hover:border-gray-800 hover:text-gray-800"
-                }`}>
-                {page}
-              </button>
-            ))}
-            <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}
-              className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 text-gray-600 hover:border-gray-800 hover:text-gray-800 transition disabled:opacity-30 disabled:cursor-not-allowed bg-white shadow-sm">
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
