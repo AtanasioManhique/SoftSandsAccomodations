@@ -444,7 +444,14 @@
       },
       "recover": {
         "title": "Se existe uma conta associada a",
-        "link": "receberá um link para redefinir a sua palavra-passe."
+        "link": "receberá um link para redefinir a sua palavra-passe.",
+        "receive": "Não recebeu o email?",
+        "spam": "Verifique a pasta de spam ou lixo. O link expira em 1 hora.",
+        "try": "Tentar com outro email",
+        "pass": "Recuperar palavra-passe",
+        "email": "Introduza o email associado à sua conta e enviaremos um link para redefinir a sua palavra-passe.",
+        "sending": "A enviar...",
+        "send": "Enviar link de recuperação"
 
       }
       

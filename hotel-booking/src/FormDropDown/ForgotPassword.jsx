@@ -60,15 +60,15 @@ export default function ForgotPassword() {
           </p>
 
           <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-700 text-left space-y-1">
-            <p className="font-semibold">📬 Não recebeu o email?</p>
-            <p>Verifique a pasta de spam ou lixo. O link expira em <strong>1 hora</strong>.</p>
+            <p className="font-semibold">📬{t("recover.receive")}</p>
+            <p>{t("recover.spam")}</p>
           </div>
 
           <button
             onClick={() => { setSent(false); setEmail(""); }}
             className="w-full py-2.5 border-2 border-gray-200 hover:border-blue-400 text-gray-700 hover:text-blue-600 rounded-xl font-semibold text-sm transition"
           >
-            Tentar com outro email
+            {t("receive.try")}
           </button>
 
           <Link
@@ -88,9 +88,9 @@ export default function ForgotPassword() {
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center">
         <img src={logo} alt="SoftSands" className="h-16 mx-auto mb-3" />
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-1">Recuperar palavra-passe</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-1">{t("recover.pass")}</h2>
         <p className="text-gray-500 text-sm mb-6">
-          Introduza o email associado à sua conta e enviaremos um link para redefinir a sua palavra-passe.
+          {t("recover.email")}
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -102,7 +102,7 @@ export default function ForgotPassword() {
               type="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(null); }}
-              placeholder="o-seu-email@exemplo.com"
+              placeholder=""
               required
               className={`border rounded-lg px-4 py-2.5 focus:ring-2 outline-none transition-colors text-sm ${
                 error
@@ -121,10 +121,10 @@ export default function ForgotPassword() {
             {loading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                A enviar...
+                {t("recover.sending")}
               </>
             ) : (
-              "Enviar link de recuperação"
+              {t("recover.send")}
             )}
           </button>
         </form>
@@ -133,7 +133,7 @@ export default function ForgotPassword() {
           to="/login"
           className="block mt-5 text-sm text-blue-600 hover:underline font-medium"
         >
-          ← Voltar ao login
+          ← {t("verification.login")}
         </Link>
       </div>
     </div>

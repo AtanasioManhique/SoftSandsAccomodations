@@ -448,7 +448,14 @@
       },
       "recover": {
         "title": "If there is an account associated with",
-        "link": "you will receive a link to reset your password."
+        "link": "you will receive a link to reset your password.",
+        "receive": "Didn't receive the email?",
+        "spam": "Check the spam or junk folder. The link expires in 1 hour.",
+        "try": "Try with another email",
+        "pass": "Recover password",
+        "email": "Enter the email associated with your account and we will send a link to reset your password.",
+        "sending": "Sending...",
+        "send": "Send recovery link"
 
       }
       
