@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {useTranslation} from "react-i18next"
 
-const {t}= useTranslation();
+
 const EmailVerificationModal = ({ email, onClose }) => {
+  const {t}= useTranslation();
   const navigate = useNavigate();
   const [closing, setClosing] = useState(false);
   const handleGoToLogin = () => {
