@@ -159,7 +159,7 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
               to="/forgot-password"
               className="text-sm text-blue-600 hover:underline"
             >
-              Esqueceu a palavra-passe?
+            {t("recover.forget")}
             </Link>
           </div>
 
@@ -186,7 +186,7 @@ const LoginPage = ({ isModal = false, onSuccess }) => {
           {googleLoading ? (
             <div className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg py-2.5 px-4 bg-gray-50">
               <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm font-medium text-gray-700">A entrar...</span>
+              <span className="text-sm font-medium text-gray-700">{t("recover.sending")}</span>
             </div>
           ) : (
             <GoogleLogin

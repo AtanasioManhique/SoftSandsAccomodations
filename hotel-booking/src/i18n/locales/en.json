@@ -455,8 +455,12 @@
         "pass": "Recover password",
         "email": "Enter the email associated with your account and we will send a link to reset your password.",
         "sending": "Sending...",
-        "send": "Send recovery link"
-
+        "send": "Send recovery link",
+        "forget": "Forgot your password?"
+      },
+      "resetpass":{
+        "title": "Invalid or expired link",
+        "subtitle": "This recovery link is no longer valid. Links expire after 1 hour."
       }
       
     

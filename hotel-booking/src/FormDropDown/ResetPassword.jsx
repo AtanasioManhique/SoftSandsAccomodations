@@ -121,18 +121,18 @@ export default function ResetPassword() {
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">Link inválido ou expirado</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{t("resetpass.title")}</h2>
           <p className="text-gray-500 text-sm leading-relaxed">
-            Este link de recuperação já não é válido. Os links expiram após <strong>1 hora</strong>.
+            {t("reset.subtitle")}
           </p>
           <Link
             to="/recuperar-senha"
             className="block w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition text-center"
           >
-            Pedir novo link
+           {t("resetpass.link")}
           </Link>
           <Link to="/login" className="block text-sm text-blue-600 hover:underline">
-            ← Voltar ao login
+            ← {t("verification.login")}
           </Link>
         </div>
       </div>
@@ -151,15 +151,15 @@ export default function ResetPassword() {
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800">Palavra-passe alterada!</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{t("resetpass.new")}</h2>
           <p className="text-gray-500 text-sm">
-            A sua palavra-passe foi redefinida com sucesso. Já pode fazer login com a nova palavra-passe.
+        {t("resetpass.redefined")}
           </p>
           <button
             onClick={() => navigate("/login")}
             className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition"
           >
-            Ir para o login
+            {t("verification.login")}
           </button>
         </div>
       </div>
@@ -171,9 +171,9 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-4 pt-24">
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center">
         <img src={logo} alt="SoftSands" className="h-16 mx-auto mb-3" />
-        <h2 className="text-2xl font-bold text-gray-800 mb-1">Nova palavra-passe</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-1">{t("resetpass.pass")}</h2>
         <p className="text-gray-500 text-sm mb-6">
-          Escolha uma nova palavra-passe segura para a sua conta.
+         {t("resetpass.newpass")}
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
@@ -181,7 +181,7 @@ export default function ResetPassword() {
           {/* Nova password */}
           <div className="flex flex-col gap-1 text-left">
             <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide px-1">
-              Nova palavra-passe
+              {t("resetpass.pass")}
             </label>
             <div className="relative">
               <input
@@ -222,7 +222,7 @@ export default function ResetPassword() {
           {/* Confirmar password */}
           <div className="flex flex-col gap-1 text-left">
             <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide px-1">
-              Confirmar palavra-passe
+             {t("resetpass.confirm")}
             </label>
             <div className="relative">
               <input
@@ -262,7 +262,7 @@ export default function ResetPassword() {
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-                As palavras-passe coincidem
+                {t("resetpass.password")}
               </p>
             )}
             {errors.confirm && (
@@ -282,16 +282,16 @@ export default function ResetPassword() {
             {loading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                A guardar...
+               {t("resetpass.keep")}
               </>
             ) : (
-              "Guardar nova palavra-passe"
+              t("resetpass.password")
             )}
           </button>
         </form>
 
         <Link to="/login" className="block mt-5 text-sm text-blue-600 hover:underline">
-          ← Voltar ao login
+          ← {t("verification.login")}
         </Link>
       </div>
     </div>
