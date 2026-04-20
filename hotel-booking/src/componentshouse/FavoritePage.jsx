@@ -36,6 +36,16 @@ const FavoritesPageSkeleton = () => (
     </div>
   </div>
 );
+// ─────────────────────────────────────────────────────────────
+
+
+const resolveImage = (house) =>
+  house.primaryImageUrl ??
+  house.imageUrl ??
+  house.images?.[0]?.url ??
+  house.images?.[0]?.image_url ??
+  house.image?.[0] ??
+  null;
 
 export default function FavoritesPage() {
   const { favorites, removeFavorite } = useFavorites();
@@ -43,8 +53,6 @@ export default function FavoritesPage() {
   const { getNightPrice } = useSeasonPricing();
   const [loading, setLoading] = useState(true);
 
-  // Favoritos vêm do contexto local, mas simulamos
-  // loading para consistência visual com o resto da app.
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 400);
     return () => clearTimeout(timer);
@@ -73,6 +81,8 @@ export default function FavoritesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {favorites.map((house) => {
             const { formatted } = getNightPrice(house.price);
+            const imageUrl = resolveImage(house);
+
             return (
               <div
                 key={house.id}
@@ -86,11 +96,22 @@ export default function FavoritesPage() {
                 </button>
 
                 <Link to={`/casas/${house.id}`}>
-                  <img
-                    src={house.imageUrl ?? house.image?.[0]}
-                    alt={house.name}
-                    className="w-full h-48 object-cover"
-                  />
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={house.name ?? house.location ?? "Casa"}
+                      className="w-full h-48 object-cover"
+                    />
+                  ) : (
+                    // ✅ Fallback visual quando não há imagem
+                    <div className="w-full h-48 bg-gray-100 flex flex-col items-center justify-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
+                      </svg>
+                      <span className="text-xs text-gray-300">Sem imagem</span>
+                    </div>
+                  )}
                   <div className="p-4">
                     <p className="text-sm text-gray-500">{house.location}</p>
                     <p className="text-base font-semibold mt-1">

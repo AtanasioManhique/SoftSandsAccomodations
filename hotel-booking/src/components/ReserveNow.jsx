@@ -20,6 +20,23 @@ const formatDisplayDate = (dateStr) => {
     year:  "numeric",
   });
 };
+
+const resolveImage = (house) =>
+  house?.primaryImageUrl ??
+  house?.images?.[0]?.url ??
+  house?.images?.[0]?.image_url ??
+  house?.image?.[0] ??
+  null;
+
+const resolveImageArray = (house) => {
+  if (!house) return [];
+  if (Array.isArray(house.images) && house.images.length > 0) {
+    return house.images.map((i) => (typeof i === "string" ? i : i.url ?? i.image_url)).filter(Boolean);
+  }
+  if (Array.isArray(house.image) && house.image.length > 0) return house.image;
+  if (house.primaryImageUrl) return [house.primaryImageUrl];
+  return [];
+};
 // ─────────────────────────────────────────────────────────────
 
 // ── Helpers localStorage ──────────────────────────────────────
@@ -67,12 +84,12 @@ export default function ReserveAgora() {
     if (!houseId) return;
     const load = async () => {
       try {
-        // BACKEND: GET /api/accommodations/:id
         const res = await api.get(`/accommodations/${houseId}`);
-        setHouse(res.data?.data ?? res.data);
+        // ✅ Normaliza a resposta cobrindo os dois níveis possíveis
+        const raw = res.data?.data?.accommodation ?? res.data?.data ?? res.data;
+        setHouse(raw);
       } catch {
-     
-
+        // silencioso — o UI já trata o estado null
       }
     };
     load();
@@ -82,7 +99,8 @@ export default function ReserveAgora() {
     const result = await initiatePayment({
       bookingId,
       accommodationId: houseId,
-      images:          house?.image ?? [],
+      // ✅ usa o helper para garantir que o array de imagens está correto
+      images:          resolveImageArray(house),
       totalPrice,
       houseName,
       startDate,
@@ -114,6 +132,7 @@ export default function ReserveAgora() {
   }
 
   const isLoading = status === "loading" || status === "redirecting";
+  const imageUrl  = resolveImage(house);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 pt-[7.5rem]">
@@ -129,12 +148,10 @@ export default function ReserveAgora() {
           <div className="text-sm space-y-2 text-gray-700">
             <div className="flex justify-between">
               <span className="text-gray-500">{t("center.entrydate")}</span>
-              {/* ✅ fix timezone: parseLocalDate evita shift de dia */}
               <span className="font-medium">{formatDisplayDate(startDate)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">{t("center.outdate")}</span>
-              {/* ✅ fix timezone: parseLocalDate evita shift de dia */}
               <span className="font-medium">{formatDisplayDate(endDate)}</span>
             </div>
             <div className="flex justify-between">
@@ -190,11 +207,22 @@ export default function ReserveAgora() {
 
         {/* Coluna direita — card da casa */}
         <div className="bg-white shadow-sm rounded-xl overflow-hidden border">
-          <img
-            src={house.image?.[0]}
-            alt={house.location}
-            className="h-56 w-full object-cover"
-          />
+          {/* ✅ Imagem com fallback visual */}
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={house.name ?? house.location ?? "Casa"}
+              className="h-56 w-full object-cover"
+            />
+          ) : (
+            <div className="h-56 w-full bg-gray-100 flex flex-col items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
+              </svg>
+              <span className="text-xs text-gray-300">Sem imagem</span>
+            </div>
+          )}
           <div className="p-4 space-y-2">
             <span className="text-gray-500 text-sm flex items-center gap-1">
               <img src={fullstar} className="w-4 h-4" alt="" />
