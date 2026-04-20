@@ -3,7 +3,8 @@ import { useFavorites } from "../componentshouse/FavoriteStore";
 import { Link } from "react-router-dom";
 import { HeartOff, ChevronLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useSeasonPricing } from "../context/seasonPricing.js";
+import { formatCurrency, convertPrice } from "../context/utils/currency";
+import { useCurrency } from "../FormDropDown/CurrencyContext";
 
 // ── Skeleton da FavoritesPage ─────────────────────────────────
 const shimmerStyle = {
@@ -15,14 +16,8 @@ const shimmerStyle = {
 const FavoritesPageSkeleton = () => (
   <div className="px-4 md:px-20 py-10">
     <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
-
-    {/* Botão voltar skeleton */}
     <div style={{ ...shimmerStyle, width: "100px", height: "20px", borderRadius: "6px", marginBottom: "24px" }} />
-
-    {/* Título skeleton */}
     <div style={{ ...shimmerStyle, width: "220px", height: "32px", borderRadius: "8px", marginBottom: "24px", marginTop: "60px" }} />
-
-    {/* Grid de cards skeleton */}
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {[...Array(4)].map((_, i) => (
         <div key={i} style={{ borderRadius: "12px", overflow: "hidden", background: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
@@ -38,7 +33,6 @@ const FavoritesPageSkeleton = () => (
 );
 // ─────────────────────────────────────────────────────────────
 
-
 const resolveImage = (house) =>
   house.primaryImageUrl ??
   house.imageUrl ??
@@ -50,7 +44,8 @@ const resolveImage = (house) =>
 export default function FavoritesPage() {
   const { favorites, removeFavorite } = useFavorites();
   const { t } = useTranslation();
-  const { getNightPrice } = useSeasonPricing();
+  // ✅ substituído useSeasonPricing por useCurrency — respeita a moeda escolhida pelo utilizador
+  const { currency, rates } = useCurrency();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -80,8 +75,12 @@ export default function FavoritesPage() {
       {hasFavorites && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {favorites.map((house) => {
-            const { formatted } = getNightPrice(house.price);
             const imageUrl = resolveImage(house);
+
+            // ✅ cobre os vários nomes que o backend pode usar para o preço
+            const priceZAR  = house.price_per_night ?? house.pricePerNight ?? house.price ?? 0;
+            const converted = convertPrice(priceZAR, "ZAR", currency, rates);
+            const formatted = formatCurrency(converted, currency);
 
             return (
               <div
@@ -103,7 +102,6 @@ export default function FavoritesPage() {
                       className="w-full h-48 object-cover"
                     />
                   ) : (
-                    // ✅ Fallback visual quando não há imagem
                     <div className="w-full h-48 bg-gray-100 flex flex-col items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z" />

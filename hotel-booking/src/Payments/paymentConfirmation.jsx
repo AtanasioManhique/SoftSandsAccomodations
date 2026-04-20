@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../services/api";
+import { formatCurrency, convertPrice } from "../context/utils/currency";
+import { useCurrency } from "../FormDropDown/CurrencyContext";
 
-// ── Fix timezone — mesmo utilitário do HouseDetails ───────────
+// ── Fix timezone ──────────────────────────────────────────────
 const parseLocalDate = (dateStr) => {
   if (!dateStr) return null;
   return new Date(dateStr + "T00:00:00");
@@ -22,12 +24,14 @@ export default function PaymentConfirmation() {
   const navigate       = useNavigate();
   const [searchParams] = useSearchParams();
   const { t }          = useTranslation();
+  // ✅ hook de moeda
+  const { currency, rates } = useCurrency();
+
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const paymentStatus = searchParams.get("status");
   const bookingId     = searchParams.get("bookingId");
-  const reason        = searchParams.get("reason");
   const isDev         = searchParams.get("dev") === "true";
 
   const isSuccess = paymentStatus === "success";
@@ -39,20 +43,10 @@ export default function PaymentConfirmation() {
 
   const loadBooking = async () => {
     try {
-      // GET /api/bookings/:id — reserva já confirmada pelo webhook do PaySuite
       const res = await api.get(`/bookings/${bookingId}`);
-      setBooking(res.data?.data ?? res.data);
+      setBooking(res.data?.data?.booking ?? res.data?.data ?? res.data);
     } catch {
-      /* // 🚧 DEV — lê do localStorage
-      if (isDev) {
-        const allKeys = Object.keys(localStorage).filter((k) => k.startsWith("minhasReservas_"));
-        for (const key of allKeys) {
-          const reservas = JSON.parse(localStorage.getItem(key) || "[]");
-          const found    = reservas.find((r) => r.id === bookingId);
-          if (found) { setBooking(found); break; }
-        }
-      }
-      // 🚧 fim DEV */
+      // silencioso
     } finally {
       setLoading(false);
     }
@@ -79,9 +73,7 @@ export default function PaymentConfirmation() {
             </div>
           </div>
           <h1 className="text-xl font-bold text-gray-900">{t("all.conclusion")}</h1>
-          <p className="text-gray-500 text-sm">
-            {t("all.payment")}
-          </p>
+          <p className="text-gray-500 text-sm">{t("all.payment")}</p>
           <button
             onClick={() => navigate(-1)}
             className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition text-sm"
@@ -99,6 +91,11 @@ export default function PaymentConfirmation() {
     );
   }
 
+  // ✅ converte o totalPrice do booking (ZAR) para a moeda do utilizador
+  const totalPriceZAR  = Number(booking?.totalPrice) || 0;
+  const totalConverted = convertPrice(totalPriceZAR, "ZAR", currency, rates);
+  const totalFormatted = totalPriceZAR > 0 ? formatCurrency(totalConverted, currency) : (booking?.totalPrice ?? "—");
+
   // ── Pagamento bem-sucedido ────────────────────────────────
   return (
     <div className="bg-gray-50 py-10 px-4 pt-24">
@@ -114,27 +111,23 @@ export default function PaymentConfirmation() {
 
         <div>
           <h1 className="text-xl font-bold text-gray-900">{t("all.submit")}!</h1>
-          <p className="text-gray-500 text-xs mt-1">
-            {t("all.pay")}
-          </p>
+          <p className="text-gray-500 text-xs mt-1">{t("all.pay")}</p>
         </div>
 
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-left space-y-1">
           <p className="text-xs font-semibold text-yellow-800">⏳ {t("all.aguarda")}</p>
-          <p className="text-xs text-yellow-700 leading-relaxed">
-         {t("all.notified")}
-          </p>
+          <p className="text-xs text-yellow-700 leading-relaxed">{t("all.notified")}</p>
         </div>
 
         {/* Detalhes da reserva */}
         {booking && (
           <div className="bg-gray-50 rounded-xl p-3 text-left space-y-2 text-sm border">
-            <Row label="Referência" value={booking.id}                          small />
-            {/* ✅ fix timezone: formatDisplayDate em vez de string crua */}
-            <Row label="Entrada"    value={formatDisplayDate(booking.startDate)}       />
-            <Row label="Saída"      value={formatDisplayDate(booking.endDate)}         />
-            <Row label="Hóspedes"   value={booking.guests}                             />
-            <Row label="Total"      value={booking.totalPrice}                  bold   />
+            <Row label="Referência" value={booking.id}                           small />
+            <Row label="Entrada"    value={formatDisplayDate(booking.startDate)}        />
+            <Row label="Saída"      value={formatDisplayDate(booking.endDate)}          />
+            <Row label="Hóspedes"   value={booking.guests}                              />
+            {/* ✅ total convertido e formatado na moeda do utilizador */}
+            <Row label="Total"      value={totalFormatted}                        bold  />
             {booking.paidAt && (
               <Row
                 label="Data"
@@ -156,13 +149,13 @@ export default function PaymentConfirmation() {
           onClick={() => navigate("/minhasreservas")}
           className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition text-sm"
         >
-         {t("all.reserves")}
+          {t("all.reserves")}
         </button>
         <button
           onClick={() => navigate("/")}
           className="w-full py-2.5 border-2 border-gray-200 hover:border-gray-400 rounded-xl font-semibold text-gray-700 transition text-sm"
         >
-         {t("all.inicio")}
+          {t("all.inicio")}
         </button>
       </div>
     </div>

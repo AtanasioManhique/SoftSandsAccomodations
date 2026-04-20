@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { usePayment } from "../Payments/usePayments";
 import fullstar from "../assets/fullstar.png";
 import { api } from "../services/api";
+import { formatCurrency, convertPrice } from "../context/utils/currency";
+import { useCurrency } from "../FormDropDown/CurrencyContext";
 
 const parseLocalDate = (dateStr) => {
   if (!dateStr) return null;
@@ -58,38 +60,47 @@ export default function ReserveAgora() {
   const { houseId: routeHouseId } = useParams();
   const { t }     = useTranslation();
   const { initiatePayment, status, errorMessage } = usePayment();
+  // ✅ hook de moeda
+  const { currency, rates } = useCurrency();
 
   const stateData  = location.state || {};
   const stored     = safeGetStorage("preReserva");
 
-  const bookingId  = stateData.id            || stateData.bookingId  || stored.bookingId;
-  const houseId    = stateData.accommodationId || stored.houseId     || Number(routeHouseId);
-  const startDate  = stateData.startDate     || stored.startDate;
-  const endDate    = stateData.endDate       || stored.endDate;
-  const guests     = stateData.guests        || stored.guests;
-  const totalPrice = stateData.totalPrice    || stored.totalPrice;
-  const houseName  = stateData.houseName     || stored.houseName;
+  const bookingId      = stateData.id              || stateData.bookingId  || stored.bookingId;
+  const houseId        = stateData.accommodationId || stored.houseId       || Number(routeHouseId);
+  const startDate      = stateData.startDate       || stored.startDate;
+  const endDate        = stateData.endDate         || stored.endDate;
+  const guests         = stateData.guests          || stored.guests;
+  // totalPrice vem do backend em ZAR (número)
+  const totalPriceZAR  = stateData.totalPrice      || stored.totalPrice;
+  const houseName      = stateData.houseName       || stored.houseName;
 
   const [house, setHouse] = useState(null);
 
-  // Persiste dados enquanto o backend não está pronto
-  useEffect(() => {
-    if (houseId && startDate && endDate && totalPrice) {
-      safeSetStorage("preReserva", { bookingId, houseId, startDate, endDate, guests, totalPrice, houseName });
-    }
-  }, [bookingId, houseId, startDate, endDate, guests, totalPrice, houseName]);
+  // ✅ converte o total para a moeda escolhida pelo utilizador
+  const totalConverted = convertPrice(Number(totalPriceZAR) || 0, "ZAR", currency, rates);
+  const totalFormatted = formatCurrency(totalConverted, currency);
 
-  // Carrega dados da casa para mostrar o resumo
+  // Persiste dados
+  useEffect(() => {
+    if (houseId && startDate && endDate && totalPriceZAR) {
+      safeSetStorage("preReserva", {
+        bookingId, houseId, startDate, endDate,
+        guests, totalPrice: totalPriceZAR, houseName,
+      });
+    }
+  }, [bookingId, houseId, startDate, endDate, guests, totalPriceZAR, houseName]);
+
+  // Carrega dados da casa
   useEffect(() => {
     if (!houseId) return;
     const load = async () => {
       try {
         const res = await api.get(`/accommodations/${houseId}`);
-        // ✅ Normaliza a resposta cobrindo os dois níveis possíveis
         const raw = res.data?.data?.accommodation ?? res.data?.data ?? res.data;
         setHouse(raw);
       } catch {
-        // silencioso — o UI já trata o estado null
+        // silencioso
       }
     };
     load();
@@ -99,9 +110,9 @@ export default function ReserveAgora() {
     const result = await initiatePayment({
       bookingId,
       accommodationId: houseId,
-      // ✅ usa o helper para garantir que o array de imagens está correto
       images:          resolveImageArray(house),
-      totalPrice,
+      // ✅ passa sempre o valor em ZAR ao gateway de pagamento
+      totalPrice:      totalPriceZAR,
       houseName,
       startDate,
       endDate,
@@ -114,7 +125,7 @@ export default function ReserveAgora() {
     }
   };
 
-  if (!houseId || !startDate || !endDate || !totalPrice) {
+  if (!houseId || !startDate || !endDate || !totalPriceZAR) {
     return (
       <div className="min-h-screen flex justify-center items-center">
         <p className="text-red-600 text-lg font-semibold">{t("reservenow.error")}</p>
@@ -144,7 +155,6 @@ export default function ReserveAgora() {
         <div className="bg-white p-5 rounded-xl shadow-sm space-y-5 border">
           <h2 className="text-lg font-semibold">{t("reservenow.details")}</h2>
 
-          {/* Detalhes da reserva */}
           <div className="text-sm space-y-2 text-gray-700">
             <div className="flex justify-between">
               <span className="text-gray-500">{t("center.entrydate")}</span>
@@ -160,7 +170,8 @@ export default function ReserveAgora() {
             </div>
             <div className="flex justify-between border-t pt-2 mt-2">
               <span className="font-semibold text-gray-900">Total</span>
-              <span className="font-bold text-gray-900 text-base">{totalPrice}</span>
+              {/* ✅ mostra o total convertido e formatado */}
+              <span className="font-bold text-gray-900 text-base">{totalFormatted}</span>
             </div>
           </div>
 
@@ -174,9 +185,9 @@ export default function ReserveAgora() {
           <div className="flex items-center gap-3">
             <span className="text-xs text-gray-400">{t("paysuite.Aceita")}:</span>
             <div className="flex items-center gap-2">
-              <img src="/icons/visa1.png"              alt="Visa"   className="h-6 object-contain" />
-              <img src="/icons/m-pesa-seeklogo.png"    alt="M-Pesa" className="h-6 object-contain" />
-              <img src="/icons/emola.png"              alt="e-Mola" className="h-6 object-contain" />
+              <img src="/icons/visa1.png"           alt="Visa"   className="h-6 object-contain" />
+              <img src="/icons/m-pesa-seeklogo.png" alt="M-Pesa" className="h-6 object-contain" />
+              <img src="/icons/emola.png"           alt="e-Mola" className="h-6 object-contain" />
             </div>
           </div>
 
@@ -192,7 +203,8 @@ export default function ReserveAgora() {
                 {status === "redirecting" ? t("paysuite.process") : t("paysuite.pro")}
               </>
             ) : (
-              `Pagar ${totalPrice}`
+              // ✅ botão mostra o total formatado na moeda do utilizador
+              `Pagar ${totalFormatted}`
             )}
           </button>
 
@@ -200,14 +212,11 @@ export default function ReserveAgora() {
             <p className="text-red-500 text-sm font-medium text-center">{errorMessage}</p>
           )}
 
-          <p className="text-xs text-gray-400 text-center">
-            {t("paysuite.direcc")}
-          </p>
+          <p className="text-xs text-gray-400 text-center">{t("paysuite.direcc")}</p>
         </div>
 
         {/* Coluna direita — card da casa */}
         <div className="bg-white shadow-sm rounded-xl overflow-hidden border">
-          {/* ✅ Imagem com fallback visual */}
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -231,7 +240,8 @@ export default function ReserveAgora() {
             <p className="text-gray-700 text-sm">{house.location}</p>
             <div className="mt-3 p-3 bg-gray-50 rounded-xl text-center border">
               <p className="text-xs font-medium text-gray-500 mb-1">{t("reservenow.totalprice")}</p>
-              <p className="text-xl font-bold text-gray-900">{totalPrice}</p>
+              {/* ✅ total formatado na moeda do utilizador */}
+              <p className="text-xl font-bold text-gray-900">{totalFormatted}</p>
             </div>
           </div>
         </div>
