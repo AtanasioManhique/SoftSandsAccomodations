@@ -34,30 +34,6 @@ const safeRemoveStorage = (key) => {
   try { localStorage.removeItem(key); } catch {}
 };
 // ─────────────────────────────────────────────────────────────
-const resolveImage = (house) => {
-  
-  if (house.primaryImageUrl) return house.primaryImageUrl;
-  // Formato: images: [{ url: "..." }, ...]
-  if (Array.isArray(house.images) && house.images.length > 0) {
-    const first = house.images[0];
-    if (typeof first === "string") return first;
-    if (first?.url) return first.url;
-    if (first?.image_url) return first.image_url;
-    if (first?.src) return first.src;
-  }
-  // Formato: image: ["url", ...]
-  if (Array.isArray(house.image) && house.image.length > 0) {
-    const first = house.image[0];
-    if (typeof first === "string") return first;
-    if (first?.url) return first.url;
-  }
-  // Formato: image_url: "..."
-  if (house.image_url) return house.image_url;
-  // Formato: thumbnail: "..."
-  if (house.thumbnail) return house.thumbnail;
-
-  return null;
-};
 
 export default function ReserveAgora() {
   const navigate  = useNavigate();
