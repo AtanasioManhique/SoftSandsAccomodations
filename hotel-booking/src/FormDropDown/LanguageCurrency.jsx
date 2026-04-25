@@ -25,7 +25,7 @@ export default function LanguageCurrency() {
     }
 
     if (editField === "currency") {
-      changeCurrency(tempCurrency); // ⭐ AQUI ESTÁ A CHAVE
+      changeCurrency(tempCurrency); 
     }
 
     setEditField(null);

@@ -285,7 +285,7 @@ export default function ResetPassword() {
                {t("resetpass.keep")}
               </>
             ) : (
-              t("resetpass.password")
+              t("resetpass.newpassword")
             )}
           </button>
         </form>

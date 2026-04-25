@@ -9,9 +9,7 @@ export function FavoriteProvider({ children }) {
   const { user } = useAuth();
   const [favorites, setFavorites] = useState([]);
 
-  // ── Chave localStorage por utilizador ─────────────────────
-  // Cada utilizador tem os seus próprios favoritos no localStorage.
-  // Quando o backend estiver pronto, isto deixa de ser necessário.
+ 
   const storageKey = user?.email
     ? `favorites_${user.email}`
     : "favorites_guest";

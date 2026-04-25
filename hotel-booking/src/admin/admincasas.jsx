@@ -64,6 +64,7 @@ const AdminCasas = () => {
   const [existingImages, setExistingImages]   = useState([]);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [isDragging, setIsDragging]           = useState(false);
+  const [loadingEdit, setLoadingEdit]         = useState(false); // ← NOVO
 
   useEffect(() => { loadData(); }, []);
 
@@ -90,7 +91,8 @@ const AdminCasas = () => {
     setShowForm(true);
   };
 
-  const openEdit = (casa) => {
+  // ✅ CORRIGIDO: busca os detalhes completos da casa (com imagens) ao abrir edição
+  const openEdit = async (casa) => {
     setForm({
       name:           casa.name           ?? "",
       description:    casa.description    ?? "",
@@ -110,8 +112,34 @@ const AdminCasas = () => {
     setNovaPraia("");
     setEditingId(casa.id);
     setImagesToUpload([]);
-    setExistingImages(casa.images ?? []);
+    setExistingImages(casa.images ?? []); // fallback enquanto carrega
     setShowForm(true);
+
+    // Busca detalhes completos para garantir que as imagens vêm todas
+    setLoadingEdit(true);
+    try {
+      const res = await api.get(`/accommodations/${casa.id}`);
+      const detail = res.data?.data ?? res.data;
+
+      // Normaliza imagens — o backend pode retornar em formatos diferentes
+      const imgs =
+        detail.images ??
+        detail.Images ??
+        [];
+
+      const normalized = imgs.map((img) => ({
+        id:         img.id,
+        url:        img.url ?? img.image_url ?? img.imageUrl ?? "",
+        is_primary: img.is_primary ?? img.isPrimary ?? false,
+      }));
+
+      setExistingImages(normalized);
+    } catch (err) {
+      console.error("Erro ao carregar detalhes da casa:", err);
+      // Mantém o fallback que já estava
+    } finally {
+      setLoadingEdit(false);
+    }
   };
 
   const handleImageUpload = async (accommodationId) => {
@@ -124,7 +152,7 @@ const AdminCasas = () => {
 
       await api.post(`/accommodations/${accommodationId}/images`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
-        timeout: 60000, // 60 segundos para uploads grandes
+        timeout: 60000,
       });
 
       setImagesToUpload([]);
@@ -236,7 +264,6 @@ const AdminCasas = () => {
   const getPrice = (casa) => casa.low_season_price ?? casa.lowSeasonPrice ?? casa.price_per_night ?? casa.pricePerNight;
   const getGuests = (casa) => casa.max_guests ?? casa.maxGuests;
 
-  // ✅ CORRIGIDO: agora usa primaryImageUrl como primeiro fallback
   const getImage = (casa) =>
     casa.primaryImageUrl ??
     casa.images?.[0]?.url ??
@@ -279,7 +306,6 @@ const AdminCasas = () => {
             {filtered.map((casa) => (
               <div key={casa.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
-                {/* ✅ CORRIGIDO: imagem clicável que navega para detalhes da casa */}
                 <Link to={`/casas/${casa.id}`} onClick={() => scrollTo(0, 0)}>
                   <div className="h-36 bg-gray-100 flex items-center justify-center relative">
                     {getImage(casa) ? (
@@ -296,7 +322,6 @@ const AdminCasas = () => {
                   </div>
                 </Link>
 
-                {/* Botões de editar/apagar — fora do Link para não interferir */}
                 <div className="relative">
                   <div className="absolute -top-[108px] right-2 flex gap-1.5 z-10">
                     <button
@@ -314,7 +339,6 @@ const AdminCasas = () => {
                   </div>
                 </div>
 
-                {/* ✅ Info também clicável */}
                 <Link to={`/casas/${casa.id}`} onClick={() => scrollTo(0, 0)}>
                   <div className="p-4">
                     <p className="text-sm font-semibold text-gray-900 truncate">{casa.name}</p>
@@ -510,38 +534,51 @@ const AdminCasas = () => {
                 </div>
               </div>
 
-              {/* Imagens existentes (modo edição) */}
-              {editingId && existingImages.length > 0 && (
+              {/* ✅ Imagens existentes (modo edição) */}
+              {editingId && (
                 <div>
-                  <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Imagens actuais</label>
-                  <div className="grid grid-cols-4 gap-2 mt-2">
-                    {existingImages.map((img) => (
-                      <div key={img.id} className="relative group">
-                        <img
-                          src={img.url}
-                          alt="Casa"
-                          className={`w-full h-20 object-cover rounded-lg ${img.is_primary ? "ring-2 ring-blue-500" : ""}`}
-                        />
-                        {img.is_primary && (
-                          <span className="absolute top-1 left-1 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded-full">Principal</span>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteImage(img.id)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition"
-                        >
-                          <X size={10} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                    Imagens actuais
+                  </label>
+
+                  {/* Estado de carregamento das imagens */}
+                  {loadingEdit ? (
+                    <div className="flex items-center gap-2 mt-3 text-sm text-gray-400">
+                      <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                      A carregar imagens...
+                    </div>
+                  ) : existingImages.length === 0 ? (
+                    <p className="mt-2 text-xs text-gray-400 italic">Nenhuma imagem adicionada ainda.</p>
+                  ) : (
+                    <div className="grid grid-cols-4 gap-2 mt-2">
+                      {existingImages.map((img) => (
+                        <div key={img.id} className="relative group">
+                          <img
+                            src={img.url}
+                            alt="Casa"
+                            className={`w-full h-20 object-cover rounded-lg ${img.is_primary ? "ring-2 ring-blue-500" : ""}`}
+                          />
+                          {img.is_primary && (
+                            <span className="absolute top-1 left-1 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded-full">Principal</span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage(img.id)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition"
+                          >
+                            <X size={10} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Upload novas imagens — drag & drop */}
               <div>
                 <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                  {editingId ? "Adicionar imagens" : "Imagens"}
+                  {editingId ? "Adicionar novas imagens" : "Imagens"}
                 </label>
 
                 <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-3">
@@ -552,7 +589,7 @@ const AdminCasas = () => {
                         alt={`Preview ${i}`}
                         className="w-full h-full object-cover rounded-xl border border-gray-100"
                       />
-                      {i === 0 && (
+                      {i === 0 && existingImages.length === 0 && (
                         <span className="absolute bottom-1 left-1 bg-blue-600 text-white text-[9px] px-1.5 py-0.5 rounded-full leading-none">
                           Principal
                         </span>
@@ -620,7 +657,7 @@ const AdminCasas = () => {
                   className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl font-semibold text-sm hover:bg-gray-50 transition">
                   Cancelar
                 </button>
-                <button type="submit" disabled={saving || uploadingImages}
+                <button type="submit" disabled={saving || uploadingImages || loadingEdit}
                   className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2">
                   {saving || uploadingImages ? (
                     <>

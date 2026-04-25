@@ -68,18 +68,14 @@ const SearchOverlay = ({ onClose }) => {
   const search = async (q) => {
     setLoading(true);
     try {
-      // GET /api/search?q=query
-      // Resposta esperada:
-      // { praias: [{ name, total }], casas: [{ id, location, bedroom, capacity, price, image }] }
-      const res  = await api.get("/accommodations", { params: { search: q, limit: 20 } });
+      const res   = await api.get("/accommodations", { params: { search: q, limit: 20 } });
       const casas = res.data?.data ?? [];
 
-      // agrupar por location para gerar as praias
-
+      // Agrupar por location para gerar as praias
       const praiasMap = {};
       casas.forEach((c) => {
         if (!c.location) return;
-        praiasMap[c.location] = (praiasMap[c.location] ?? 0) +1;
+        praiasMap[c.location] = (praiasMap[c.location] ?? 0) + 1;
       });
 
       const praias = Object.entries(praiasMap).map(([name, total]) => ({ name, total }));
@@ -194,10 +190,11 @@ const SearchOverlay = ({ onClose }) => {
               <div>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 py-2 mt-1">Casas</p>
                 {results.casas.map((casa) => {
-                  const imageUrl = casa.images?.casa_images?.[0]?.url || casa.image?.[0];
-                  const price = casa.price_per_night ?? casa.PricePerNight;
-                  const bedrooms = casa.bedroom ?? casa.Bedroom;
-                  const guests = casa.max_guests ?? casa.maxGuests;
+                  // ✅ CORRIGIDO: imagem, preço e quartos com os campos certos
+                  const imageUrl = casa.primaryImageUrl ?? casa.images?.[0]?.url ?? casa.images?.[0]?.image_url ?? null;
+                  const price    = casa.low_season_price ?? casa.lowSeasonPrice ?? casa.price_per_night ?? casa.pricePerNight;
+                  const bedrooms = casa.bedrooms ?? casa.bedroom;
+                  const guests   = casa.max_guests ?? casa.maxGuests;
 
                   return (
                     <button
@@ -205,27 +202,31 @@ const SearchOverlay = ({ onClose }) => {
                       onClick={() => goToCasa(casa.id)}
                       className="w-full flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-gray-50 transition text-left"
                     >
-                    <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center shrink-0 overflow-hidden">
-                      {imageUrl ? (
-                        <img src={imageUrl} alt={casa.name} className="w-full h-full object-cover" />
+                      <div className="w-9 h-9 rounded-lg bg-green-100 flex items-center justify-center shrink-0 overflow-hidden">
+                        {imageUrl ? (
+                          <img src={imageUrl} alt={casa.name} className="w-full h-full object-cover" />
                         ) : (
                           <Home size={16} className="text-green-600" />
                         )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">{casa.location}</p>
-                      <p className="text-xs text-gray-400">
-                        {casa.location} · {bedrooms} quarto{bedrooms !== 1 ? "s" : ""} · {guests} hósp.
-                      </p>
-                    </div>
-                    {price && (
-                      <p className="text-sm font-semibold text-gray-700 shrink-0">
-                       R {Number(price).toLocaleString("en-ZA")}/noite
-                      </p>
-                    )}
-                  </button>
-                );
-              })}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        {/* ✅ CORRIGIDO: mostra o nome da casa, não a localização */}
+                        <p className="text-sm font-semibold text-gray-800 truncate">{casa.name}</p>
+                        {/* ✅ CORRIGIDO: quartos e hóspedes sem repetir localização */}
+                        <p className="text-xs text-gray-400">
+                          {casa.location}
+                          {bedrooms != null ? ` · ${bedrooms} quarto${bedrooms !== 1 ? "s" : ""}` : ""}
+                          {guests    != null ? ` · ${guests} hósp.` : ""}
+                        </p>
+                      </div>
+                      {price && (
+                        <p className="text-sm font-semibold text-gray-700 shrink-0">
+                          R {Number(price).toLocaleString("en-ZA")}/noite
+                        </p>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
 
