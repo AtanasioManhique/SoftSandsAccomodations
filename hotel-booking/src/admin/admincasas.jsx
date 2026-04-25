@@ -115,17 +115,18 @@ const AdminCasas = () => {
     setExistingImages(casa.images ?? []); // fallback enquanto carrega
     setShowForm(true);
 
-    // Busca detalhes completos para garantir que as imagens vêm todas
+    // Busca detalhes completos — mesma estrutura usada no HouseDetails
     setLoadingEdit(true);
     try {
       const res = await api.get(`/accommodations/${casa.id}`);
-      const detail = res.data?.data ?? res.data;
+      // HouseDetails usa: res.data?.data?.accommodation ?? res.data?.data ?? res.data
+      const detail =
+        res.data?.data?.accommodation ??
+        res.data?.data ??
+        res.data;
 
-      // Normaliza imagens — o backend pode retornar em formatos diferentes
-      const imgs =
-        detail.images ??
-        detail.Images ??
-        [];
+      // raw.images é um array de objetos { id, url, is_primary, ... }
+      const imgs = detail?.images ?? [];
 
       const normalized = imgs.map((img) => ({
         id:         img.id,
@@ -136,7 +137,7 @@ const AdminCasas = () => {
       setExistingImages(normalized);
     } catch (err) {
       console.error("Erro ao carregar detalhes da casa:", err);
-      // Mantém o fallback que já estava
+      // Mantém o fallback da listagem
     } finally {
       setLoadingEdit(false);
     }

@@ -35,11 +35,8 @@ const PraiaSection = ({ praia, houses, title, subtitle, isFirst = false }) => {
   );
 
   return (
-    // mt-20 só na primeira (clearfix da navbar); mt-10 para todas as outras
-    // pt-8 mantém o padding interno consistente em todas as secções
-    // isFirst → mt-20 pt-8 (clearfix da navbar + padding normal)
-    // outras  → mt-2 pt-4  (o pb-7 do Swiper já cria espaço suficiente abaixo)
-    <div className={`flex flex-col items-start px-4 md:px-20 ${isFirst ? "mt-20 -pt-5" : "mt-20 pt-0"} relative`}>
+   
+    <div className={`flex flex-col items-start px-4 md:px-20 ${isFirst ? "mt-15 -pt-5" : "mt-20 pt-0"} relative`}>
 
       {/* Título grande — só aparece se for passado */}
       {title && (
