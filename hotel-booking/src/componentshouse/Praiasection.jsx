@@ -36,7 +36,7 @@ const PraiaSection = ({ praia, houses, title, subtitle, isFirst = false }) => {
 
   return (
    
-    <div className={`flex flex-col items-start px-4 md:px-20 ${isFirst ? "mt-15 -pt-5" : "mt-20 pt-0"} relative`}>
+    <div className={`flex flex-col items-start px-4 md:px-20 ${isFirst ? "mt-19 -pt-5" : "mt-10 pt-0"} relative`}>
 
       {/* Título grande — só aparece se for passado */}
       {title && (
